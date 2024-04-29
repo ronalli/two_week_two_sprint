@@ -2,6 +2,7 @@ import {Db, MongoClient} from 'mongodb'
 import {SETTINGS} from "../settings";
 import {IUserDBType} from "../users/types/user-types";
 import {IPostDBType} from "../posts/types/posts-types";
+import {ICommentDBType} from "../comments/types/comments-types";
 
 export const db = {
     client: {} as MongoClient,
@@ -46,6 +47,7 @@ export const db = {
             usersCollection: this.getDbName().collection<IUserDBType>('users'),
             postsCollection: this.getDbName().collection<IPostDBType>('posts'),
             blogsCollection: this.getDbName().collection<IPostDBType>('blogs'),
+            commentsCollection: this.getDbName().collection<ICommentDBType>('comments'),
         }
     }
 }

@@ -4,7 +4,7 @@ import {IUserDBType} from "../users/types/user-types";
 
 export const jwtService = {
     createdJWT: async (user: IUserDBType) => {
-        return jwt.sign({userId: user._id}, process.env.SECRET_PASSWORD!, {expiresIn: "1d"})
+        return jwt.sign({userId: user._id}, process.env.SECRET_PASSWORD!, {expiresIn: "1h"})
     },
     getUserIdByToken: async (token: string) => {
         try {

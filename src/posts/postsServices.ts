@@ -10,5 +10,5 @@ export const postsServices = {
     },
     deletePost: async (id: string) => {
         return await postsMongoRepositories.delete(id);
-    }
+    },
 }

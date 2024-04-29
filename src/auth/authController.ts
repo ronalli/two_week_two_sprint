@@ -15,7 +15,7 @@ export const authController = {
         const user = await authService.login(authData);
         if (user) {
             const token = await jwtService.createdJWT(user)
-            res.status(HTTP_STATUSES.OK_200).send({"access_token": token})
+            res.status(HTTP_STATUSES.OK_200).send({"accessToken": token})
             return;
         }
         res.status(HTTP_STATUSES.UNAUTHORIZED).send({})
