@@ -7,6 +7,8 @@ export const usersServices = {
     },
     deleteUser: async (id:string): Promise<boolean | undefined> => {
         return await usersMongoRepositories.deleteUser(id);
+    },
+    findUser: async (id: string)=> {
+        return await usersMongoRepositories.findUserById(id)
     }
-
 }

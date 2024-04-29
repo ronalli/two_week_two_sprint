@@ -7,4 +7,13 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         res.status(HTTP_STATUSES.UNAUTHORIZED).send({})
         return;
     }
+    const token = req.headers.authorization.split(" ")[1];
+    const userId = await jwtService.getUserIdByToken(token);
+    if(userId) {
+        req.userId = String(userId);
+        next();
+        return;
+    }
+    res.status(HTTP_STATUSES.UNAUTHORIZED).send({})
+    return;
 }
