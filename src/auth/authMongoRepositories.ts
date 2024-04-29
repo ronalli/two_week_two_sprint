@@ -1,4 +1,4 @@
-import {ILoginBody} from "./types/login-type";
+import {ILoginBody} from "./types/login-types";
 import {usersCollection} from "../db/mongo-db";
 import {IUserDBType, IUserViewModel} from "../users/types/user-types";
 
