@@ -1,5 +1,5 @@
 export const commentsQueryRepositories = {
-    getComments: async () => {
+    getCommentsById: async () => {
 
     }
 }

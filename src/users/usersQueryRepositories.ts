@@ -1,7 +1,7 @@
 import {IUserQueryType} from "./types/request-response-type";
 import {IPaginatorUserViewModel, IUserDBType, IUserViewModel} from "./types/user-types";
 import {usersCollection} from "../db/mongo-db";
-import {SortDirection} from "mongodb";
+import {ObjectId, SortDirection} from "mongodb";
 
 export const usersQueryRepositories = {
     getUsers: async (queryParams: IUserQueryType): Promise<IPaginatorUserViewModel | []> => {
@@ -47,6 +47,20 @@ export const usersQueryRepositories = {
         } catch (error) {
             console.log(error)
             return [];
+        }
+    },
+    findUserById: async (id: string): Promise<IUserDBType | undefined> => {
+        try {
+
+            const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
+            if(foundUser) {
+                return foundUser;
+            }
+            return;
+
+        } catch (e) {
+            console.error(e);
+            return;
         }
     },
 

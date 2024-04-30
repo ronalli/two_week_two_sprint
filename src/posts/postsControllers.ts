@@ -6,6 +6,7 @@ import {IPostInputModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
 import {jwtService} from "../utils/jwt-services";
 import {ObjectId} from "mongodb";
+import {commentsServices} from "../comments/commentsServices";
 
 export const postsControllers = {
     createPost: async (req: Request, res: Response) => {
@@ -59,10 +60,13 @@ export const postsControllers = {
         const token = req.headers.authorization?.split(" ")[1];
         let userId = await jwtService.getUserIdByToken(token!);
 
+        const newComment = await commentsServices.create({postId, userId, content})
 
-        console.log(postId, content, userId)
-
-        res.status(HTTP_STATUSES.CREATED_201).send({})
+        if(newComment) {
+            res.status(HTTP_STATUSES.CREATED_201).send(newComment)
+            return
+        }
+        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
     }
 }
 

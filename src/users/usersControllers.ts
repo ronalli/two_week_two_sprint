@@ -31,5 +31,5 @@ export const usersController = {
         }
         res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
         return
-    }
+    },
 }

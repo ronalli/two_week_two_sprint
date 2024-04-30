@@ -2,12 +2,10 @@ import {Request, Response} from 'express';
 import {ILoginBody} from "./types/login-types";
 import {authService} from "./authService";
 import {HTTP_STATUSES} from "../settings";
-import jwt from 'jsonwebtoken';
 import {jwtService} from "../utils/jwt-services";
 import {usersServices} from "../users/usersServices";
 import {IUserDBType, IUserViewModel} from "../users/types/user-types";
 import {IMeViewModel} from "./types/me-types";
-
 
 export const authController = {
     login: async (req: Request, res: Response) => {

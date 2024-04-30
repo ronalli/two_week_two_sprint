@@ -10,15 +10,22 @@ export interface ICommentDBType {
     content: string
     createdAt: string
     commentatorInfo: ICommentatorInfo
+    postId: string
 }
 
-export interface ICommentInoutModel {
+export interface ICommentInputModel {
     content: string
 }
 
 export interface ICommentViewModel {
     id: string
     content: string
-    commentatorInfo: ICommentInoutModel
+    commentatorInfo: ICommentatorInfo
     createdAt: string
+}
+
+export interface ICommentAdd {
+    postId: string
+    userId: string
+    content: string
 }
