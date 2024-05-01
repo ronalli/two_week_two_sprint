@@ -14,11 +14,11 @@ export const commentsMongoRepositories = {
                         content: contentUpdate
                     }
                 })
-                return true;
+                return {status: 204}
             }
-            return  false;
+            return {error: 'Not found comment', status: 404};
         } catch (e) {
-            return;
+            return {error: 'Error BD', status: 400}
         }
     },
     deleteComment: async () => {},

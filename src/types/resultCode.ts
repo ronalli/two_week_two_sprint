@@ -4,4 +4,5 @@ export enum ResultCode {
     Forbidden = 'Forbidden',
     Unauthorized = 'Unauthorized',
     BadRequest = 'BadRequest',
+    NotContent = 'NotContent'
 }
