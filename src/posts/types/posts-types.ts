@@ -27,7 +27,3 @@ export interface IPostDBType  {
     blogName: string,
     createdAt: string,
 }
-
-export interface IPaginatorPostViewModel extends IPaginator {
-    items: IPostViewModel[]
-}

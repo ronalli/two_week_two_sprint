@@ -2,8 +2,9 @@ import {createDefaultValues} from "../utils/helper";
 import {blogsCollection, postsCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {IBlogQueryType} from "./types/request-response-type";
-import {IBlogDBType, IBlogViewModel, IPaginatorBlogViewModel} from "./types/blogs-types";
+import {IBlogDBType, IBlogViewModel} from "./types/blogs-types";
 import {IPostDBType, IPostViewModel} from "../posts/types/posts-types";
+import {IPaginator} from "../types/output-paginator";
 
 
 export const blogsQueryRepositories = {
@@ -45,7 +46,7 @@ export const blogsQueryRepositories = {
         }
     },
 
-    getAllBlogs: async (queryParams: IBlogQueryType): Promise<IPaginatorBlogViewModel | []> => {
+    getAllBlogs: async (queryParams: IBlogQueryType): Promise<IPaginator<IBlogViewModel[]> | []> => {
         const query = createDefaultValues(queryParams);
 
         const search = query.searchNameTerm ? {name: {$regex: `${query.searchNameTerm}`, $options: "i"}} : {}

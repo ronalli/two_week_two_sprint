@@ -1,11 +1,12 @@
 import {createDefaultValues} from "../utils/helper";
 import {postsCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
-import {IPaginatorPostViewModel, IPostDBType, IPostViewModel} from "./types/posts-types";
+import { IPostDBType, IPostViewModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
+import {IPaginator} from "../types/output-paginator";
 
 export const postsQueryRepositories = {
-    getPosts: async (queryParams: IPostQueryType): Promise<IPaginatorPostViewModel | []> => {
+    getPosts: async (queryParams: IPostQueryType): Promise<IPaginator<IPostDBType[]> | []> => {
         const query = createDefaultValues(queryParams);
         try {
             const allPosts = await postsCollection.find()

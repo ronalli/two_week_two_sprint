@@ -16,10 +16,6 @@ export interface IBlogViewModel  {
     isMembership: boolean,
 }
 
-export interface IPaginatorBlogViewModel extends IPaginator {
-    items: IBlogViewModel[]
-}
-
 export interface IBlogDBType {
     _id?: ObjectId
     name: string,

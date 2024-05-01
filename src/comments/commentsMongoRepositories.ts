@@ -2,10 +2,24 @@ import {ICommentAdd, ICommentDBType, ICommentViewModel} from "./types/comments-t
 import {commentsCollection, usersCollection} from "../db/mongo-db";
 import {usersController} from "../users/usersControllers";
 import {usersQueryRepositories} from "../users/usersQueryRepositories";
+import {ObjectId} from "mongodb";
 
 export const commentsMongoRepositories = {
-    updateComment: async () => {
-
+    updateComment: async (id: string, contentUpdate: string) => {
+        try {
+            const findComment = await commentsCollection.findOne({_id: new ObjectId(id)});
+            if(findComment) {
+                await commentsCollection.findOneAndUpdate({_id: new ObjectId(id)}, {
+                    $set: {
+                        content: contentUpdate
+                    }
+                })
+                return true;
+            }
+            return  false;
+        } catch (e) {
+            return;
+        }
     },
     deleteComment: async () => {},
     addComment: async (data: ICommentAdd) => {

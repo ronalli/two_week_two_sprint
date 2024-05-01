@@ -3,7 +3,9 @@ import {ICommentDBType, ICommentViewModel} from "./types/comments-types";
 import {ICommentsQueryType} from "./types/output-paginator-comments-types";
 import {createDefaultValuesQueryParams} from "../utils/helper";
 import {ObjectId} from "mongodb";
-import {commentsServices} from "./commentsServices";
+import {IPaginator} from "../types/output-paginator";
+import {Result} from "../types/result.type";
+import {ResultCode} from "../types/resultCode";
 
 export const commentsQueryRepositories = {
     getCommentsForSpecialPost: async (postId: string, queryParams: ICommentsQueryType) => {
@@ -25,7 +27,7 @@ export const commentsQueryRepositories = {
                 items: commentsQueryRepositories._mappingAll(comments)
             }
         } catch (e) {
-            return [];
+            return {error: 'Error BD'}
         }
     },
 

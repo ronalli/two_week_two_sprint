@@ -1,6 +1,7 @@
-export interface IPaginator {
-    pagesCount?: number,
-    page?: number,
-    pageSize?: number,
-    totalCount?: number,
+export interface IPaginator<T> {
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: T
 }
