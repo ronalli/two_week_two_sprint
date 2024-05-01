@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb";
+import {IPaginator} from "../../types/output-paginator";
 
 export interface IPostInputModel {
     title: string,
@@ -27,10 +28,6 @@ export interface IPostDBType  {
     createdAt: string,
 }
 
-export interface IPaginatorPostViewModel  {
-    pagesCount: number,
-    page: number,
-    pageSize: number,
-    totalCount: number,
+export interface IPaginatorPostViewModel extends IPaginator {
     items: IPostViewModel[]
 }

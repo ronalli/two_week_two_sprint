@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb";
+import {IPaginator} from "../../types/output-paginator";
 
 export interface IBlogInputModel {
     name: string,
@@ -15,11 +16,7 @@ export interface IBlogViewModel  {
     isMembership: boolean,
 }
 
-export interface IPaginatorBlogViewModel  {
-    pagesCount: number,
-    page: number,
-    pageSize: number,
-    totalCount: number,
+export interface IPaginatorBlogViewModel extends IPaginator {
     items: IBlogViewModel[]
 }
 

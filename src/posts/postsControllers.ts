@@ -7,6 +7,7 @@ import {IPostQueryType} from "./types/request-response-type";
 import {jwtService} from "../utils/jwt-services";
 import {ObjectId} from "mongodb";
 import {commentsServices} from "../comments/commentsServices";
+import {ICommentsQueryType} from "../comments/types/output-paginator-comments-types";
 
 export const postsControllers = {
     createPost: async (req: Request, res: Response) => {
@@ -67,6 +68,12 @@ export const postsControllers = {
             return
         }
         res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+    },
+    getAllCommentsForPost: async (req: Request, res: Response) => {
+        const queryParams: ICommentsQueryType = req.query;
+        const {postId} = req.params;
+        const allComments = await commentsServices.findComments(postId, queryParams)
+        res.status(HTTP_STATUSES.OK_200).send(allComments)
     }
 }
 

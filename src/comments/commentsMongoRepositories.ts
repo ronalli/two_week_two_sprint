@@ -13,7 +13,8 @@ export const commentsMongoRepositories = {
         const user = await usersQueryRepositories.findUserById(data.userId)
 
         const newComment: ICommentDBType = {
-            ...data,
+            postId: data.postId,
+            content: data.content,
             createdAt: new Date().toISOString(),
             commentatorInfo: {
                 userId: data.userId,
@@ -25,7 +26,7 @@ export const commentsMongoRepositories = {
             const insertedComment = await commentsCollection.insertOne(newComment);
             const foundComment = await commentsCollection.findOne({_id: insertedComment.insertedId})
             if (foundComment) {
-                return commentsMongoRepositories._maping(foundComment);
+                return commentsMongoRepositories._mapping(foundComment);
             }
             return;
 
@@ -34,7 +35,8 @@ export const commentsMongoRepositories = {
         }
     },
 
-    _maping: (comment: ICommentDBType): ICommentViewModel => {
+    //дублирование commentsQueryRepositories
+    _mapping: (comment: ICommentDBType): ICommentViewModel => {
         return {
             id: String(comment._id),
             commentatorInfo: {...comment.commentatorInfo},
