@@ -2,7 +2,7 @@ import {IUserDBType, IUserInputModel, IUserViewModel} from "./types/user-types";
 import {usersCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {bcryptService} from "../utils/bcrypt-service";
-import bcrypt from "bcrypt";
+import {ResultCode} from "../types/resultCode";
 
 export const usersMongoRepositories = {
     createUser: async (data: IUserInputModel):Promise<IUserViewModel | undefined> => {
@@ -18,10 +18,10 @@ export const usersMongoRepositories = {
 
         try {
             const insertUser = await usersCollection.insertOne(newUser);
-            const foundUser = await usersMongoRepositories.findUserById(String(insertUser.insertedId))
+            const result = await usersMongoRepositories.findUserById(String(insertUser.insertedId))
 
-            if(foundUser) {
-                return usersMongoRepositories._maping(foundUser);
+            if(result.item) {
+                return usersMongoRepositories._maping(result.item);
             }
             return;
         } catch (e) {
@@ -30,18 +30,19 @@ export const usersMongoRepositories = {
         }
 
     },
-    findUserById: async (id: string): Promise<IUserDBType | undefined> => {
+    findUserById: async (id: string) => {
         try {
-
             const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
             if(foundUser) {
-                return foundUser;
+                return {
+                    status: ResultCode.Success,
+                    item: foundUser
+                }
             }
-            return;
+            return {error: "Not found user", status: ResultCode.NotFound}
 
         } catch (e) {
-            console.error(e);
-            return;
+            return {error: 'Errors BD', status: ResultCode.BadRequest}
         }
     },
     deleteUser: async (id: string): Promise<boolean | undefined> => {

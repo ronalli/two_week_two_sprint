@@ -10,7 +10,9 @@ const validatorQuerySortByPost = query('sortBy').optional().custom(value => {
 const validatorQueryPageNumber = query('pageNumber').optional().isInt().withMessage('Field is incorrect');
 const validatorQueryPageSize = query('pageSize').optional().isInt().withMessage('Field is incorrect');
 const validatorQuerySearchNameTerm = query('searchNameTerm').optional().isString().withMessage('Field is incorrect');
-const validatorQuerySortDirection = query('sortDirection').optional().custom(value => sortDirection.hasOwnProperty(value)).withMessage('Field is incorrect');
+const validatorQuerySortDirection = query('sortDirection').optional()
+    .custom(value => sortDirection.hasOwnProperty(value)).withMessage('Field is incorrect');
 
 
-export const validationQueryParamsPosts = [validatorQuerySortByPost, validatorQueryPageNumber, validatorQueryPageSize, validatorQuerySearchNameTerm, validatorQuerySortDirection]
+export const validationQueryParamsPosts = [validatorQuerySortByPost,
+    validatorQueryPageNumber, validatorQueryPageSize, validatorQuerySearchNameTerm, validatorQuerySortDirection]

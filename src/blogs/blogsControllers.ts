@@ -56,14 +56,27 @@ export const blogsControllers = {
         const {blogId} = req.params;
         const queryParams: IBlogQueryType = req.query;
 
-        const result = await blogsQueryRepositories.getAndSortPostsSpecialBlog(blogId, queryParams)
+        const blog = await blogsQueryRepositories.findBlogById(blogId);
+        if(blog) {
+            const result = await blogsQueryRepositories.getAndSortPostsSpecialBlog(blogId, queryParams)
+            res.status(HTTP_STATUSES.OK_200).send(result)
+            return
+        }
 
-        res.status(HTTP_STATUSES.OK_200).send(result)
+        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+        return
+
     },
-
     createPostForSpecialBlog: async (req: Request, res: Response) => {
         const inputDataPost = req.body;
         const {blogId} = req.params;
+
+        const blog = await blogsQueryRepositories.findBlogById(blogId);
+
+        if(!blog) {
+            res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+            return
+        }
 
         const post = {
             blogId,
@@ -77,6 +90,6 @@ export const blogsControllers = {
             return
         }
         res.status(HTTP_STATUSES.CREATED_201).send(createdPost)
-        return;
+        return
     }
 }
