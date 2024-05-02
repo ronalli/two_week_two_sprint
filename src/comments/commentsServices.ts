@@ -6,13 +6,21 @@ import {Result} from "../types/result.type";
 import {ResultCode} from "../types/resultCode";
 import {IPaginator} from "../types/output-paginator";
 import {jwtService} from "../utils/jwt-services";
+import {postsQueryRepositories} from "../posts/postsQueryRepositories";
 
 export const commentsServices = {
     update: async (id: string, content: string, token: string) => {
-
         const userId = await jwtService.getUserIdByToken(token);
         const comment = await commentsQueryRepositories.getCommentById(id);
-        if(userId !== comment?.id) {
+
+        if(!comment) {
+            return {
+                status: ResultCode.NotFound,
+                data: null
+            }
+        }
+
+        if(userId !== comment?.commentatorInfo.userId) {
             return {
                 status: ResultCode.Forbidden,
                 errorMessage: 'Try edit the comment that is not your own',
@@ -22,12 +30,39 @@ export const commentsServices = {
 
         const result = await commentsMongoRepositories.updateComment(id, content);
 
-        if(result.status === 204) {
+        if(result.status === 400) {
             return {
-                status: ResultCode.NotContent,
+                status: ResultCode.BadRequest,
                 data: null
             }
         }
+
+        return {
+            status: ResultCode.NotContent,
+            data: null
+        }
+    },
+    delete: async (id: string, token: string) => {
+        const comment = await commentsQueryRepositories.getCommentById(id);
+        const userId = await jwtService.getUserIdByToken(token);
+
+        if(!comment) {
+            return {
+                status: ResultCode.NotFound,
+                data: null
+            }
+        }
+
+        if(userId !== comment?.commentatorInfo.userId) {
+            return {
+                status: ResultCode.Forbidden,
+                errorMessage: 'Try edit the comment that is not your own',
+                data: null
+            }
+        }
+
+        const result = await commentsMongoRepositories.deleteComment(id);
+
 
         if(result.status === 400) {
             return {
@@ -37,15 +72,34 @@ export const commentsServices = {
         }
 
         return {
-            status: ResultCode.Forbidden,
+            status: ResultCode.NotContent,
             data: null
         }
-    },
-    delete: async () => {
 
     },
     create: async (data: ICommentAdd) => {
-        return await commentsMongoRepositories.addComment(data)
+        const {postId} = data;
+        const findPost = await postsQueryRepositories.findPostById(postId);
+        const result = await commentsMongoRepositories.addComment(data)
+
+        if(!findPost) {
+            return {
+                status: ResultCode.NotFound,
+                data: null
+            }
+        }
+        if(result.item) {
+            return {
+                status: result.status,
+                data: result.item
+            }
+        }
+        return {
+            status: result.status,
+            errorMessage: result.error,
+            data: null
+        }
+
     },
     findComments: async (postId: string, queryParams: ICommentsQueryType): Promise<Result<IPaginator<ICommentViewModel[]> | null>> => {
         const result = await commentsQueryRepositories.getCommentsForSpecialPost(postId, queryParams)

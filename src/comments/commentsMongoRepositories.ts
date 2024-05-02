@@ -3,6 +3,7 @@ import {commentsCollection, usersCollection} from "../db/mongo-db";
 import {usersController} from "../users/usersControllers";
 import {usersQueryRepositories} from "../users/usersQueryRepositories";
 import {ObjectId} from "mongodb";
+import {ResultCode} from "../types/resultCode";
 
 export const commentsMongoRepositories = {
     updateComment: async (id: string, contentUpdate: string) => {
@@ -21,7 +22,15 @@ export const commentsMongoRepositories = {
             return {error: 'Error BD', status: 400}
         }
     },
-    deleteComment: async () => {},
+    deleteComment: async (id: string) => {
+        try {
+            await commentsCollection.findOneAndDelete({_id: new ObjectId(id)});
+            return {status: 204};
+        } catch (e) {
+            return {error: 'Error deleting comment', status: 400};
+        }
+
+    },
     addComment: async (data: ICommentAdd) => {
 
         const user = await usersQueryRepositories.findUserById(data.userId)
@@ -40,12 +49,12 @@ export const commentsMongoRepositories = {
             const insertedComment = await commentsCollection.insertOne(newComment);
             const foundComment = await commentsCollection.findOne({_id: insertedComment.insertedId})
             if (foundComment) {
-                return commentsMongoRepositories._mapping(foundComment);
+                return {status: ResultCode.Created, item: commentsMongoRepositories._mapping(foundComment)}
             }
-            return;
+            return {error: 'Not found comment', status: ResultCode.NotFound};
 
         } catch (e) {
-            return
+            return {error: 'Error DB', status: ResultCode.BadRequest}
         }
     },
 

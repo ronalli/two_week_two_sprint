@@ -31,6 +31,7 @@ export const commentsController = {
         const token = req.headers.authorization?.split(" ")[1]!;
 
         const result = await commentsServices.update(commentId, content, token)
+
         if (result.status === ResultCode.Forbidden) {
             res.status(HTTP_STATUSES.FORBIDDEN_403).send({})
             return;
@@ -47,5 +48,25 @@ export const commentsController = {
         res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
         return;
     },
-    deleteComment: async (req: Request, res: Response) => {}
+    deleteComment: async (req: Request, res: Response) => {
+        const {commentId} = req.params;
+        const token = req.headers.authorization?.split(" ")[1]!;
+        const result = await commentsServices.delete(commentId, token)
+
+
+        if(result.status === ResultCode.NotContent) {
+            res.status(HTTP_STATUSES.NO_CONTENT_204).send({})
+            return;
+        }
+        if (result.status === ResultCode.Forbidden) {
+            res.status(HTTP_STATUSES.FORBIDDEN_403).send({})
+            return;
+        }
+        if(result.status === ResultCode.BadRequest) {
+            res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
+            return;
+        }
+        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+        return;
+    }
 }

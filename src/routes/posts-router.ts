@@ -16,5 +16,5 @@ postsRouter.post('/', authMiddleware, ...validationCreatePost, inputCheckErrorsM
 postsRouter.put('/:id', authMiddleware, ...validationCreatePost, inputCheckErrorsMiddleware, postsControllers.updatePost)
 postsRouter.delete('/:id', authMiddleware, postsControllers.deletePost)
 
-postsRouter.post('/:postId/comments', authJwtMiddleware, validationContent, inputCheckErrorsMiddleware, postsControllers.createCommentsForSpecialPost)
-postsRouter.get('/:postId/comments', authJwtMiddleware, postsControllers.getAllCommentsForPost)
+postsRouter.post('/:postId/comments', authJwtMiddleware, validationContent, inputCheckErrorsMiddleware, postsControllers.createCommentForSpecialPost)
+postsRouter.get('/:postId/comments', postsControllers.getAllCommentsForPost)

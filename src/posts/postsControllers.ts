@@ -5,9 +5,9 @@ import {postsServices} from "./postsServices";
 import {IPostInputModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
 import {jwtService} from "../utils/jwt-services";
-import {ObjectId} from "mongodb";
 import {commentsServices} from "../comments/commentsServices";
 import {ICommentsQueryType} from "../comments/types/output-paginator-comments-types";
+import {ResultCode} from "../types/resultCode";
 
 export const postsControllers = {
     createPost: async (req: Request, res: Response) => {
@@ -55,7 +55,7 @@ export const postsControllers = {
         }
         res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
     },
-    createCommentsForSpecialPost: async (req: Request, res: Response) => {
+    createCommentForSpecialPost: async (req: Request, res: Response) => {
         const {postId} = req.params;
         const {content} = req.body;
         const token = req.headers.authorization?.split(" ")[1];
@@ -63,11 +63,17 @@ export const postsControllers = {
 
         const newComment = await commentsServices.create({postId, userId, content})
 
-        if(newComment) {
-            res.status(HTTP_STATUSES.CREATED_201).send(newComment)
+        if(newComment.data) {
+            res.status(HTTP_STATUSES.CREATED_201).send(newComment.data)
             return
         }
-        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+
+        if(newComment.status === ResultCode.NotFound) {
+            res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+            return;
+        }
+
+        res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
     },
     getAllCommentsForPost: async (req: Request, res: Response) => {
         const queryParams: ICommentsQueryType = req.query;
