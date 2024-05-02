@@ -7,6 +7,7 @@ import {ResultCode} from "../types/resultCode";
 import {IPaginator} from "../types/output-paginator";
 import {jwtService} from "../utils/jwt-services";
 import {postsQueryRepositories} from "../posts/postsQueryRepositories";
+import {postsServices} from "../posts/postsServices";
 
 export const commentsServices = {
     update: async (id: string, content: string, token: string) => {
@@ -102,6 +103,16 @@ export const commentsServices = {
 
     },
     findComments: async (postId: string, queryParams: ICommentsQueryType): Promise<Result<IPaginator<ICommentViewModel[]> | null>> => {
+
+        const post = await postsQueryRepositories.findPostById(postId);
+
+        if(!post) {
+            return {
+                status: ResultCode.NotFound,
+                data: null
+            }
+        }
+
         const result = await commentsQueryRepositories.getCommentsForSpecialPost(postId, queryParams)
         if(result.items) {
             return {

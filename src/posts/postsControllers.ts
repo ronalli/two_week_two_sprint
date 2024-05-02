@@ -61,25 +61,40 @@ export const postsControllers = {
         const token = req.headers.authorization?.split(" ")[1];
         let userId = await jwtService.getUserIdByToken(token!);
 
-        const newComment = await commentsServices.create({postId, userId, content})
+        const result = await commentsServices.create({postId, userId, content})
 
-        if(newComment.data) {
-            res.status(HTTP_STATUSES.CREATED_201).send(newComment.data)
+        if (result.data) {
+            res.status(HTTP_STATUSES.CREATED_201).send(result.data)
             return
         }
 
-        if(newComment.status === ResultCode.NotFound) {
+        if (result.status === ResultCode.NotFound) {
             res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
             return;
         }
 
         res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
+        return
     },
+
     getAllCommentsForPost: async (req: Request, res: Response) => {
         const queryParams: ICommentsQueryType = req.query;
         const {postId} = req.params;
-        const allComments = await commentsServices.findComments(postId, queryParams)
-        res.status(HTTP_STATUSES.OK_200).send(allComments)
+        const result = await commentsServices.findComments(postId, queryParams)
+
+        if (result.data) {
+            res.status(HTTP_STATUSES.OK_200).send(result.data)
+            return
+        }
+
+        if (result.status === ResultCode.NotFound) {
+            res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+            return
+        }
+
+        res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
+        return;
+
     }
 }
 
