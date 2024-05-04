@@ -10,30 +10,20 @@ export const usersController = {
     getAllUsers: async (req: Request, res: Response) => {
         const queryParams: IUserQueryType = req.query;
         const result = await usersQueryRepositories.getUsers(queryParams);
-        if(result.items) {
-            res.status(HTTP_STATUSES.OK_200).json(result.items)
+        if(result.data) {
+            res.status(HTTP_STATUSES[result.status]).json(result.data)
             return
         }
-        if(result.status === ResultCode.BadRequest) {
-            res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
-            return
-        }
-        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+        res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
     },
     createUser: async (req: Request, res: Response)=> {
         const inputData: IUserInputModel = req.body;
         const result = await usersServices.createUser(inputData);
         if (result.data) {
-            res.status(HTTP_STATUSES.CREATED_201).send(result.data);
+            res.status(HTTP_STATUSES[result.status]).send(result.data);
             return
         }
-
-        if(result.status === ResultCode.BadRequest) {
-            res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
-            return
-        }
-
-        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+        res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
         return
 
     },
@@ -41,17 +31,11 @@ export const usersController = {
         const {id} = req.params;
         const result = await usersServices.deleteUser(id)
 
-        if(result.status === ResultCode.BadRequest) {
-            res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
+        if(result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
             return
         }
-
-        if (result.status === ResultCode.NotContent) {
-            res.status(HTTP_STATUSES.NO_CONTENT_204).send({})
-            return
-        }
-
-        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+        res.status(HTTP_STATUSES[result.status]).send({})
         return
     },
 }

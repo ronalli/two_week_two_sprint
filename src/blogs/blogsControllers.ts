@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import {HTTP_STATUSES, HTTP_STATUSES1} from "../settings";
+import {HTTP_STATUSES} from "../settings";
 import {blogsQueryRepositories} from "./blogsQueryRepositories";
 import {blogsServices} from "./blogsServices";
 import {IBlogInputModel} from "./types/blogs-types";
@@ -11,44 +11,52 @@ export const blogsControllers = {
         const inputDataBlog: IBlogInputModel = req.body;
         const result = await blogsServices.createBlog(inputDataBlog);
         if (result.data) {
-            res.status(HTTP_STATUSES1[result.status]).send(result.data)
+            res.status(HTTP_STATUSES[result.status]).send(result.data)
             return;
         }
-        res.status(HTTP_STATUSES1[result.status]).send({error: result.errorMessage})
+        res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
     },
     getBlog: async (req: Request, res: Response) => {
         const {id} = req.params;
-        const foundBlog = await blogsQueryRepositories.findBlogById(id);
-        if (foundBlog.data) {
-            res.status(HTTP_STATUSES1[foundBlog.status]).send(foundBlog.data)
+        const result = await blogsQueryRepositories.findBlogById(id);
+        if (result.data) {
+            res.status(HTTP_STATUSES[result.status]).send(result.data)
             return
         }
-        res.status(HTTP_STATUSES1[foundBlog.status]).send({error: foundBlog.errorMessage})
+        res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
         return
     },
     getBlogs: async (req: Request, res: Response) => {
         const queryParams: IBlogQueryType = req.query;
-        const findBlogs = await blogsQueryRepositories.getAllBlogs(queryParams);
+        const result = await blogsQueryRepositories.getAllBlogs(queryParams);
 
-        if (findBlogs.data) {
-            res.status(HTTP_STATUSES1[findBlogs.status]).send(findBlogs.data)
+        if (result.data) {
+            res.status(HTTP_STATUSES[result.status]).send(result.data)
             return
         }
 
-        res.status(HTTP_STATUSES1[findBlogs.status]).send({error: findBlogs.errorMessage})
+        res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
         return
     },
     updateBlog: async (req: Request, res: Response) => {
         const {id} = req.params;
         const inputUpdateDataBlog: IBlogInputModel = req.body;
         const result = await blogsServices.updateBlog(id, inputUpdateDataBlog)
-        res.status(HTTP_STATUSES1[result.status]).send(result.errorMessage ? {error: result.errorMessage} : {})
+        if(result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
+            return
+        }
+        res.status(HTTP_STATUSES[result.status]).send(result.data)
         return
     },
     deleteBlog: async (req: Request, res: Response) => {
         const {id} = req.params;
         const result = await blogsServices.deleteBlog(id);
-        res.status(HTTP_STATUSES1[result.status]).send(result.errorMessage ? {error: result.errorMessage} : {})
+        if(result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
+            return
+        }
+        res.status(HTTP_STATUSES[result.status]).send(result.data)
         return
     },
     getAllPostsForBlog: async (req: Request, res: Response) => {
@@ -58,11 +66,11 @@ export const blogsControllers = {
         const result = await blogsQueryRepositories.findBlogById(blogId);
         if (result.data) {
             const foundPosts = await blogsQueryRepositories.getAndSortPostsSpecialBlog(blogId, queryParams)
-            res.status(HTTP_STATUSES1[foundPosts.status]).send(foundPosts.data ? foundPosts.data : {error: foundPosts.errorMessage})
+            res.status(HTTP_STATUSES[foundPosts.status]).send(foundPosts.data)
             return
         }
 
-        res.status(HTTP_STATUSES1[result.status]).send({error: result.errorMessage})
+        res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
         return
 
     },
@@ -70,10 +78,10 @@ export const blogsControllers = {
         const inputDataPost = req.body;
         const {blogId} = req.params;
 
-        const foundBlog = await blogsQueryRepositories.findBlogById(blogId);
+        const result = await blogsQueryRepositories.findBlogById(blogId);
 
-        if (!foundBlog.data) {
-            res.status(HTTP_STATUSES1[foundBlog.status]).send({error: foundBlog.errorMessage})
+        if (!result.data) {
+            res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
             return
         }
 
@@ -82,14 +90,13 @@ export const blogsControllers = {
             ...inputDataPost
         }
 
-        ///нужно переделать endpoint post
         const createdPost = await postsServices.createPost(post);
 
-        if (!createdPost) {
-            res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
+        if (createdPost.data) {
+            res.status(HTTP_STATUSES[createdPost.status]).send(createdPost.data)
             return
         }
-        res.status(HTTP_STATUSES.CREATED_201).send(createdPost)
+        res.status(HTTP_STATUSES[createdPost.status]).send({error: createdPost.errorMessage, data: result.data})
         return
     }
 }

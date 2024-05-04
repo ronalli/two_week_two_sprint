@@ -20,9 +20,9 @@ export const blogsMongoRepositories = {
                     data: blogsQueryRepositories._formatingDataForOutputBlog(foundBlog)
                 }
             }
-            return {errorMessage: 'Not found blog', status: ResultCode.BadRequest}
+            return {errorMessage: 'Not found blog', status: ResultCode.BadRequest, data: null}
         } catch (e) {
-            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
     update: async (id: string, inputUpdateDataBlog: IBlogInputModel) => {
@@ -39,23 +39,23 @@ export const blogsMongoRepositories = {
                 });
                 return {status: ResultCode.NotContent, data: null}
             } else {
-                return {errorMessage: 'Not found blog', status: ResultCode.NotFound}
+                return {errorMessage: 'Not found blog', status: ResultCode.NotFound, data: null}
             }
         } catch (e) {
-            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
     delete: async (id: string) => {
         try {
             const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)});
             if (!foundBlog) {
-                return {errorMessage: 'Not found blog', status: ResultCode.NotFound}
+                return {errorMessage: 'Not found blog', status: ResultCode.NotFound, data: null}
             } else {
                 await blogsCollection.findOneAndDelete({_id: new ObjectId(id)});
                 return {status: ResultCode.NotContent, data: null}
             }
         } catch (e) {
-            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
 }

@@ -20,16 +20,16 @@ export const usersMongoRepositories = {
             const insertUser = await usersCollection.insertOne(newUser);
             const result = await usersMongoRepositories.findUserById(String(insertUser.insertedId))
 
-            if(result.item) {
-                const outViewModelUser = usersMongoRepositories._maping(result.item);
+            if(result.data) {
+                const outViewModelUser = usersMongoRepositories._maping(result.data);
                 return {
                     status: ResultCode.Created,
-                    item: outViewModelUser,
+                    data: outViewModelUser,
                 }
             }
-            return {error: 'Error created user', status: ResultCode.NotFound}
+            return {errorMessage: 'Error created user', status: ResultCode.NotFound, data: null}
         } catch (e) {
-            return {error: 'Error DB', status: ResultCode.BadRequest}
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
 
     },
@@ -39,32 +39,33 @@ export const usersMongoRepositories = {
             if(foundUser) {
                 return {
                     status: ResultCode.Success,
-                    item: foundUser
+                    data: foundUser
                 }
             }
-            return {error: "Not found user", status: ResultCode.NotFound}
+            return {errorMessage: "Not found user", status: ResultCode.NotFound}
 
         } catch (e) {
-            return {error: 'Errors BD', status: ResultCode.BadRequest}
+            return {errorMessage: 'Errors BD', status: ResultCode.InternalServerError, data: null}
         }
     },
     deleteUser: async (id: string) => {
     try {
         const foundUser = await usersCollection.findOne({_id: new ObjectId(id)});
-        if(foundUser) {
+        if(!foundUser) {
             return {
-                error: 'Not found user',
+                errorMessage: 'Not found user',
                 status: ResultCode.NotFound,
+                data: null
             }
         }
         await usersCollection.findOneAndDelete({_id: new ObjectId(id)});
         return {
             status: ResultCode.NotContent,
-            item: null
+            data: null
         }
 
     }  catch (e) {
-        return {error: 'Error DB', status: ResultCode.BadRequest}
+        return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
     }
 
     },

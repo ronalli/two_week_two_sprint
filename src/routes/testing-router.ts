@@ -10,7 +10,7 @@ testingRouter.delete('/all-data', async (req: Request, res: Response) => {
         await blogsCollection.deleteMany({})
         await usersCollection.deleteMany({})
         await commentsCollection.deleteMany({})
-        res.status(HTTP_STATUSES.NO_CONTENT_204).send({})
+        res.status(HTTP_STATUSES.NotContent).send({})
     } catch (e) {
         console.log(e)
         return;

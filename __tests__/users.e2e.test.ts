@@ -24,11 +24,11 @@ describe("Users Tests", () => {
     afterAll(done => done())
 
     it("shouldn't create user without authorization", async () => {
-        await req.post(SETTINGS.PATH.USERS).send({login: ''}).expect(HTTP_STATUSES.UNAUTHORIZED)
+        await req.post(SETTINGS.PATH.USERS).send({login: ''}).expect(HTTP_STATUSES.Unauthorized)
     })
 
     it("shouldn't create user with correct authorization", async () => {
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send({login: ''}).expect(HTTP_STATUSES.BED_REQUEST_400)
+        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send({login: ''}).expect(HTTP_STATUSES.BadRequest)
     })
 
     it("should create user with correct authorization", async () => {
@@ -38,21 +38,21 @@ describe("Users Tests", () => {
             email: 'bob123@gmail.com',
         }
 
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser).expect(HTTP_STATUSES.CREATED_201)
+        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser).expect(HTTP_STATUSES.Created)
     })
 
     it('shouldn\'t get all users without authorization', async () => {
-        await req.get(SETTINGS.PATH.USERS).expect(HTTP_STATUSES.UNAUTHORIZED);
+        await req.get(SETTINGS.PATH.USERS).expect(HTTP_STATUSES.Unauthorized);
     })
 
     it('should get all users with correct authorization headers', async () => {
-        await req.get(SETTINGS.PATH.USERS).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.OK_200);
+        await req.get(SETTINGS.PATH.USERS).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.Success);
     })
 
     it('should correct delete user', async() => {
-        const user = await req.get(SETTINGS.PATH.USERS).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.OK_200)
+        const user = await req.get(SETTINGS.PATH.USERS).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.Success)
 
-        await req.delete(SETTINGS.PATH.USERS + `/${user.body.items[0].id}`).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.NO_CONTENT_204)
+        await req.delete(SETTINGS.PATH.USERS + `/${user.body.items[0].id}`).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.NotContent)
 
         const result = await req.get(SETTINGS.PATH.USERS).auth(process.env.USER || '', process.env.PASSWORD || '')
 
@@ -60,7 +60,7 @@ describe("Users Tests", () => {
     });
 
     it('shouldn\t delete user with incorrect id', async() => {
-        await req.delete(SETTINGS.PATH.USERS + '/507f191e810c19729de860ea').auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.NOT_FOUND_404)
+        await req.delete(SETTINGS.PATH.USERS + '/507f191e810c19729de860ea').auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.NotFound)
     })
 
     it('should get users with query params', async () => {
@@ -88,12 +88,13 @@ describe("Users Tests", () => {
             email: 'qwerty@gmail.com',
         }
 
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser).expect(HTTP_STATUSES.CREATED_201)
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser1).expect(HTTP_STATUSES.CREATED_201)
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser2).expect(HTTP_STATUSES.CREATED_201)
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser3).expect(HTTP_STATUSES.CREATED_201)
+        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser).expect(HTTP_STATUSES.Created)
+        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser1).expect(HTTP_STATUSES.Created)
+        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser2).expect(HTTP_STATUSES.Created)
+        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser3).expect(HTTP_STATUSES.Created)
 
-        const result = await req.get(SETTINGS.PATH.USERS + `?sortBy=login&sortDirection=asc&pageNumber=1&pageSize=4&searchLoginTerm=ob12&searchEmailTerm=qwerty`).set('Authorization', process.env.AUTH_HEADER || '').expect(HTTP_STATUSES.OK_200);
+        const result = await req.get(SETTINGS.PATH.USERS + `?sortBy=login&sortDirection=asc&pageNumber=1&pageSize=4&searchLoginTerm=ob12&searchEmailTerm=qwerty`)
+            .set('Authorization', process.env.AUTH_HEADER || '').expect(HTTP_STATUSES.Success);
 
         expect(result.body.items.length).toBe(3)
         expect(result.body.items[0].login).toBe('aob123')

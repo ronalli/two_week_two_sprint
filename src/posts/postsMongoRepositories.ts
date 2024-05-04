@@ -3,29 +3,33 @@ import {ObjectId} from "mongodb";
 import {blogsQueryRepositories} from "../blogs/blogsQueryRepositories";
 import {postsQueryRepositories} from "./postsQueryRepositories";
 import {IPostDBType, IPostInputModel} from "./types/posts-types";
+import {ResultCode} from "../types/resultCode";
 
 export const postsMongoRepositories = {
     create: async (post: IPostInputModel) => {
         const findBlog = await blogsQueryRepositories.findBlogById(post.blogId);
         let newPost: IPostDBType;
-        if (findBlog) {
+        if (findBlog.data) {
             newPost = {
                 ...post,
-                blogName: findBlog.name,
+                blogName: findBlog.data.name,
                 createdAt: new Date().toISOString(),
             }
             try {
                 const insertedPost = await postsCollection.insertOne(newPost);
                 const foundPost = await postsCollection.findOne({_id: insertedPost.insertedId});
                 if (foundPost) {
-                    return postsQueryRepositories._formatingDataForOutputPost(foundPost);
+                    return {
+                        status: ResultCode.Created,
+                        data: postsQueryRepositories._formatingDataForOutputPost(foundPost)
+                    }
                 }
-                return;
+                return {errorMessage: 'Something went wrong', status: ResultCode.BadRequest, data: null}
             } catch (e) {
-                return;
+                return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
             }
         }
-        return false;
+        return {errorMessage: 'Not found blog', status: ResultCode.NotFound}
     },
     update: async (id: string, updatePost: IPostInputModel) => {
         try {
@@ -39,11 +43,11 @@ export const postsMongoRepositories = {
                         blogId: updatePost.blogId
                     }
                 })
-                return true;
+                return {status: ResultCode.NotContent, data: null}
             }
-            return false;
+            return {errorMessage: 'Something went wrong', status: ResultCode.BadRequest, data: null}
         } catch (e) {
-            return;
+            return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
         }
 
     },
@@ -51,8 +55,8 @@ export const postsMongoRepositories = {
         const findDeletePost = await postsCollection.findOne({_id: new ObjectId(id)});
         if (findDeletePost) {
             await postsCollection.findOneAndDelete({_id: new ObjectId(id)});
-            return true;
+            return {status: ResultCode.NotContent, data: null}
         }
-        return false;
+        return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}
     },
 }

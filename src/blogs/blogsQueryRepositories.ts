@@ -43,9 +43,8 @@ export const blogsQueryRepositories = {
                 }
             }
 
-
         } catch (e) {
-            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
 
@@ -81,7 +80,7 @@ export const blogsQueryRepositories = {
                 }
             }
         } catch (e) {
-            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
     findBlogById: async (id: string) => {
@@ -94,9 +93,9 @@ export const blogsQueryRepositories = {
                     data: blogsQueryRepositories._formatingDataForOutputBlog(foundBlog)
                 }
             }
-            return {errorMessage: 'Error DB', status: ResultCode.NotFound}
+            return {errorMessage: 'Not found blog', status: ResultCode.NotFound, data: null}
         } catch (e) {
-            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
 
     },

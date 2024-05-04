@@ -15,19 +15,19 @@ export const commentsMongoRepositories = {
                         content: contentUpdate
                     }
                 })
-                return {status: 204}
+                return {status: ResultCode.NotContent, data: null}
             }
-            return {error: 'Not found comment', status: ResultCode.NotFound};
+            return {errorMessage: 'Not found comment', status: ResultCode.NotFound, data: null};
         } catch (e) {
-            return {error: 'Error BD', status: ResultCode.InternalServerError}
+            return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
         }
     },
     deleteComment: async (id: string) => {
         try {
             await commentsCollection.findOneAndDelete({_id: new ObjectId(id)});
-            return {status: ResultCode.NotContent, item: null};
+            return {status: ResultCode.NotContent, data: null};
         } catch (e) {
-            return {error: 'Error DB', status: ResultCode.InternalServerError};
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null};
         }
 
     },
@@ -41,7 +41,7 @@ export const commentsMongoRepositories = {
             createdAt: new Date().toISOString(),
             commentatorInfo: {
                 userId: data.userId,
-                userLogin: result.item!.login
+                userLogin: result.data!.login
             }
         }
 
@@ -49,12 +49,12 @@ export const commentsMongoRepositories = {
             const insertedComment = await commentsCollection.insertOne(newComment);
             const foundComment = await commentsCollection.findOne({_id: insertedComment.insertedId})
             if (foundComment) {
-                return {status: ResultCode.Created, item: commentsMongoRepositories._mapping(foundComment)}
+                return {status: ResultCode.Created, data: commentsMongoRepositories._mapping(foundComment)}
             }
-            return {error: 'Not found comment', status: ResultCode.NotFound};
+            return {errorMessage: 'Not found comment', status: ResultCode.NotFound, data: null};
 
         } catch (e) {
-            return {error: 'Error DB', status: ResultCode.InternalServerError}
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
 

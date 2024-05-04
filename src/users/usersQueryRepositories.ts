@@ -39,7 +39,7 @@ export const usersQueryRepositories = {
 
             return {
                 status: ResultCode.Success,
-                items: {
+                data: {
                     pagesCount: Math.ceil(totalCount/ query.pageSize),
                     pageSize: query.pageSize,
                     page: query.pageNumber,
@@ -49,19 +49,19 @@ export const usersQueryRepositories = {
             }
 
         } catch (e) {
-            return {error: 'Error BD', status: ResultCode.BadRequest};
+            return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null};
         }
     },
     findUserById: async (id: string) => {
         try {
             const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
             if(foundUser) {
-                return {status: ResultCode.Success, item: foundUser };
+                return {status: ResultCode.Success, data: foundUser };
             }
-            return {error: 'Not found user', status: ResultCode.NotFound}
+            return {errorMessage: 'Not found user', status: ResultCode.NotFound, data: null}
 
         } catch (e) {
-            return {error: 'Error DB', status: ResultCode.BadRequest};
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null};
         }
     },
 

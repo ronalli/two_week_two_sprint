@@ -7,12 +7,13 @@ import {ResultCode} from "../types/resultCode";
 export const commentsController = {
     getComment: async (req: Request, res: Response) => {
         const {commentId} = req.params;
-        const comment = await commentsQueryRepositories.getCommentById(commentId)
-        if(comment) {
-            res.status(HTTP_STATUSES.OK_200).json(comment)
-            return;
+        const result = await commentsQueryRepositories.getCommentById(commentId)
+        if(result.data) {
+            res.status(HTTP_STATUSES[result.status]).json(result.data)
+            return
         }
-        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+        res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+        return
 
     },
     updateComment: async (req: Request, res: Response) => {
@@ -22,21 +23,12 @@ export const commentsController = {
 
         const result = await commentsServices.update(commentId, content, token)
 
-        if (result.status === ResultCode.Forbidden) {
-            res.status(HTTP_STATUSES.FORBIDDEN_403).send({})
-            return;
+        if(result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+            return
         }
-        if(result.status === ResultCode.NotContent) {
-            res.status(HTTP_STATUSES.NO_CONTENT_204).send({})
-            return;
-        }
+        res.status(HTTP_STATUSES[result.status]).send({})
 
-        if(result.status === ResultCode.BadRequest) {
-            res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
-            return;
-        }
-        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
-        return;
     },
     deleteComment: async (req: Request, res: Response) => {
         const {commentId} = req.params;
@@ -44,19 +36,12 @@ export const commentsController = {
         const result = await commentsServices.delete(commentId, token)
 
 
-        if(result.status === ResultCode.NotContent) {
-            res.status(HTTP_STATUSES.NO_CONTENT_204).send({})
-            return;
+        if(result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+            return
         }
-        if (result.status === ResultCode.Forbidden) {
-            res.status(HTTP_STATUSES.FORBIDDEN_403).send({})
-            return;
-        }
-        if(result.status === ResultCode.BadRequest) {
-            res.status(HTTP_STATUSES.BED_REQUEST_400).send({})
-            return;
-        }
-        res.status(HTTP_STATUSES.NOT_FOUND_404).send({})
+
+        res.status(HTTP_STATUSES[result.status]).send({})
         return;
     }
 }

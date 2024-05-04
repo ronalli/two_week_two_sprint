@@ -30,7 +30,7 @@ describe('Posts Tests', () => {
         }
         const res = await req.post(SETTINGS.PATH.POSTS)
             .set('Authorization', process.env.AUTH_HEADER || '')
-            .send(newPost).expect(HTTP_STATUSES.BED_REQUEST_400);
+            .send(newPost).expect(HTTP_STATUSES.BadRequest);
     });
 
     it('shouldn\'t create post, as not found authorization header', async () => {
@@ -41,7 +41,7 @@ describe('Posts Tests', () => {
             title: 'test 2'
         }
         const res = await req.post(SETTINGS.PATH.POSTS)
-            .send(newPost).expect(HTTP_STATUSES.UNAUTHORIZED);
+            .send(newPost).expect(HTTP_STATUSES.Unauthorized);
     });
 
     it('should create post', async () => {
@@ -60,9 +60,9 @@ describe('Posts Tests', () => {
         }
         const res = await req.post(SETTINGS.PATH.POSTS)
             .set('Authorization', process.env.AUTH_HEADER || '')
-            .send(newPost).expect(HTTP_STATUSES.CREATED_201);
+            .send(newPost).expect(HTTP_STATUSES.Created);
 
-        const findPost = await  req.get(`${SETTINGS.PATH.POSTS}/${res.body.id}`).expect(HTTP_STATUSES.OK_200)
+        const findPost = await  req.get(`${SETTINGS.PATH.POSTS}/${res.body.id}`).expect(HTTP_STATUSES.Success)
     });
     it('should correct update post', async () => {
 
@@ -78,7 +78,7 @@ describe('Posts Tests', () => {
         const res = await req.put(`${SETTINGS.PATH.POSTS}/${findPosts.body.items[0].id}`)
             .set('Authorization', process.env.AUTH_HEADER || '')
             .send(updatePost)
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(HTTP_STATUSES.NotContent)
 
     });
 
@@ -87,9 +87,9 @@ describe('Posts Tests', () => {
 
          await req.delete(`${SETTINGS.PATH.POSTS}/${findPosts.body.items[0].id}`)
             .set('Authorization', process.env.AUTH_HEADER || '')
-            .expect(HTTP_STATUSES.NO_CONTENT_204)
+            .expect(HTTP_STATUSES.NotContent)
 
-        await req.get(`${SETTINGS.PATH.POSTS}/${findPosts.body.items[0].id}`).expect(HTTP_STATUSES.NOT_FOUND_404)
+        await req.get(`${SETTINGS.PATH.POSTS}/${findPosts.body.items[0].id}`).expect(HTTP_STATUSES.NotFound)
 
     })
 

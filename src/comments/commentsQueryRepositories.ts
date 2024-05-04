@@ -3,6 +3,7 @@ import {ICommentDBType, ICommentViewModel} from "./types/comments-types";
 import {ICommentsQueryType} from "./types/output-paginator-comments-types";
 import {createDefaultValuesQueryParams} from "../utils/helper";
 import {ObjectId} from "mongodb";
+import {ResultCode} from "../types/resultCode";
 
 export const commentsQueryRepositories = {
     getCommentsForSpecialPost: async (postId: string, queryParams: ICommentsQueryType) => {
@@ -17,14 +18,18 @@ export const commentsQueryRepositories = {
             const totalCount = await commentsCollection.countDocuments(filter);
 
             return {
-                pagesCount: Math.ceil(totalCount / query.pageSize),
-                pageSize: query.pageSize,
-                page: query.pageNumber,
-                totalCount,
-                items: commentsQueryRepositories._mappingAll(comments)
+                status: ResultCode.Success,
+                data: {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    pageSize: query.pageSize,
+                    page: query.pageNumber,
+                    totalCount,
+                    items: commentsQueryRepositories._mappingAll(comments)
+                }
+
             }
         } catch (e) {
-            return {error: 'Error BD'}
+            return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
         }
     },
 
@@ -32,12 +37,14 @@ export const commentsQueryRepositories = {
         try {
             const findComment = await commentsCollection.findOne({_id: new ObjectId(id)});
             if (findComment) {
-                return commentsQueryRepositories._mapping(findComment);
+                return {
+                    status: ResultCode.Success,
+                    data: commentsQueryRepositories._mapping(findComment)
+                }
             }
-            return;
+            return {errorMessage: 'Not found comment', status: ResultCode.NotFound, data: null}
         } catch (e) {
-            //возвращение объекта
-            return;
+            return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
         }
     },
 

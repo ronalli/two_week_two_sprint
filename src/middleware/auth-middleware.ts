@@ -13,10 +13,10 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
             next();
             return;
         } else {
-            res.status(HTTP_STATUSES.UNAUTHORIZED).send({})
+            res.status(HTTP_STATUSES.Unauthorized).send({})
             return;
         }
     }
-    res.status(HTTP_STATUSES.UNAUTHORIZED).send({})
+    res.status(HTTP_STATUSES.Unauthorized).send({})
     return;
 }

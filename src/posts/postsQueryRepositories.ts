@@ -1,12 +1,13 @@
 import {createDefaultValues} from "../utils/helper";
 import {postsCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
-import { IPostDBType, IPostViewModel} from "./types/posts-types";
+import {IPostDBType, IPostViewModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
 import {IPaginator} from "../types/output-paginator";
+import {ResultCode} from "../types/resultCode";
 
 export const postsQueryRepositories = {
-    getPosts: async (queryParams: IPostQueryType): Promise<IPaginator<IPostDBType[]> | []> => {
+    getPosts: async (queryParams: IPostQueryType) => {
         const query = createDefaultValues(queryParams);
         try {
             const allPosts = await postsCollection.find()
@@ -18,16 +19,19 @@ export const postsQueryRepositories = {
             const totalCount = await postsCollection.countDocuments();
 
             return {
-                pagesCount: Math.ceil(totalCount / query.pageSize),
-                page: query.pageNumber,
-                pageSize: query.pageSize,
-                totalCount,
-                items: allPosts.map(x => postsQueryRepositories._formatingDataForOutputPost(x))
+                status: ResultCode.Success,
+                data: {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    page: query.pageNumber,
+                    pageSize: query.pageSize,
+                    totalCount,
+                    items: allPosts.map(x => postsQueryRepositories._formatingDataForOutputPost(x))
+                }
+
             }
 
-        } catch (error) {
-            console.log(error);
-            return []
+        } catch (e) {
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
 
@@ -35,14 +39,17 @@ export const postsQueryRepositories = {
         try {
             const foundPost = await postsCollection.findOne({_id: new ObjectId(id)});
             if (foundPost) {
-                return postsQueryRepositories._formatingDataForOutputPost(foundPost);
+                return {
+                    status: ResultCode.Success,
+                    data: postsQueryRepositories._formatingDataForOutputPost(foundPost)
+                }
             }
-            return;
+            return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}
         } catch (e) {
-            return;
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
-    _formatingDataForOutputPost : (input: IPostDBType): IPostViewModel => {
+    _formatingDataForOutputPost: (input: IPostDBType): IPostViewModel => {
         return {
             id: String(input._id),
             blogId: input.blogId,

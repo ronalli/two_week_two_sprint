@@ -20,23 +20,23 @@ export const SETTINGS = {
     COMMENTS_COLLECTION_NAME: 'comments',
 }
 
-export const HTTP_STATUSES = {
-    OK_200: 200,
-    NOT_FOUND_404: 404,
-    NO_CONTENT_204: 204,
-    CREATED_201: 201,
-    BED_REQUEST_400: 400,
-    UNAUTHORIZED: 401,
-    FORBIDDEN_403: 403
-}
+// export const HTTP_STATUSES = {
+//     OK_200: 200,
+//     NOT_FOUND_404: 404,
+//     NO_CONTENT_204: 204,
+//     CREATED_201: 201,
+//     BED_REQUEST_400: 400,
+//     UNAUTHORIZED: 401,
+//     FORBIDDEN_403: 403
+// }
 
-export const HTTP_STATUSES1 = {
+export const HTTP_STATUSES = {
     Success: 200,
     NotFound: 404,
     Forbidden: 403,
     Unauthorized: 401,
     BadRequest: 400,
-    NotContent: 404,
+    NotContent: 204,
     Created: 201,
     InternalServerError: 500,
 }

@@ -33,7 +33,7 @@ describe("Auth Tests", () => {
             loginOrEmail: 'bob',
             password: 'password',
         }
-        await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.UNAUTHORIZED)
+        await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Unauthorized)
     })
 
     it("should correct authorization", async() => {
@@ -41,7 +41,7 @@ describe("Auth Tests", () => {
             loginOrEmail: 'bob',
             password: 'qwerty',
         }
-        await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.NO_CONTENT_204)
+        await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.NotContent)
     })
 
 })

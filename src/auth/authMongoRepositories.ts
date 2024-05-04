@@ -3,17 +3,17 @@ import {usersCollection} from "../db/mongo-db";
 import {ResultCode} from "../types/resultCode";
 
 export const authMongoRepositories = {
-    findByLoginOrEmail: async (data: ILoginBody) => {
+    findByLoginOrEmail: async (loginOrEmail: string) => {
         try {
             const findUser = await usersCollection.findOne({
-                $or:[{email: data.loginOrEmail}, {login: data.loginOrEmail}],
+                $or:[{email: loginOrEmail}, {login: loginOrEmail}],
             })
 
-            if (findUser) return {status: ResultCode.Success,  item: findUser};
-            return {error: 'Not found login/email', status: ResultCode.Unauthorized }
+            if (findUser) return {status: ResultCode.Success, data: findUser};
+            return {errorMessage: 'Not found login/email', status: ResultCode.Unauthorized, data: null }
 
         } catch (e) {
-            return {error: 'Error DB', status: ResultCode.BadRequest};
+            return {errorMessage: 'Error DB', status: ResultCode.BadRequest, data: null};
         }
     }
 }
