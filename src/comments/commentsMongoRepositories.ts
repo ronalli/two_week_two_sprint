@@ -17,17 +17,17 @@ export const commentsMongoRepositories = {
                 })
                 return {status: 204}
             }
-            return {error: 'Not found comment', status: 404};
+            return {error: 'Not found comment', status: ResultCode.NotFound};
         } catch (e) {
-            return {error: 'Error BD', status: 400}
+            return {error: 'Error BD', status: ResultCode.InternalServerError}
         }
     },
     deleteComment: async (id: string) => {
         try {
             await commentsCollection.findOneAndDelete({_id: new ObjectId(id)});
-            return {status: 204};
+            return {status: ResultCode.NotContent, item: null};
         } catch (e) {
-            return {error: 'Error deleting comment', status: 400};
+            return {error: 'Error DB', status: ResultCode.InternalServerError};
         }
 
     },
@@ -54,7 +54,7 @@ export const commentsMongoRepositories = {
             return {error: 'Not found comment', status: ResultCode.NotFound};
 
         } catch (e) {
-            return {error: 'Error DB', status: ResultCode.BadRequest}
+            return {error: 'Error DB', status: ResultCode.InternalServerError}
         }
     },
 

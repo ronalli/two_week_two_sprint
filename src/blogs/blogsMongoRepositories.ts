@@ -2,6 +2,7 @@ import {blogsCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {IBlogInputModel} from "./types/blogs-types";
 import {blogsQueryRepositories} from "./blogsQueryRepositories";
+import {ResultCode} from "../types/resultCode";
 
 export const blogsMongoRepositories = {
     create: async (blog: IBlogInputModel) => {
@@ -14,12 +15,14 @@ export const blogsMongoRepositories = {
             const insertedBlog = await blogsCollection.insertOne(newBlog);
             const foundBlog = await blogsCollection.findOne({_id: insertedBlog.insertedId})
             if (foundBlog) {
-                return blogsQueryRepositories._formatingDataForOutputBlog(foundBlog)
+                return {
+                    status: ResultCode.Created,
+                    data: blogsQueryRepositories._formatingDataForOutputBlog(foundBlog)
+                }
             }
-            return;
+            return {errorMessage: 'Not found blog', status: ResultCode.BadRequest}
         } catch (e) {
-            console.log(e)
-            return;
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
     },
     update: async (id: string, inputUpdateDataBlog: IBlogInputModel) => {
@@ -34,27 +37,25 @@ export const blogsMongoRepositories = {
                         websiteUrl
                     }
                 });
-                return true;
+                return {status: ResultCode.NotContent, data: null}
             } else {
-                return false;
+                return {errorMessage: 'Not found blog', status: ResultCode.NotFound}
             }
         } catch (e) {
-            console.log(e)
-            return false;
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
     },
     delete: async (id: string) => {
         try {
-            const flag = await blogsCollection.findOne({_id: new ObjectId(id)});
-            if (!flag) {
-                return false;
+            const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)});
+            if (!foundBlog) {
+                return {errorMessage: 'Not found blog', status: ResultCode.NotFound}
             } else {
                 await blogsCollection.findOneAndDelete({_id: new ObjectId(id)});
-                return true;
+                return {status: ResultCode.NotContent, data: null}
             }
         } catch (e) {
-            console.log(e)
-            return;
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
     },
 }

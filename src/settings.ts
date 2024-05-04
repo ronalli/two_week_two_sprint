@@ -29,3 +29,14 @@ export const HTTP_STATUSES = {
     UNAUTHORIZED: 401,
     FORBIDDEN_403: 403
 }
+
+export const HTTP_STATUSES1 = {
+    Success: 200,
+    NotFound: 404,
+    Forbidden: 403,
+    Unauthorized: 401,
+    BadRequest: 400,
+    NotContent: 404,
+    Created: 201,
+    InternalServerError: 500,
+}

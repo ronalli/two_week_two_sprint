@@ -4,7 +4,7 @@ import {ObjectId} from "mongodb";
 import {IBlogQueryType} from "./types/request-response-type";
 import {IBlogDBType, IBlogViewModel} from "./types/blogs-types";
 import {IPostDBType, IPostViewModel} from "../posts/types/posts-types";
-import {IPaginator} from "../types/output-paginator";
+import {ResultCode} from "../types/resultCode";
 
 
 export const blogsQueryRepositories = {
@@ -13,7 +13,8 @@ export const blogsQueryRepositories = {
 
         const query = createDefaultValues(queryParams);
 
-        const search = query.searchNameTerm ? {title: {$regex: query.searchNameTerm, $options: "i"}} : {}
+        const search = query.searchNameTerm ?
+            {title: {$regex: query.searchNameTerm, $options: "i"}} : {}
 
         const filter = {
             blogId,
@@ -32,24 +33,27 @@ export const blogsQueryRepositories = {
             const totalCount = await postsCollection.countDocuments(filter);
 
             return {
-                pagesCount: Math.ceil(totalCount / query.pageSize),
-                page: query.pageNumber,
-                pageSize: query.pageSize,
-                totalCount,
-                items: allPosts.map(x => blogsQueryRepositories._formatingDataForOutputPost(x))
+                status: ResultCode.Success,
+                data: {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    page: query.pageNumber,
+                    pageSize: query.pageSize,
+                    totalCount,
+                    items: allPosts.map(x => blogsQueryRepositories._formatingDataForOutputPost(x))
+                }
             }
 
 
         } catch (e) {
-            console.log(e)
-            return []
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
     },
 
-    getAllBlogs: async (queryParams: IBlogQueryType): Promise<IPaginator<IBlogViewModel[]> | []> => {
+    getAllBlogs: async (queryParams: IBlogQueryType) => {
         const query = createDefaultValues(queryParams);
 
-        const search = query.searchNameTerm ? {name: {$regex: `${query.searchNameTerm}`, $options: "i"}} : {}
+        const search = query.searchNameTerm ?
+            {name: {$regex: `${query.searchNameTerm}`, $options: "i"}} : {}
 
         const filter = {
             ...search
@@ -67,31 +71,36 @@ export const blogsQueryRepositories = {
             const totalCount = await blogsCollection.countDocuments(filter);
 
             return {
-                pagesCount: Math.ceil(totalCount / query.pageSize),
-                page: query.pageNumber,
-                pageSize: query.pageSize,
-                totalCount,
-                items: allBlogs.map(x => blogsQueryRepositories._formatingDataForOutputBlog(x))
+                status: ResultCode.Success,
+                data: {
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
+                    page: query.pageNumber,
+                    pageSize: query.pageSize,
+                    totalCount,
+                    items: allBlogs.map(x => blogsQueryRepositories._formatingDataForOutputBlog(x))
+                }
             }
-        } catch (error) {
-            console.log(error);
-            return [];
+        } catch (e) {
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
     },
     findBlogById: async (id: string) => {
         try {
             const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)});
             if (foundBlog) {
-                return blogsQueryRepositories._formatingDataForOutputBlog(foundBlog);
+
+                return {
+                    status: ResultCode.Success,
+                    data: blogsQueryRepositories._formatingDataForOutputBlog(foundBlog)
+                }
             }
-            return;
+            return {errorMessage: 'Error DB', status: ResultCode.NotFound}
         } catch (e) {
-            // console.log(e)
-            return;
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
 
     },
-    _formatingDataForOutputBlog: (input: IBlogDBType):IBlogViewModel => {
+    _formatingDataForOutputBlog: (input: IBlogDBType): IBlogViewModel => {
         return {
             id: String(input._id),
             name: input.name,
@@ -101,7 +110,7 @@ export const blogsQueryRepositories = {
             isMembership: input.isMembership,
         };
     },
-    _formatingDataForOutputPost: (input: IPostDBType):IPostViewModel => {
+    _formatingDataForOutputPost: (input: IPostDBType): IPostViewModel => {
         return {
             id: String(input._id),
             blogId: input.blogId,

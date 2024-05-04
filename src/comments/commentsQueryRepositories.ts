@@ -9,7 +9,7 @@ export const commentsQueryRepositories = {
         const query = createDefaultValuesQueryParams(queryParams);
         try {
             const filter = {postId: postId}
-            const comments =  await commentsCollection.find(filter)
+            const comments = await commentsCollection.find(filter)
                 .sort(query.sortBy, query.sortDirection)
                 .skip((query.pageNumber - 1) * query.pageSize)
                 .limit(query.pageSize)
@@ -17,7 +17,7 @@ export const commentsQueryRepositories = {
             const totalCount = await commentsCollection.countDocuments(filter);
 
             return {
-                pagesCount: Math.ceil(totalCount/ query.pageSize),
+                pagesCount: Math.ceil(totalCount / query.pageSize),
                 pageSize: query.pageSize,
                 page: query.pageNumber,
                 totalCount,
@@ -28,10 +28,10 @@ export const commentsQueryRepositories = {
         }
     },
 
-    getCommentById: async (id: string)=> {
+    getCommentById: async (id: string) => {
         try {
             const findComment = await commentsCollection.findOne({_id: new ObjectId(id)});
-            if(findComment) {
+            if (findComment) {
                 return commentsQueryRepositories._mapping(findComment);
             }
             return;

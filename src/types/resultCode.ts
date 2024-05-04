@@ -5,5 +5,6 @@ export enum ResultCode {
     Unauthorized = 'Unauthorized',
     BadRequest = 'BadRequest',
     NotContent = 'NotContent',
-    Created = 'Created'
+    Created = 'Created',
+    InternalServerError = 'InternalServerError',
 }
