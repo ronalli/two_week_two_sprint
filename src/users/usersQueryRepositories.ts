@@ -2,9 +2,10 @@ import {IUserQueryType} from "./types/request-response-type";
 import {IPaginatorUserViewModel, IUserDBType, IUserViewModel} from "./types/user-types";
 import {usersCollection} from "../db/mongo-db";
 import {ObjectId, SortDirection} from "mongodb";
+import {ResultCode} from "../types/resultCode";
 
 export const usersQueryRepositories = {
-    getUsers: async (queryParams: IUserQueryType): Promise<IPaginatorUserViewModel | []> => {
+    getUsers: async (queryParams: IUserQueryType) => {
         const query = usersQueryRepositories._createDefaultValues(queryParams);
         let search = {};
         if(query.searchLoginTerm && query.searchEmailTerm) {
@@ -37,30 +38,30 @@ export const usersQueryRepositories = {
             const totalCount = await usersCollection.countDocuments(filter);
 
             return {
-                pagesCount: Math.ceil(totalCount/ query.pageSize),
-                pageSize: query.pageSize,
-                page: query.pageNumber,
-                totalCount,
-                items: usersQueryRepositories._maping(allUsers)
+                status: ResultCode.Success,
+                items: {
+                    pagesCount: Math.ceil(totalCount/ query.pageSize),
+                    pageSize: query.pageSize,
+                    page: query.pageNumber,
+                    totalCount,
+                    items: usersQueryRepositories._maping(allUsers)
+                }
             }
-
-        } catch (error) {
-            console.log(error)
-            return [];
-        }
-    },
-    findUserById: async (id: string): Promise<IUserDBType | undefined> => {
-        try {
-
-            const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
-            if(foundUser) {
-                return foundUser;
-            }
-            return;
 
         } catch (e) {
-            console.error(e);
-            return;
+            return {error: 'Error BD', status: ResultCode.BadRequest};
+        }
+    },
+    findUserById: async (id: string) => {
+        try {
+            const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
+            if(foundUser) {
+                return {status: ResultCode.Success, item: foundUser };
+            }
+            return {error: 'Not found user', status: ResultCode.NotFound}
+
+        } catch (e) {
+            return {error: 'Error DB', status: ResultCode.BadRequest};
         }
     },
 

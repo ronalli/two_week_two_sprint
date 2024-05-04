@@ -5,16 +5,6 @@ import {commentsServices} from "./commentsServices";
 import {ResultCode} from "../types/resultCode";
 
 export const commentsController = {
-    // addComment: async (req: Request, res: Response) => {
-    //     // const {postId} = req.params;
-    //     // const {content} = req.body;
-    //     // const token = req.headers.authorization!.split(' ')[1];
-    //     // const userId = await jwtService.getUserIdByToken(token);
-    //     //
-    //     // console.log(postId, content, userId)
-    //     //
-    //     // const newComment = await commentsServices.add()
-    // },
     getComment: async (req: Request, res: Response) => {
         const {commentId} = req.params;
         const comment = await commentsQueryRepositories.getCommentById(commentId)

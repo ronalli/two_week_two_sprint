@@ -4,10 +4,27 @@ import {ResultCode} from "../types/resultCode";
 
 export const usersServices = {
     createUser: async (data: IUserInputModel) => {
-        return await usersMongoRepositories.createUser(data);
+        const result = await usersMongoRepositories.createUser(data);
+
+        if(result.item) {
+            return {
+                status: result.status,
+                data: result.item
+            }
+        }
+        return {
+            status: result.status,
+            data: null
+        }
     },
-    deleteUser: async (id:string): Promise<boolean | undefined> => {
-        return await usersMongoRepositories.deleteUser(id);
+    deleteUser: async (id:string) => {
+        const result = await usersMongoRepositories.deleteUser(id);
+        return {
+            status: result.status,
+            data: null
+
+        }
+
     },
     findUser: async (id: string)=> {
         const result = await usersMongoRepositories.findUserById(id)

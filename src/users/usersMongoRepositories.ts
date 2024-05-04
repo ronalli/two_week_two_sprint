@@ -5,7 +5,7 @@ import {bcryptService} from "../utils/bcrypt-service";
 import {ResultCode} from "../types/resultCode";
 
 export const usersMongoRepositories = {
-    createUser: async (data: IUserInputModel):Promise<IUserViewModel | undefined> => {
+    createUser: async (data: IUserInputModel) => {
 
         const hash = await bcryptService.generateHash(data.password);
 
@@ -21,12 +21,15 @@ export const usersMongoRepositories = {
             const result = await usersMongoRepositories.findUserById(String(insertUser.insertedId))
 
             if(result.item) {
-                return usersMongoRepositories._maping(result.item);
+                const outViewModelUser = usersMongoRepositories._maping(result.item);
+                return {
+                    status: ResultCode.Created,
+                    item: outViewModelUser,
+                }
             }
-            return;
+            return {error: 'Error created user', status: ResultCode.NotFound}
         } catch (e) {
-            console.error(e);
-            return;
+            return {error: 'Error DB', status: ResultCode.BadRequest}
         }
 
     },
@@ -45,20 +48,23 @@ export const usersMongoRepositories = {
             return {error: 'Errors BD', status: ResultCode.BadRequest}
         }
     },
-    deleteUser: async (id: string): Promise<boolean | undefined> => {
+    deleteUser: async (id: string) => {
     try {
-        const flag = await usersCollection.findOne({_id: new ObjectId(id)});
-        if(!flag) {
-            return;
+        const foundUser = await usersCollection.findOne({_id: new ObjectId(id)});
+        if(foundUser) {
+            return {
+                error: 'Not found user',
+                status: ResultCode.NotFound,
+            }
         }
-        else {
-            await usersCollection.findOneAndDelete({_id: new ObjectId(id)});
-            return true;
+        await usersCollection.findOneAndDelete({_id: new ObjectId(id)});
+        return {
+            status: ResultCode.NotContent,
+            item: null
         }
 
-    }  catch (error) {
-        console.error(error);
-        return;
+    }  catch (e) {
+        return {error: 'Error DB', status: ResultCode.BadRequest}
     }
 
     },

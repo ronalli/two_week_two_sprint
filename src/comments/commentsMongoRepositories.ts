@@ -33,7 +33,7 @@ export const commentsMongoRepositories = {
     },
     addComment: async (data: ICommentAdd) => {
 
-        const user = await usersQueryRepositories.findUserById(data.userId)
+        const result = await usersQueryRepositories.findUserById(data.userId)
 
         const newComment: ICommentDBType = {
             postId: data.postId,
@@ -41,7 +41,7 @@ export const commentsMongoRepositories = {
             createdAt: new Date().toISOString(),
             commentatorInfo: {
                 userId: data.userId,
-                userLogin: user!.login
+                userLogin: result.item!.login
             }
         }
 
