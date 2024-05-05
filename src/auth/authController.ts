@@ -18,7 +18,7 @@ export const authController = {
         return
     },
     me: async (req: Request, res: Response) => {
-        const userId = req.userId;
+        const userId = req.userId!;
         if(userId !== null) {
             const result = await usersServices.findUser(userId);
             if(result.data) {

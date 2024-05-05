@@ -1,5 +1,6 @@
 import {IPostInputModel} from "./types/posts-types";
 import {postsMongoRepositories} from "./postsMongoRepositories";
+import {blogsQueryRepositories} from "../blogs/blogsQueryRepositories";
 
 export const postsServices = {
     createPost: async (post: IPostInputModel) => {

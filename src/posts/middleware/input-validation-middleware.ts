@@ -20,7 +20,7 @@ const validationBlogId = body('blogId')
     .custom(
         async value => {
             const isValidBlogId = await blogsQueryRepositories.findBlogById(value);
-            if(!isValidBlogId) {
+            if(!isValidBlogId.data) {
                 throw new Error('Field is incorrect')
             }
             return true;

@@ -20,7 +20,7 @@ export const blogsMongoRepositories = {
                     data: blogsQueryRepositories._formatingDataForOutputBlog(foundBlog)
                 }
             }
-            return {errorMessage: 'Not found blog', status: ResultCode.BadRequest, data: null}
+            return {errorMessage: 'Not found blog', status: ResultCode.NotFound, data: null}
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }

@@ -10,6 +10,7 @@ export const postsMongoRepositories = {
         const findBlog = await blogsQueryRepositories.findBlogById(post.blogId);
         let newPost: IPostDBType;
         if (findBlog.data) {
+
             newPost = {
                 ...post,
                 blogName: findBlog.data.name,
@@ -45,7 +46,7 @@ export const postsMongoRepositories = {
                 })
                 return {status: ResultCode.NotContent, data: null}
             }
-            return {errorMessage: 'Something went wrong', status: ResultCode.BadRequest, data: null}
+            return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}
         } catch (e) {
             return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
         }
