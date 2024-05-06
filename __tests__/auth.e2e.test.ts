@@ -44,4 +44,19 @@ describe("Auth Tests", () => {
         await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Success)
     })
 
+    it("should correct getting info for user login", async() => {
+        const auth = {
+            loginOrEmail: 'bob',
+            password: 'qwerty',
+        }
+        const jwtToken = await req.post(SETTINGS.PATH.AUTH + '/login').send(auth);
+
+        const infoUser = await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer ${jwtToken.body.accessToken}`).expect(HTTP_STATUSES.Success)
+    })
+
+    it("shouldn't correct auth", async() => {
+
+        const infoUser = await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer e5rt78ert9er.54354.24fs4df432s`).expect(HTTP_STATUSES.Unauthorized)
+    })
+
 })
