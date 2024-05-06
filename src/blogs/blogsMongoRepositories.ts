@@ -25,12 +25,12 @@ export const blogsMongoRepositories = {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
-    update: async (id: string, inputUpdateDataBlog: IBlogInputModel) => {
+    update: async (blogId: string, inputUpdateDataBlog: IBlogInputModel) => {
         const {name, websiteUrl, description} = inputUpdateDataBlog
         try {
-            const findBlog = await blogsCollection.findOne({_id: new ObjectId(id)});
+            const findBlog = await blogsCollection.findOne({_id: new ObjectId(blogId)});
             if (findBlog) {
-                await blogsCollection.findOneAndUpdate({_id: new ObjectId(id)}, {
+                await blogsCollection.findOneAndUpdate({_id: new ObjectId(blogId)}, {
                     $set: {
                         name,
                         description,
@@ -45,13 +45,13 @@ export const blogsMongoRepositories = {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
-    delete: async (id: string) => {
+    delete: async (blogId: string) => {
         try {
-            const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)});
+            const foundBlog = await blogsCollection.findOne({_id: new ObjectId(blogId)});
             if (!foundBlog) {
                 return {errorMessage: 'Not found blog', status: ResultCode.NotFound, data: null}
             } else {
-                await blogsCollection.findOneAndDelete({_id: new ObjectId(id)});
+                await blogsCollection.findOneAndDelete({_id: new ObjectId(blogId)});
                 return {status: ResultCode.NotContent, data: null}
             }
         } catch (e) {

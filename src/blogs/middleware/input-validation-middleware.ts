@@ -1,4 +1,5 @@
-import {body} from 'express-validator'
+import {body, param} from 'express-validator'
+import {blogsQueryRepositories} from "../blogsQueryRepositories";
 
 const validationTitle = body('name').trim().notEmpty().withMessage('Field name is empty').isLength({
     max: 15
@@ -14,6 +15,14 @@ const validationWebsiteUrl = body('websiteUrl').trim().notEmpty().withMessage('F
     const regexp = new RegExp('^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$', 'g');
     return regexp.test(value);
 }).withMessage('Field is not correct url');
+
+// const validatorParamBlogId = param("id").custom(async id => {
+//     const isValid = await blogsQueryRepositories.findBlogById(id)
+//     if(!isValid.data) {
+//         throw new Error('Field is incorrect')
+//     }
+//     return true;
+// })
 
 
 export const validationCreateBlog = [validationTitle, validatorDescription, validationWebsiteUrl];

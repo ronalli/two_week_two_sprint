@@ -41,7 +41,7 @@ describe("Auth Tests", () => {
             loginOrEmail: 'bob',
             password: 'qwerty',
         }
-        await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.NotContent)
+        await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Success)
     })
 
 })

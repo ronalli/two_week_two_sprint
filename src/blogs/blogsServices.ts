@@ -5,10 +5,10 @@ export const blogsServices = {
     createBlog: async (blog: IBlogInputModel) => {
         return await blogsMongoRepositories.create(blog)
     },
-    updateBlog: async (id: string, inputUpdateBlog: IBlogInputModel) => {
-        return await blogsMongoRepositories.update(id, inputUpdateBlog);
+    updateBlog: async (blogId: string, inputUpdateBlog: IBlogInputModel) => {
+        return await blogsMongoRepositories.update(blogId, inputUpdateBlog);
     },
-    deleteBlog: async (id: string) => {
-        return await blogsMongoRepositories.delete(id);
+    deleteBlog: async (blogId: string) => {
+        return await blogsMongoRepositories.delete(blogId);
     }
 }

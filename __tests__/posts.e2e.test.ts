@@ -68,6 +68,7 @@ describe('Posts Tests', () => {
 
         const findPosts = await req.get(SETTINGS.PATH.POSTS);
 
+
         const updatePost: IPostInputModel = {
             title: 'test 2',
             blogId: findPosts.body.items[0].blogId,
@@ -75,7 +76,7 @@ describe('Posts Tests', () => {
             shortDescription: 'short description',
         }
 
-        const res = await req.put(`${SETTINGS.PATH.POSTS}/${findPosts.body.items[0].id}`)
+        const res = await req.put(`${SETTINGS.PATH.POSTS}/${String(findPosts.body.items[0].id)}`)
             .set('Authorization', process.env.AUTH_HEADER || '')
             .send(updatePost)
             .expect(HTTP_STATUSES.NotContent)

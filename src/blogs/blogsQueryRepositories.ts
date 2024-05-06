@@ -83,9 +83,9 @@ export const blogsQueryRepositories = {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     },
-    findBlogById: async (id: string) => {
+    findBlogById: async (blogId: string) => {
         try {
-            const foundBlog = await blogsCollection.findOne({_id: new ObjectId(id)});
+            const foundBlog = await blogsCollection.findOne({_id: new ObjectId(blogId)});
             if (foundBlog) {
 
                 return {

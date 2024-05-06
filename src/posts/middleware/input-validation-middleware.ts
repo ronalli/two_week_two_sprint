@@ -1,4 +1,4 @@
-import {body} from 'express-validator'
+import {body, param} from 'express-validator'
 import {blogsQueryRepositories} from "../../blogs/blogsQueryRepositories";
 
 const validationTitle = body('title')
@@ -13,19 +13,14 @@ const validationContent = body('content')
     .trim().notEmpty().withMessage('Field is empty')
     .isLength({max: 1000}).withMessage('Filed should be max 1000 symbols')
 
-const validationBlogId = body('blogId')
-    .trim().notEmpty().withMessage('Field is empty')
-    .isString()
-    .withMessage('Field is not correct type')
-    .custom(
-        async value => {
-            const isValidBlogId = await blogsQueryRepositories.findBlogById(value);
-            if(!isValidBlogId.data) {
-                throw new Error('Field is incorrect')
-            }
-            return true;
-        })
+export const validatorBlogId = body("blogId").custom(async id => {
+    const isValid = await blogsQueryRepositories.findBlogById(id)
+    if(!isValid.data) {
+        throw new Error('Field is incorrect')
+    }
+    return true;
+})
 
-export const validationCreatePost = [validationBlogId, validationTitle, validationShortDescription, validationContent];
+export const validationCreatePost = [validationTitle, validationShortDescription, validationContent, validatorBlogId];
 
 export const validationCreateSpecialPost = [validationTitle, validationShortDescription, validationContent];

@@ -17,8 +17,8 @@ export const blogsControllers = {
         res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
     },
     getBlog: async (req: Request, res: Response) => {
-        const {id} = req.params;
-        const result = await blogsQueryRepositories.findBlogById(id);
+        const {blogId} = req.params;
+        const result = await blogsQueryRepositories.findBlogById(blogId);
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data)
             return
@@ -39,9 +39,9 @@ export const blogsControllers = {
         return
     },
     updateBlog: async (req: Request, res: Response) => {
-        const {id} = req.params;
+        const {blogId} = req.params;
         const inputUpdateDataBlog: IBlogInputModel = req.body;
-        const result = await blogsServices.updateBlog(id, inputUpdateDataBlog)
+        const result = await blogsServices.updateBlog(blogId, inputUpdateDataBlog)
         if(result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
             return
@@ -50,8 +50,8 @@ export const blogsControllers = {
         return
     },
     deleteBlog: async (req: Request, res: Response) => {
-        const {id} = req.params;
-        const result = await blogsServices.deleteBlog(id);
+        const {blogId} = req.params;
+        const result = await blogsServices.deleteBlog(blogId);
         if(result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
             return
@@ -74,6 +74,7 @@ export const blogsControllers = {
         return
 
     },
+
     createPostForSpecialBlog: async (req: Request, res: Response) => {
         const inputDataPost = req.body;
         const {blogId} = req.params;
@@ -96,7 +97,7 @@ export const blogsControllers = {
             res.status(HTTP_STATUSES[createdPost.status]).send(createdPost.data)
             return
         }
-        res.status(HTTP_STATUSES[createdPost.status]).send({error: createdPost.errorMessage, data: result.data})
+        res.status(HTTP_STATUSES[createdPost.status]).send({error: createdPost.errorMessage, data: createdPost.data})
         return
     }
 }

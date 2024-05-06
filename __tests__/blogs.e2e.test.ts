@@ -91,10 +91,8 @@ describe('Blogs Tests', () => {
     it('should get correct blog', async () => {
         const foundBlogs = await req.get(SETTINGS.PATH.BLOGS).expect(HTTP_STATUSES.Success);
 
-        // console.log(foundBlogs.body.items)
-
         const res = await req.get(`${SETTINGS.PATH.BLOGS}/${String(foundBlogs.body.items[0].id)}`).expect(HTTP_STATUSES.Success);
-        //
+
         expect(foundBlogs.body.items[0].id).toEqual(res.body.id)
     });
 
@@ -111,6 +109,7 @@ describe('Blogs Tests', () => {
 
         const res = await req.get(`${SETTINGS.PATH.BLOGS}/${String(foundBlogs.body.items[0].id)}`).expect(HTTP_STATUSES.NotFound)
     });
+
     it('should correct update blog', async () => {
         const findBlogs = await req.get(SETTINGS.PATH.BLOGS);
 
@@ -155,7 +154,7 @@ describe('Blogs Tests', () => {
 
         const blog = await req.post(SETTINGS.PATH.BLOGS)
             .set('Authorization', process.env.AUTH_HEADER || '')
-            .send(newBlog)
+            .send(newBlog).expect(HTTP_STATUSES.Created)
 
         const newPost = {
             content: 'content 2',
@@ -165,9 +164,7 @@ describe('Blogs Tests', () => {
 
         const post = await req.post(SETTINGS.PATH.BLOGS + `/${blog.body.id}/posts`)
             .set('Authorization', process.env.AUTH_HEADER || '')
-            .send(newPost).expect(HTTP_STATUSES.Created)
-
-        // console.log(post.body)
+            .send(newPost)
 
         expect(blog.body.id).toBe(post.body.blogId)
         expect(newPost.title).toBe(post.body.title)

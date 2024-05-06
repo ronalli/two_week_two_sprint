@@ -44,8 +44,6 @@ export const postsQueryRepositories = {
                     data: postsQueryRepositories._formatingDataForOutputPost(foundPost)
                 }
             }
-            console.log(foundPost)
-
             return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}

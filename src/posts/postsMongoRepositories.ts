@@ -8,6 +8,7 @@ import {ResultCode} from "../types/resultCode";
 export const postsMongoRepositories = {
     create: async (post: IPostInputModel) => {
         const findBlog = await blogsQueryRepositories.findBlogById(post.blogId);
+
         let newPost: IPostDBType;
         if (findBlog.data) {
 
