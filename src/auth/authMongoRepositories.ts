@@ -1,6 +1,7 @@
-import {ILoginBody} from "./types/login-types";
 import {usersCollection} from "../db/mongo-db";
 import {ResultCode} from "../types/resultCode";
+import {IUserDBType, IUserInputModel} from "../users/types/user-types";
+import {usersMongoRepositories} from "../users/usersMongoRepositories";
 
 export const authMongoRepositories = {
     findByLoginOrEmail: async (loginOrEmail: string) => {
@@ -15,5 +16,22 @@ export const authMongoRepositories = {
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.BadRequest, data: null};
         }
-    }
+    },
+    createUser: async (data: IUserDBType) => {
+        try {
+            const insertUser = await usersCollection.insertOne(data);
+            const result = await usersMongoRepositories.findUserById(String(insertUser.insertedId))
+
+            if(result.data) {
+                return {
+                    status: ResultCode.Created,
+                    data: result.data,
+                }
+            }
+            return {errorMessage: 'Error created user', status: ResultCode.NotFound, data: null}
+        } catch (e) {
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
+        }
+    },
+
 }

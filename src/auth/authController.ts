@@ -5,6 +5,7 @@ import {HTTP_STATUSES} from "../settings";
 import {usersServices} from "../users/usersServices";
 import {IUserDBType} from "../users/types/user-types";
 import {IMeViewModel} from "./types/me-types";
+import {IUserInputModelRegistration} from "./types/registration-type";
 
 export const authController = {
     login: async (req: Request, res: Response) => {
@@ -19,9 +20,9 @@ export const authController = {
     },
     me: async (req: Request, res: Response) => {
         const userId = req.userId!;
-        if(userId !== null) {
+        if (userId !== null) {
             const result = await usersServices.findUser(userId);
-            if(result.data) {
+            if (result.data) {
                 const outputResult = authController._maping(result.data);
                 res.status(HTTP_STATUSES[result.status]).send(outputResult)
                 return
@@ -29,6 +30,17 @@ export const authController = {
             res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
         }
         res.status(HTTP_STATUSES.BadRequest).send({errorMessage: "Something went wrong", data: null})
+        return
+    },
+
+    registration: async (req: Request, res: Response) => {
+        const data: IUserInputModelRegistration = req.body
+        const result = await authService.registration(data);
+        if(result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+            return
+        }
+        res.status(HTTP_STATUSES[result.status]).send(result.data)
         return
     },
     _maping(user: IUserDBType): IMeViewModel {

@@ -8,16 +8,16 @@ export const usersQueryRepositories = {
     getUsers: async (queryParams: IUserQueryType) => {
         const query = usersQueryRepositories._createDefaultValues(queryParams);
         let search = {};
-        if(query.searchLoginTerm && query.searchEmailTerm) {
+        if (query.searchLoginTerm && query.searchEmailTerm) {
             search = {
                 $or: [
                     {email: {$regex: `${query.searchEmailTerm}`, $options: "i"}},
                     {login: {$regex: `${query.searchLoginTerm}`, $options: "i"}},
                 ]
             }
-        } else if(query.searchLoginTerm) {
+        } else if (query.searchLoginTerm) {
             search = {login: {$regex: `${query.searchLoginTerm}`, $options: "i"}}
-        } else if(query.searchEmailTerm) {
+        } else if (query.searchEmailTerm) {
             search = {email: {$regex: `${query.searchEmailTerm}`, $options: "i"}}
         } else {
             search = {};
@@ -40,7 +40,7 @@ export const usersQueryRepositories = {
             return {
                 status: ResultCode.Success,
                 data: {
-                    pagesCount: Math.ceil(totalCount/ query.pageSize),
+                    pagesCount: Math.ceil(totalCount / query.pageSize),
                     pageSize: query.pageSize,
                     page: query.pageNumber,
                     totalCount,
@@ -55,11 +55,26 @@ export const usersQueryRepositories = {
     findUserById: async (id: string) => {
         try {
             const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
-            if(foundUser) {
-                return {status: ResultCode.Success, data: foundUser };
+            if (foundUser) {
+                return {status: ResultCode.Success, data: foundUser};
             }
             return {errorMessage: 'Not found user', status: ResultCode.NotFound, data: null}
 
+        } catch (e) {
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null};
+        }
+    },
+    doesExistByLoginOrEmail: async (login: string, email: string) => {
+        const filter = {
+            $or: [
+                {login: {$regex: login, $options: 'i'}},
+                {email: {$regex: email, $options: 'i'}}
+            ]
+        }
+        try {
+            const user = await usersCollection.findOne(filter);
+            if(user) return {errorMessage: 'User founded', status: ResultCode.BadRequest, data: null}
+            return {status: ResultCode.Success, data: null}
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null};
         }

@@ -5,12 +5,12 @@ config();
 export const SETTINGS = {
     PORT: process.env.PORT || 3000,
     PATH: {
-        BLOGS: '/hometask_06/api/blogs',
-        POSTS: '/hometask_06/api/posts',
-        USERS: '/hometask_06/api/users',
-        AUTH: '/hometask_06/api/auth',
-        ALL_DELETE: '/hometask_06/api/testing',
-        COMMENTS: '/hometask_06/api/comments',
+        BLOGS: '/hometask_07/api/blogs',
+        POSTS: '/hometask_07/api/posts',
+        USERS: '/hometask_07/api/users',
+        AUTH: '/hometask_07/api/auth',
+        ALL_DELETE: '/hometask_07/api/testing',
+        COMMENTS: '/hometask_07/api/comments',
     },
     MONGO_URL: process.env.MONGO_URL || 'mongodb://localhost',
     DB_NAME: process.env.DB_NAME || 'it-incubator',
