@@ -98,7 +98,7 @@ export const authService = {
             try {
                 const success = await usersCollection.findOneAndUpdate({_id: result.data._id}, {$set: {'emailConfirmation.isConfirmed': true, 'emailConfirmation.expirationDate': null, 'emailConfirmation.confirmationCode': null}});
                 return {
-                    status: ResultCode.Created,
+                    status: ResultCode.NotContent,
                 }
             } catch (e) {
                 return {message: 'Error DB', status: ResultCode.InternalServerError, field: 'DB'}
@@ -118,7 +118,7 @@ export const authService = {
 
         if(result.data?.emailConfirmation?.isConfirmed) {
             return {
-                status: ResultCode.NotContent,
+                status: ResultCode.BadRequest,
                 message: 'Email already confirmed',
                 field: 'email'
             }
@@ -145,7 +145,7 @@ export const authService = {
 
         return {
             status: result.status,
-            message: result.errorMessage,
+            message: result.message,
             field: 'email'
         }
 

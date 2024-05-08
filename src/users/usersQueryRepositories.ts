@@ -73,7 +73,7 @@ export const usersQueryRepositories = {
         }
         try {
             const user = await usersCollection.findOne(filter);
-            if(user) return {message: 'User founded', status: ResultCode.BadRequest, field: 'email'}
+            if(user) return {message: 'User founded', status: ResultCode.BadRequest, field: user.login === login ? 'login' : 'email'}
             return {status: ResultCode.Success, data: null}
         } catch (e) {
             return {message: 'Error DB', status: ResultCode.InternalServerError, field: 'DB'};
