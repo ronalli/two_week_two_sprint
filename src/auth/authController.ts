@@ -6,7 +6,6 @@ import {usersServices} from "../users/usersServices";
 import {IUserDBType} from "../users/types/user-types";
 import {IMeViewModel} from "./types/me-types";
 import {IUserInputModelRegistration} from "./types/registration-type";
-import {ResultCode} from "../types/resultCode";
 
 export const authController = {
     login: async (req: Request, res: Response) => {
