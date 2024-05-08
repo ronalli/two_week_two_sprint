@@ -117,7 +117,7 @@ export const authService = {
 
         if(result.data?.emailConfirmation?.isConfirmed) {
             return {
-                status: ResultCode.Success,
+                status: ResultCode.NotContent,
                 errorMessage: 'Email already confirmed',
             }
         }
@@ -149,8 +149,8 @@ export const authService = {
 
     },
 
-    checkUserCredential: async (loginOrEmail: string, password?: string) => {
-       return await authMongoRepositories.findByLoginOrEmail(loginOrEmail);
+    checkUserCredential: async (login: string) => {
+       return await authMongoRepositories.findByEmail(login);
     },
 
 }

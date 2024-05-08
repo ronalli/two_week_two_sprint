@@ -6,6 +6,7 @@ import {usersServices} from "../users/usersServices";
 import {IUserDBType} from "../users/types/user-types";
 import {IMeViewModel} from "./types/me-types";
 import {IUserInputModelRegistration} from "./types/registration-type";
+import {ResultCode} from "../types/resultCode";
 
 export const authController = {
     login: async (req: Request, res: Response) => {
@@ -28,6 +29,7 @@ export const authController = {
                 return
             }
             res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+            return
         }
         res.status(HTTP_STATUSES.BadRequest).send({errorMessage: "Something went wrong", data: null})
         return
@@ -49,6 +51,7 @@ export const authController = {
         const result = await authService.confirmEmail(code)
         if(result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+            return
         }
         res.status(HTTP_STATUSES[result.status]).send({})
         return;
@@ -56,6 +59,20 @@ export const authController = {
     resendConfirmationCode: async (req: Request, res: Response) => {
         const {email} = req.body;
         const result = await authService.resendCode(email);
+
+        if(result.status === ResultCode.NotContent) {
+            res.status(HTTP_STATUSES[result.status]).send({})
+            return
+        }
+        res.status(HTTP_STATUSES[result.status]).send({
+            "errorsMessages": [
+                {
+                    "message": result.errorMessage,
+                    "field": result.errorMessage
+                }
+            ]
+        })
+        return
     },
 
     _maping(user: IUserDBType): IMeViewModel {
