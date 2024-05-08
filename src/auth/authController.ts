@@ -40,7 +40,7 @@ export const authController = {
         const data: IUserInputModelRegistration = req.body
         const result = await authService.registration(data);
         if(result.message) {
-            res.status(HTTP_STATUSES[result.status]).send({errorsMessage: [{
+            res.status(HTTP_STATUSES[result.status]).send({errorsMessages: [{
                     message: result.message,
                     field: result.field
                 }]})
@@ -54,7 +54,7 @@ export const authController = {
         const {code} = req.body
         const result = await authService.confirmEmail(code)
         if(result.message) {
-            res.status(HTTP_STATUSES[result.status]).send({errorsMessage: [{
+            res.status(HTTP_STATUSES[result.status]).send({errorsMessages: [{
                     message: result.message,
                     field: result.field
                 }]})
@@ -71,7 +71,7 @@ export const authController = {
             res.status(HTTP_STATUSES[result.status]).send({})
             return
         }
-        res.status(HTTP_STATUSES[result.status]).send({errorsMessage: [{
+        res.status(HTTP_STATUSES[result.status]).send({errorsMessages: [{
                 message: result.message,
                 field: result.field
             }]})
