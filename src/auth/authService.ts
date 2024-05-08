@@ -82,11 +82,8 @@ export const authService = {
             }
         }
 
-        //Может быть бага
 
         if(result.data?.emailConfirmation?.expirationDate && result.data.emailConfirmation.expirationDate < new Date()) {
-
-            console.log('бага')
 
             return {
                 status: ResultCode.BadRequest,
@@ -124,13 +121,9 @@ export const authService = {
             }
         }
 
-        // console.log(result.data?.emailConfirmation?.expirationDate)
-        //
-        // console.log(new Date())
-
         if(result.data?.emailConfirmation?.expirationDate && result.data?.emailConfirmation?.expirationDate > new Date()) {
             return {
-                status: ResultCode.Success,
+                status: ResultCode.NotContent,
             }
         }
 
