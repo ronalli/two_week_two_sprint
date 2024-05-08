@@ -6,7 +6,6 @@ import {validationCreatePost} from "../posts/middleware/input-validation-middlew
 import {validationQueryParamsPosts} from "../posts/middleware/query-validation-middleware";
 import {authJwtMiddleware} from "../middleware/auth-jwt-middleware";
 import {validationContent} from "../comments/middleware/input-comment-validation-middleware";
-import {validatorParamBlogId} from "../middleware/blogId-validator-middleware";
 
 
 export const postsRouter = Router({});

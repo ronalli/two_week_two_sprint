@@ -3,6 +3,7 @@ import {usersCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {bcryptService} from "../utils/bcrypt-service";
 import {ResultCode} from "../types/resultCode";
+import {randomUUID} from "node:crypto";
 
 export const usersMongoRepositories = {
     createUser: async (data: IUserInputModel) => {
@@ -14,6 +15,11 @@ export const usersMongoRepositories = {
             login: data.login,
             hash,
             createdAt: new Date().toISOString(),
+            emailConfirmation: {
+                confirmationCode: null,
+                expirationDate: null,
+                isConfirmed: true
+            }
         }
 
         try {

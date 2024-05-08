@@ -53,6 +53,11 @@ export const authController = {
         res.status(HTTP_STATUSES[result.status]).send({})
         return;
     },
+    resendConfirmationCode: async (req: Request, res: Response) => {
+        const {email} = req.body;
+        const result = await authService.resendCode(email);
+    },
+
     _maping(user: IUserDBType): IMeViewModel {
         return {
             userId: String(user._id),

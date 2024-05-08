@@ -16,7 +16,7 @@ const validatorPassword = body('password').trim()
         min: 6, max: 20
     }).withMessage('Filed should be min 6 and max 20 symbols')
 
-const validatorEmail = body('email').trim()
+export const validatorEmail = body('email').trim()
     .notEmpty().withMessage('Field is empty')
     .matches(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/)
     .withMessage('Field is not correct')

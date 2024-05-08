@@ -20,8 +20,8 @@ export interface IUserDBType  {
     hash: string;
     createdAt: string;
     emailConfirmation?: {
-        confirmationCode: string,
-        expirationDate: Date;
+        confirmationCode: string | null,
+        expirationDate: Date | null;
         isConfirmed?: boolean;
     };
 }
