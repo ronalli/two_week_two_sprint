@@ -11,9 +11,6 @@ import {usersQueryRepositories} from "../users/usersQueryRepositories";
 import {nodemailerService} from "../common/adapter/nodemailer.service";
 import {emailExamples} from "../common/adapter/emailExamples";
 import {usersCollection} from "../db/mongo-db";
-import {usersController} from "../users/usersControllers";
-import {usersServices} from "../users/usersServices";
-import {log} from "node:util";
 
 
 export const authService = {
@@ -69,7 +66,7 @@ export const authService = {
         }
 
         return {
-            status: ResultCode.Created,
+            status: ResultCode.NotContent,
             data: null
         }
 
@@ -136,7 +133,7 @@ export const authService = {
             const code = randomUUID();
             const expirationDate = add(new Date().toISOString(), {hours: 1, minutes: 3});
 
-            const user = await usersCollection.findOneAndUpdate({_id: result.data._id}, {$set: {'emailConfirmation..expirationDate': expirationDate, 'emailConfirmation.confirmationCode': code}});
+            const user = await usersCollection.findOneAndUpdate({_id: result.data._id}, {$set: {'emailConfirmation.expirationDate': expirationDate, 'emailConfirmation.confirmationCode': code}});
             nodemailerService.sendEmail(email, code, emailExamples.registrationEmail).catch(e => console.log(e))
             return {
                 status: ResultCode.NotContent,

@@ -15,5 +15,5 @@ export const authJwtMiddleware = async (req: Request, res: Response, next: NextF
         return;
     }
     res.status(HTTP_STATUSES.Unauthorized).send({})
-    return;
+    return
 }
