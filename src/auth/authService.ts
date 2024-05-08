@@ -129,11 +129,8 @@ export const authService = {
         // console.log(new Date())
 
         if(result.data?.emailConfirmation?.expirationDate && result.data?.emailConfirmation?.expirationDate > new Date()) {
-            console.log('eee')
             return {
-                status: ResultCode.BadRequest,
-                message: 'Check your email again',
-                field: 'email'
+                status: ResultCode.Success,
             }
         }
 

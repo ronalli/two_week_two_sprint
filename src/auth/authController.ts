@@ -39,11 +39,13 @@ export const authController = {
     registration: async (req: Request, res: Response) => {
         const data: IUserInputModelRegistration = req.body
         const result = await authService.registration(data);
-        if(result.message) {
-            res.status(HTTP_STATUSES[result.status]).send({errorsMessages: [{
+        if (result.message) {
+            res.status(HTTP_STATUSES[result.status]).send({
+                errorsMessages: [{
                     message: result.message,
                     field: result.field
-                }]})
+                }]
+            })
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({})
@@ -53,11 +55,13 @@ export const authController = {
     confirmationEmail: async (req: Request, res: Response) => {
         const {code} = req.body
         const result = await authService.confirmEmail(code)
-        if(result.message) {
-            res.status(HTTP_STATUSES[result.status]).send({errorsMessages: [{
+        if (result.message) {
+            res.status(HTTP_STATUSES[result.status]).send({
+                errorsMessages: [{
                     message: result.message,
                     field: result.field
-                }]})
+                }]
+            })
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({})
@@ -67,18 +71,22 @@ export const authController = {
         const {email} = req.body;
         const result = await authService.resendCode(email);
 
-        if(result.status === ResultCode.NotContent) {
-            res.status(HTTP_STATUSES[result.status]).send({})
+        if (result.message) {
+            res.status(HTTP_STATUSES[result.status]).send({
+                errorsMessages: [{
+                    message: result.message,
+                    field: result.field
+                }]
+            })
             return
         }
-        res.status(HTTP_STATUSES[result.status]).send({errorsMessages: [{
-                message: result.message,
-                field: result.field
-            }]})
+        res.status(HTTP_STATUSES[result.status]).send({})
         return
+
     },
 
-    _maping(user: IUserDBType): IMeViewModel {
+    _maping
+    (user: IUserDBType): IMeViewModel {
         return {
             userId: String(user._id),
             email: user.email,
