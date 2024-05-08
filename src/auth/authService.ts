@@ -18,9 +18,9 @@ export const authService = {
         const { loginOrEmail }: ILoginBody = data;
         const result = await authMongoRepositories.findByLoginOrEmail(loginOrEmail)
 
-        if(result.data && !result.data.emailConfirmation?.isConfirmed) {
-            return {status: ResultCode.BadRequest, errorMessage: 'Email not confirmed', data: null}
-        }
+        // if(result.data && !result.data.emailConfirmation?.isConfirmed) {
+        //     return {status: ResultCode.BadRequest, message: 'Email not confirmed', field: 'email'}
+        // }
 
         if (result.data) {
            const success = await bcryptService.checkPassword(data.password, result.data.hash);
@@ -124,9 +124,14 @@ export const authService = {
             }
         }
 
-        if(result.data?.emailConfirmation?.expirationDate && result.data?.emailConfirmation?.expirationDate < new Date()) {
+        // console.log(result.data?.emailConfirmation?.expirationDate)
+        //
+        // console.log(new Date())
+
+        if(result.data?.emailConfirmation?.expirationDate && result.data?.emailConfirmation?.expirationDate > new Date()) {
+            console.log('eee')
             return {
-                status: ResultCode.NotContent,
+                status: ResultCode.BadRequest,
                 message: 'Check your email again',
                 field: 'email'
             }

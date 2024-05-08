@@ -82,6 +82,7 @@ export const usersQueryRepositories = {
     findUserByCodeConfirmation: async (codeConfirmation: string) => {
         try {
             const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': codeConfirmation})
+
             if(user) {
                 return {status: ResultCode.Success, data: user}
             }
