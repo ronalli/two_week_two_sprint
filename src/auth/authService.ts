@@ -35,11 +35,11 @@ export const authService = {
     registration: async (data: IUserInputModelRegistration) => {
         const {login, email, password} = data;
         const result = await usersQueryRepositories.doesExistByLoginOrEmail(login, email);
-        if(result.errorMessage) {
+        if(result.message) {
             return {
                 status: result.status,
-                errorMessage: result.errorMessage,
-                data: result.data
+                message: result.message,
+                field: result.field
             }
         }
 
@@ -67,7 +67,6 @@ export const authService = {
 
         return {
             status: ResultCode.NotContent,
-            data: null
         }
 
     },
@@ -78,7 +77,8 @@ export const authService = {
         if(result.data?.emailConfirmation?.isConfirmed) {
             return {
                 status: ResultCode.Success,
-                errorMessage: 'Email already confirmed',
+                message: 'Email already confirmed',
+                field: 'email'
             }
         }
 
@@ -90,7 +90,8 @@ export const authService = {
 
             return {
                 status: ResultCode.BadRequest,
-                errorMessage: 'The code is not valid',
+                message: 'The code is not valid',
+                field: 'email'
             }
         }
         if(result.data) {
@@ -98,17 +99,17 @@ export const authService = {
                 const success = await usersCollection.findOneAndUpdate({_id: result.data._id}, {$set: {'emailConfirmation.isConfirmed': true, 'emailConfirmation.expirationDate': null, 'emailConfirmation.confirmationCode': null}});
                 return {
                     status: ResultCode.Created,
-                    data: null
                 }
             } catch (e) {
-                return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
+                return {message: 'Error DB', status: ResultCode.InternalServerError, field: 'DB'}
             }
 
         }
 
         return {
             status: result.status,
-            errorMessage: result.errorMessage
+            message: result.message,
+            field: result.field
         }
 
     },
@@ -118,14 +119,16 @@ export const authService = {
         if(result.data?.emailConfirmation?.isConfirmed) {
             return {
                 status: ResultCode.NotContent,
-                errorMessage: 'Email already confirmed',
+                message: 'Email already confirmed',
+                field: 'email'
             }
         }
 
         if(result.data?.emailConfirmation?.expirationDate && result.data?.emailConfirmation?.expirationDate < new Date()) {
             return {
                 status: ResultCode.NotContent,
-                errorMessage: 'Check your email again'
+                message: 'Check your email again',
+                field: 'email'
             }
         }
 
@@ -137,14 +140,13 @@ export const authService = {
             nodemailerService.sendEmail(email, code, emailExamples.registrationEmail).catch(e => console.log(e))
             return {
                 status: ResultCode.NotContent,
-                data: null
             }
         }
 
         return {
             status: result.status,
-            errorMessage: result.errorMessage,
-            data: result.data
+            message: result.errorMessage,
+            field: 'email'
         }
 
     },

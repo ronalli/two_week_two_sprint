@@ -35,22 +35,29 @@ export const authController = {
         return
     },
 
+
     registration: async (req: Request, res: Response) => {
         const data: IUserInputModelRegistration = req.body
         const result = await authService.registration(data);
-        if(result.errorMessage) {
-            res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+        if(result.message) {
+            res.status(HTTP_STATUSES[result.status]).send({errorsMessage: [{
+                    message: result.message,
+                    field: result.field
+                }]})
             return
         }
-        res.status(HTTP_STATUSES[result.status]).send(result.data)
+        res.status(HTTP_STATUSES[result.status]).send({})
         return
     },
 
     confirmationEmail: async (req: Request, res: Response) => {
         const {code} = req.body
         const result = await authService.confirmEmail(code)
-        if(result.errorMessage) {
-            res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+        if(result.message) {
+            res.status(HTTP_STATUSES[result.status]).send({errorsMessage: [{
+                    message: result.message,
+                    field: result.field
+                }]})
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({})
@@ -64,14 +71,10 @@ export const authController = {
             res.status(HTTP_STATUSES[result.status]).send({})
             return
         }
-        res.status(HTTP_STATUSES[result.status]).send({
-            "errorsMessages": [
-                {
-                    "message": result.errorMessage,
-                    "field": result.errorMessage
-                }
-            ]
-        })
+        res.status(HTTP_STATUSES[result.status]).send({errorsMessage: [{
+                message: result.message,
+                field: result.field
+            }]})
         return
     },
 

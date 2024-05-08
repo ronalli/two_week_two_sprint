@@ -73,21 +73,21 @@ export const usersQueryRepositories = {
         }
         try {
             const user = await usersCollection.findOne(filter);
-            if(user) return {errorMessage: 'User founded', status: ResultCode.BadRequest, data: null}
+            if(user) return {message: 'User founded', status: ResultCode.BadRequest, field: 'email'}
             return {status: ResultCode.Success, data: null}
         } catch (e) {
-            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null};
+            return {message: 'Error DB', status: ResultCode.InternalServerError, field: 'DB'};
         }
     },
     findUserByCodeConfirmation: async (codeConfirmation: string) => {
         try {
             const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': codeConfirmation})
             if(user) {
-                return {status: ResultCode.Success, data: user};
+                return {status: ResultCode.Success, data: user}
             }
-            return {errorMessage: 'User not found', status: ResultCode.BadRequest, data: null}
+            return {message: 'User not found', status: ResultCode.BadRequest, field: 'code'}
         } catch(e) {
-            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
+            return {message: 'Error DB', status: ResultCode.InternalServerError, field: 'DB'}
         }
 
     },
