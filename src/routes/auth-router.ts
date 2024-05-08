@@ -12,3 +12,5 @@ authRouter.post('/login', ...validationInputAuth, inputCheckErrorsMiddleware, au
 authRouter.get('/me', authJwtMiddleware, authController.me)
 
 authRouter.post('/registration', ...validationInputRegistrationUser, inputCheckErrorsMiddleware, authController.registration)
+
+authRouter.post('/registration-confirmation', authController.confirmationEmail)

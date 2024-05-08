@@ -43,6 +43,16 @@ export const authController = {
         res.status(HTTP_STATUSES[result.status]).send(result.data)
         return
     },
+
+    confirmationEmail: async (req: Request, res: Response) => {
+        const {code} = req.body
+        const result = await authService.confirmEmail(code)
+        if(result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+        }
+        res.status(HTTP_STATUSES[result.status]).send({})
+        return;
+    },
     _maping(user: IUserDBType): IMeViewModel {
         return {
             userId: String(user._id),

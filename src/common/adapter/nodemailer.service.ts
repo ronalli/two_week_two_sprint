@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 export const nodemailerService = {
-    sendEmail: async (email: string, code: string) => {
+    sendEmail: async (email: string, code: string, template: (code: string) => string) => {
         let transporter = nodemailer.createTransport({
             host: process.env.HOST,
             port: Number(process.env.PORT_HOST),
@@ -16,7 +16,7 @@ export const nodemailerService = {
             from: `Kek ${process.env.EMAIL}`,
             to: email,
             subject: 'Hello World',
-            text: code,
+            html: template(code),
         })
 
         return !!info

@@ -9,6 +9,8 @@ import {jwtService} from "../utils/jwt-services";
 import {IUserDB, IUserInputModelRegistration} from "./types/registration-type";
 import {usersQueryRepositories} from "../users/usersQueryRepositories";
 import {nodemailerService} from "../common/adapter/nodemailer.service";
+import {emailExamples} from "../common/adapter/emailExamples";
+import {usersCollection} from "../db/mongo-db";
 
 
 export const authService = {
@@ -53,7 +55,7 @@ export const authService = {
         const successCreateUser = await authMongoRepositories.createUser(newUser);
 
         if(successCreateUser.data) {
-            nodemailerService.sendEmail(email, newUser.emailConfirmation.confirmationCode).catch(e => {
+            nodemailerService.sendEmail(email, newUser.emailConfirmation.confirmationCode, emailExamples.registrationEmail).catch(e => {
                 console.log(e)
             })
         }
@@ -61,6 +63,41 @@ export const authService = {
         return {
             status: ResultCode.Created,
             data: null
+        }
+
+    },
+
+    confirmEmail: async (code: string)=> {
+        const result = await usersQueryRepositories.findUserByCodeConfirmation(code);
+
+        if(result.data?.emailConfirmation?.isConfirmed) {
+            return {
+                status: ResultCode.Success,
+                errorMessage: 'Email already confirmed',
+            }
+        }
+        if(result.data?.emailConfirmation?.expirationDate && result.data.emailConfirmation.expirationDate < new Date()) {
+            return {
+                status: ResultCode.BadRequest,
+                errorMessage: 'The code is not valid',
+            }
+        }
+        if(result.data) {
+            try {
+                const success = await usersCollection.findOneAndUpdate({_id: result.data._id}, {$set: {'emailConfirmation.isConfirmed': true}})
+                return {
+                    status: ResultCode.Created,
+                    data: null
+                }
+            } catch (e) {
+                return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
+            }
+
+        }
+
+        return {
+            status: result.status,
+            errorMessage: result.errorMessage
         }
 
     }

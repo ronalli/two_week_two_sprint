@@ -79,7 +79,18 @@ export const usersQueryRepositories = {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null};
         }
     },
+    findUserByCodeConfirmation: async (codeConfirmation: string) => {
+        try {
+            const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': codeConfirmation})
+            if(user) {
+                return {status: ResultCode.Success, data: user};
+            }
+            return {errorMessage: 'User not found', status: ResultCode.BadRequest, data: null}
+        } catch(e) {
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
+        }
 
+    },
     _maping: (users: IUserDBType[]): IUserViewModel[] => {
         return users.map(u => ({
             id: String(u._id),

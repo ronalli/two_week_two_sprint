@@ -19,6 +19,11 @@ export interface IUserDBType  {
     email: string;
     hash: string;
     createdAt: string;
+    emailConfirmation?: {
+        confirmationCode: string,
+        expirationDate: Date;
+        isConfirmed?: boolean;
+    };
 }
 
 export interface IPaginatorUserViewModel {
