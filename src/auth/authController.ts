@@ -64,7 +64,7 @@ export const authController = {
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({})
-        return;
+        return
     },
     resendConfirmationCode: async (req: Request, res: Response) => {
         const {email} = req.body;
