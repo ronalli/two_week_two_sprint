@@ -5,6 +5,7 @@ import {db} from "../../src/db/db";
 import {MongoMemoryServer} from 'mongodb-memory-server'
 import {IUserInputModel} from "../../src/users/types/user-types";
 import {testSeeder} from "../utils/test.seeder";
+import {createUser, createUsers} from "../utils/createUsers";
 
 describe("Users Tests", () => {
 
@@ -60,44 +61,17 @@ describe("Users Tests", () => {
         await req.delete(SETTINGS.PATH.USERS + '/507f191e810c19729de860ea').auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.NotFound)
     })
 
+
     it('should get users with query params', async () => {
 
-        const users = testSeeder.createUserDtos(5);
+        const users = await createUsers(5)
 
-        let newUser: IUserInputModel = {
-            login: 'bob123',
-            password: '123456789',
-            email: 'wob123@gmail.com',
-        }
+        const response = await req.get(SETTINGS.PATH.USERS + `?sortBy=login&sortDirection=asc&pageNumber=1&pageSize=4`).set('Authorization', process.env.AUTH_HEADER || '').expect(HTTP_STATUSES.Success);
 
-        let newUser1: IUserInputModel = {
-            login: 'aob123',
-            password: '123456789',
-            email: 'ob123@gmail.com',
-        }
+        expect(response.body.totalCount).toBe(6)
+        expect(response.body.items[0].login).toEqual('testing0')
 
-        let newUser2: IUserInputModel = {
-            login: 'yra',
-            password: '123456789',
-            email: 'yra@gmail.com',
-        }
-
-        let newUser3: IUserInputModel = {
-            login: 'h2leb',
-            password: '123456789',
-            email: 'qwerty@gmail.com',
-        }
-
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser).expect(HTTP_STATUSES.Created)
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser1).expect(HTTP_STATUSES.Created)
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser2).expect(HTTP_STATUSES.Created)
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser3).expect(HTTP_STATUSES.Created)
-
-        const result = await req.get(SETTINGS.PATH.USERS + `?sortBy=login&sortDirection=asc&pageNumber=1&pageSize=4&searchLoginTerm=ob12&searchEmailTerm=qwerty`)
-            .set('Authorization', process.env.AUTH_HEADER || '').expect(HTTP_STATUSES.Success);
-
-        expect(result.body.items.length).toBe(3)
-        expect(result.body.items[0].login).toBe('aob123')
     })
+
 
 })

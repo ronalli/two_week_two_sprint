@@ -1,6 +1,5 @@
 import {usersMongoRepositories} from "./usersMongoRepositories";
 import {IUserInputModel} from "./types/user-types";
-import {ResultCode} from "../types/resultCode";
 
 export const usersServices = {
     createUser: async (data: IUserInputModel) => {

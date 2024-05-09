@@ -5,6 +5,7 @@ import {db} from "../../src/db/db";
 
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {testSeeder} from "../utils/test.seeder";
+import {createUser} from "../utils/createUsers";
 
 describe("Auth Tests", () => {
     beforeAll(async () => {
@@ -17,6 +18,10 @@ describe("Auth Tests", () => {
 
     afterAll(async () => {
         await db.stop();
+    })
+
+    afterEach(async () => {
+        await db.drop();
     })
 
     afterAll(async () => {
@@ -54,6 +59,24 @@ describe("Auth Tests", () => {
     it("shouldn't correct auth", async() => {
 
         const infoUser = await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer e5rt78ert9er.54354.24fs4df432s`).expect(HTTP_STATUSES.Unauthorized)
+    })
+
+    it('should correct registration', async () => {
+        let newUser = {
+            login: 'Bob',
+            password: '12345678',
+            email: 'bob@gmail.com',
+        }
+
+        await req.post(SETTINGS.PATH.AUTH + '/registration').send(newUser).expect(HTTP_STATUSES.NotContent)
+
+    })
+
+    it('shouldn\'t correct registration (email/login founded by DB)', async () => {
+        let newUser = testSeeder.creteUserDto()
+
+        await req.post(SETTINGS.PATH.AUTH + '/registration').send(newUser).expect(HTTP_STATUSES.BadRequest)
+
     })
 
 })

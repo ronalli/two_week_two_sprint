@@ -1,5 +1,5 @@
 import {IUserQueryType} from "./types/request-response-type";
-import {IPaginatorUserViewModel, IUserDBType, IUserViewModel} from "./types/user-types";
+import {IUserDBType, IUserViewModel} from "./types/user-types";
 import {usersCollection} from "../db/mongo-db";
 import {ObjectId, SortDirection} from "mongodb";
 import {ResultCode} from "../types/resultCode";
