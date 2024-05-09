@@ -6,10 +6,10 @@ export interface IUserInputModelRegistration {
     email: string;
 }
 
-export interface IUserDB extends IUserDBType {
-    emailConfirmation: {
-        confirmationCode: string,
-        expirationDate: Date,
-        isConfirmed: boolean
-    }
-}
+// export interface IUserDB extends IUserDBType {
+//     emailConfirmation: {
+//         confirmationCode: string,
+//         expirationDate: Date,
+//         isConfirmed: boolean
+//     }
+// }

@@ -36,10 +36,19 @@ export const authMongoRepositories = {
     findByEmail: async (email: string) => {
         try {
             const user = await usersCollection.findOne({email: email})
-            if (user) return {status: ResultCode.Success, data: user};
-            return {message: 'Error findByEmail', status: ResultCode.BadRequest}
+            if (user) return {
+                status: ResultCode.Success,
+                data: user
+            };
+            return {
+                errorMessage: 'Error findByEmail',
+                status: ResultCode.BadRequest
+            }
         } catch (e) {
-            return {message: 'Error DB', status: ResultCode.InternalServerError}
+            return {
+                errorMessage: 'Error DB',
+                status: ResultCode.InternalServerError
+            }
         }
     }
 

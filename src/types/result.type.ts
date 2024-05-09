@@ -4,8 +4,8 @@ export type Result<T = null> = {
     status: ResultCode,
     errorMessage?: string,
     extensions?: [{
-        field: 'id'
-        message: ''
+        field: string
+        message: string
     }],
     data: T
 }

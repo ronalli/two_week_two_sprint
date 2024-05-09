@@ -1,10 +1,10 @@
-import {req} from "./test-helpers";
-import {HTTP_STATUSES} from "../src/settings";
-import {db} from '../src/db/db'
+import {req} from "../test-helpers";
+import {HTTP_STATUSES} from "../../src/settings";
+import {db} from '../../src/db/db'
 import {MongoMemoryServer} from "mongodb-memory-server";
-import {SETTINGS} from "../src/settings";
-import {IBlogInputModel} from "../src/blogs/types/blogs-types";
-import {IPostInputModel} from "../src/posts/types/posts-types";
+import {SETTINGS} from "../../src/settings";
+import {IBlogInputModel} from "../../src/blogs/types/blogs-types";
+import {IPostInputModel} from "../../src/posts/types/posts-types";
 
 describe('Posts Tests', () => {
     beforeAll(async () => {

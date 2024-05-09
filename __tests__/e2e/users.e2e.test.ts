@@ -1,9 +1,10 @@
-import {req} from "./test-helpers";
-import {HTTP_STATUSES} from "../src/settings";
-import {SETTINGS} from "../src/settings";
-import {db} from "../src/db/db";
+import {req} from "../test-helpers";
+import {HTTP_STATUSES} from "../../src/settings";
+import {SETTINGS} from "../../src/settings";
+import {db} from "../../src/db/db";
 import {MongoMemoryServer} from 'mongodb-memory-server'
-import {IUserInputModel} from "../src/users/types/user-types";
+import {IUserInputModel} from "../../src/users/types/user-types";
+import {testSeeder} from "../utils/test.seeder";
 
 describe("Users Tests", () => {
 
@@ -32,11 +33,7 @@ describe("Users Tests", () => {
     })
 
     it("should create user with correct authorization", async () => {
-        let newUser: IUserInputModel = {
-            login: 'bob123',
-            password: '123456789',
-            email: 'bob123@gmail.com',
-        }
+        let newUser = testSeeder.creteUserDto();
 
         await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser).expect(HTTP_STATUSES.Created)
     })
@@ -64,6 +61,9 @@ describe("Users Tests", () => {
     })
 
     it('should get users with query params', async () => {
+
+        const users = testSeeder.createUserDtos(5);
+
         let newUser: IUserInputModel = {
             login: 'bob123',
             password: '123456789',

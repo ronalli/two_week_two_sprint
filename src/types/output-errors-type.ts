@@ -4,3 +4,8 @@ export type OutputErrorsType = {
         field: string
     }[]
 }
+
+export type ErrorsType = {
+    message: string,
+    field: string
+}

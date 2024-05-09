@@ -6,6 +6,7 @@ import {usersServices} from "../users/usersServices";
 import {IUserDBType} from "../users/types/user-types";
 import {IMeViewModel} from "./types/me-types";
 import {IUserInputModelRegistration} from "./types/registration-type";
+import {mapingErrors} from "../common/adapter/mapingErrors";
 
 export const authController = {
     login: async (req: Request, res: Response) => {
@@ -38,13 +39,8 @@ export const authController = {
     registration: async (req: Request, res: Response) => {
         const data: IUserInputModelRegistration = req.body
         const result = await authService.registration(data);
-        if (result.message) {
-            res.status(HTTP_STATUSES[result.status]).send({
-                errorsMessages: [{
-                    message: result.message,
-                    field: result.field
-                }]
-            })
+        if (result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send(mapingErrors.outputResponse(result.errorMessage))
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({})
@@ -54,13 +50,8 @@ export const authController = {
     confirmationEmail: async (req: Request, res: Response) => {
         const {code} = req.body
         const result = await authService.confirmEmail(code)
-        if (result.message) {
-            res.status(HTTP_STATUSES[result.status]).send({
-                errorsMessages: [{
-                    message: result.message,
-                    field: result.field
-                }]
-            })
+        if (result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send(mapingErrors.outputResponse(result.errorMessage))
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({})
@@ -70,13 +61,8 @@ export const authController = {
         const {email} = req.body;
         const result = await authService.resendCode(email);
 
-        if (result.message) {
-            res.status(HTTP_STATUSES[result.status]).send({
-                errorsMessages: [{
-                    message: result.message,
-                    field: result.field
-                }]
-            })
+        if (result.errorMessage) {
+            res.status(HTTP_STATUSES[result.status]).send(mapingErrors.outputResponse(result.errorMessage))
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({})

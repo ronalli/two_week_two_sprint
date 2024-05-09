@@ -1,9 +1,9 @@
-import {req} from "./test-helpers";
-import {db} from '../src/db/db'
+import {req} from "../test-helpers";
+import {db} from '../../src/db/db'
 import {MongoMemoryServer} from "mongodb-memory-server";
-import {HTTP_STATUSES} from "../src/settings";
-import {SETTINGS} from "../src/settings";
-import {IBlogInputModel} from "../src/blogs/types/blogs-types";
+import {HTTP_STATUSES} from "../../src/settings";
+import {SETTINGS} from "../../src/settings";
+import {IBlogInputModel} from "../../src/blogs/types/blogs-types";
 
 
 describe('Blogs Tests', () => {

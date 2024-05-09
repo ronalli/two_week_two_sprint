@@ -1,7 +1,7 @@
 import {MongoMemoryServer} from "mongodb-memory-server";
-import {db} from "../src/db/db";
-import {req} from "./test-helpers";
-import {HTTP_STATUSES, SETTINGS} from "../src/settings";
+import {db} from "../../src/db/db";
+import {req} from "../test-helpers";
+import {HTTP_STATUSES, SETTINGS} from "../../src/settings";
 
 describe("Comments Tests", () => {
     beforeAll(async () => {

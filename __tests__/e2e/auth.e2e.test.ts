@@ -1,9 +1,10 @@
-import {req} from "./test-helpers";
-import {HTTP_STATUSES} from "../src/settings";
-import {SETTINGS} from "../src/settings";
-import {db} from "../src/db/db";
+import {req} from "../test-helpers";
+import {HTTP_STATUSES} from "../../src/settings";
+import {SETTINGS} from "../../src/settings";
+import {db} from "../../src/db/db";
 
 import {MongoMemoryServer} from "mongodb-memory-server";
+import {testSeeder} from "../utils/test.seeder";
 
 describe("Auth Tests", () => {
     beforeAll(async () => {
@@ -11,11 +12,7 @@ describe("Auth Tests", () => {
         await db.run(mongoServer.getUri());
 
         await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '')
-            .send({
-                login: 'bob',
-                password: 'qwerty',
-                email: 'bob@gmail.com',
-            })
+            .send(testSeeder.creteUserDto())
     })
 
     afterAll(async () => {
@@ -30,7 +27,7 @@ describe("Auth Tests", () => {
 
     it("shouldn't correct auth - not found user", async () => {
         const auth = {
-            loginOrEmail: 'bob',
+            loginOrEmail: 'testing',
             password: 'password',
         }
         await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Unauthorized)
@@ -38,16 +35,16 @@ describe("Auth Tests", () => {
 
     it("should correct authorization", async() => {
         const auth = {
-            loginOrEmail: 'bob',
-            password: 'qwerty',
+            loginOrEmail: 'testing',
+            password: '12345678',
         }
         await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Success)
     })
 
     it("should correct getting info for user login", async() => {
         const auth = {
-            loginOrEmail: 'bob',
-            password: 'qwerty',
+            loginOrEmail: 'testing',
+            password: '12345678',
         }
         const jwtToken = await req.post(SETTINGS.PATH.AUTH + '/login').send(auth);
 

@@ -1,9 +1,8 @@
 import {IUserDBType, IUserInputModel, IUserViewModel} from "./types/user-types";
 import {usersCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
-import {bcryptService} from "../utils/bcrypt-service";
+import {bcryptService} from "../common/adapter/bcrypt.service";
 import {ResultCode} from "../types/resultCode";
-import {randomUUID} from "node:crypto";
 
 export const usersMongoRepositories = {
     createUser: async (data: IUserInputModel) => {
