@@ -6,7 +6,7 @@ import {IUserViewModel} from "../../src/users/types/user-types";
 export const createUser = async () => {
     const response = await req.post(SETTINGS.PATH.USERS)
         .set('Authorization', process.env.AUTH_HEADER || '')
-        .send(testSeeder.creteUserDto()).expect(HTTP_STATUSES.Created)
+        .send(testSeeder.createUserDto()).expect(HTTP_STATUSES.Created)
     return response.body;
 }
 
