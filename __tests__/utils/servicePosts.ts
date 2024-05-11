@@ -2,11 +2,11 @@ import {req} from "../test-helpers";
 import {HTTP_STATUSES, SETTINGS} from "../../src/settings";
 import {testSeeder} from "./test.seeder";
 import {serviceBlogs} from "./serviceBlogs";
-import {IPostInputModel} from "../../src/posts/types/posts-types";
+import {IPostInputModel, IPostViewModel} from "../../src/posts/types/posts-types";
 
 export const servicePosts = {
 
-    createPost: async () => {
+    createPost: async ():Promise<IPostViewModel> => {
         const response = await req.post(SETTINGS.PATH.POSTS).set('Authorization', process.env.AUTH_HEADER || '').send(testSeeder.createPostDto()).expect(HTTP_STATUSES.Created)
         return response.body
     },

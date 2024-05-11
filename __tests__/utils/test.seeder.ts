@@ -4,8 +4,7 @@ import {randomUUID} from "node:crypto";
 import {add} from "date-fns";
 import {db} from "../../src/db/db";
 import {IBlogInputModel} from "../../src/blogs/types/blogs-types";
-import {serviceBlogs} from "./serviceBlogs";
-import {IPostInputModel} from "../../src/posts/types/posts-types";
+import {ICommentInputModel} from "../../src/comments/types/comments-types";
 
 interface IRegisterUserType {
     login: string;
@@ -28,7 +27,7 @@ export const testSeeder = {
     createUserDtos(count: number) {
         const users = [];
 
-        for(let i = 0; i < count; i++) {
+        for (let i = 0; i < count; i++) {
             users.push({
                 login: `testing ${i}`,
                 email: `test${i}@gmail.com`,
@@ -58,7 +57,7 @@ export const testSeeder = {
         }
     },
 
-    createBlogDto: ():IBlogInputModel => {
+    createBlogDto: (): IBlogInputModel => {
         return {
             name: `test blog`,
             description: 'valid test description blog',
@@ -68,7 +67,7 @@ export const testSeeder = {
 
     createBlogDtos: (count: number) => {
         const blogs: IBlogInputModel[] = []
-        for(let i = 0; i < count; i++) {
+        for (let i = 0; i < count; i++) {
             blogs.push({
                 name: `testing ${i}`,
                 description: `description testing ${i}`,
@@ -78,24 +77,20 @@ export const testSeeder = {
         return blogs;
     },
 
-    createPostDto: async (): Promise<IPostInputModel> => {
-        const blog = await serviceBlogs.createBlog()
+    createPostDto: () => {
         return {
             title: 'valid title',
             content: 'content valid post',
             shortDescription: 'post short description valid',
-            blogId: blog.id,
         }
     },
 
-    createPostDtos: async (count: number) => {
-        const blog = await serviceBlogs.createBlog()
+    createPostDtos: (count: number) => {
 
-        const posts: IPostInputModel[] = [];
+        const posts = [];
 
-        for(let i = 0; i < count; i++ ){
+        for (let i = 0; i < count; i++) {
             posts.push({
-                blogId: blog.id,
                 title: `valid title ${i}`,
                 content: `content valid post ${i}`,
                 shortDescription: `post ${i} short description valid`,
@@ -105,9 +100,21 @@ export const testSeeder = {
         return posts;
     },
 
-    createCommentDto: async () => {
-        const blog = await serviceBlogs.createBlog()
+    createCommentDto: () => {
+        return {
+            'content': 'valid content for by comment'
+        }
+    },
+    createCommentDtos: (count: number) => {
 
-    }
+        const comments: ICommentInputModel[] = [];
+
+        for (let i = 0; i < count; i++) {
+            comments.push({
+                'content': `valid content for by comment ${i}`
+            })
+        }
+        return comments;
+    },
 
 }

@@ -5,7 +5,6 @@ import {db} from "../../src/db/db";
 
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {testSeeder} from "../utils/test.seeder";
-import {createUser} from "../utils/createUsers";
 
 describe("Auth Tests", () => {
     beforeAll(async () => {
@@ -13,11 +12,8 @@ describe("Auth Tests", () => {
         await db.run(mongoServer.getUri());
 
         await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '')
-            .send(testSeeder.creteUserDto())
-    })
+            .send(testSeeder.createUserDto())
 
-    afterAll(async () => {
-        await db.stop();
     })
 
     afterEach(async () => {
@@ -25,7 +21,12 @@ describe("Auth Tests", () => {
     })
 
     afterAll(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.drop();
+    })
+
+    afterAll(async () => {
+        await db.stop();
     })
 
     afterAll(done => done())
@@ -73,7 +74,7 @@ describe("Auth Tests", () => {
     })
 
     it('shouldn\'t correct registration (email/login founded by DB)', async () => {
-        let newUser = testSeeder.creteUserDto()
+        let newUser = testSeeder.createUserDto()
 
         await req.post(SETTINGS.PATH.AUTH + '/registration').send(newUser).expect(HTTP_STATUSES.BadRequest)
 

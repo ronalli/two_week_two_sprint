@@ -9,13 +9,20 @@ describe("Comments Tests", () => {
         await db.run(mongoServer.getUri());
     })
 
+
+    afterEach(async () => {
+        await db.drop();
+    })
+
+    afterAll(async () => {
+        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.drop();
+    })
+
     afterAll(async () => {
         await db.stop();
     })
 
-    afterAll(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-    })
 
     afterAll(done => done())
 

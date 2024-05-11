@@ -4,6 +4,7 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import {HTTP_STATUSES} from "../../src/settings";
 import {SETTINGS} from "../../src/settings";
 import {IBlogInputModel} from "../../src/blogs/types/blogs-types";
+import {testSeeder} from "../utils/test.seeder";
 
 
 describe('Blogs Tests', () => {
@@ -13,22 +14,23 @@ describe('Blogs Tests', () => {
         await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
 
-    afterAll(async () => {
-        await db.stop();
+    afterEach(async () => {
+        await db.drop();
     })
 
     afterAll(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.drop();
+    })
+
+    afterAll(async () => {
+        await db.stop();
     })
 
     afterAll(done => done())
 
     it('should created blog', async () => {
-        const blog = {
-            name: 'test',
-            websiteUrl: 'https://it-incubator.com',
-            description: 'valid description',
-        }
+        const blog = testSeeder.createBlogDto()
         const resCreated = await req.post(SETTINGS.PATH.BLOGS)
             .set('Authorization', process.env.AUTH_HEADER || '')
             .send(blog).expect(HTTP_STATUSES.Created)
@@ -38,11 +40,7 @@ describe('Blogs Tests', () => {
     });
 
     it('shouldn\'t created blog, because not found authorization header', async () => {
-        const blog = {
-            name: 'test',
-            websiteUrl: 'https://it-incubator.com',
-            description: 'valid description',
-        }
+        const blog = testSeeder.createBlogDto();
         const resCreated = await req.post(SETTINGS.PATH.BLOGS).send(blog).expect(HTTP_STATUSES.Unauthorized)
     });
 
@@ -65,21 +63,14 @@ describe('Blogs Tests', () => {
     });
 
     it('shouldn\'t created blog, because not found correct authorization header', async () => {
-        const blog = {
-            name: 'test valid',
-            websiteUrl: 'https://it-incubator.com',
-            description: 'valid description',
-        }
+        const blog = testSeeder.createBlogDto();
         const resCreated = await req.post(SETTINGS.PATH.BLOGS).set('Authorization', process.env.AUTH_HEADER_FAIL || '')
             .send(blog).expect(HTTP_STATUSES.Unauthorized)
     });
 
     it('should created blog, and return correct data', async () => {
-        const blog = {
-            name: 'test valid',
-            websiteUrl: 'https://it-incubator.com',
-            description: 'valid description',
-        }
+
+        const blog = testSeeder.createBlogDto();
         const resCreated = await req.post(SETTINGS.PATH.BLOGS).set('Authorization', process.env.AUTH_HEADER || '')
             .send(blog).expect(HTTP_STATUSES.Created)
 
@@ -113,11 +104,7 @@ describe('Blogs Tests', () => {
     it('should correct update blog', async () => {
         const findBlogs = await req.get(SETTINGS.PATH.BLOGS);
 
-        const updateBlogs: IBlogInputModel = {
-            name: 'test valid',
-            websiteUrl: 'https://example.com',
-            description: 'valid description',
-        }
+        const updateBlogs = testSeeder.createBlogDto();
 
         await req.put(`${SETTINGS.PATH.BLOGS}/${String(findBlogs.body.items[0].id)}`)
             .set('Authorization', process.env.AUTH_HEADER || '')
@@ -145,22 +132,15 @@ describe('Blogs Tests', () => {
 
     });
 
+
     it('should create post for special blog', async () => {
-        const newBlog: IBlogInputModel = {
-            name: 'test valid',
-            websiteUrl: 'https://example.com',
-            description: 'valid description',
-        }
+        const newBlog = testSeeder.createBlogDto();
 
         const blog = await req.post(SETTINGS.PATH.BLOGS)
             .set('Authorization', process.env.AUTH_HEADER || '')
             .send(newBlog).expect(HTTP_STATUSES.Created)
 
-        const newPost = {
-            content: 'content 2',
-            shortDescription: 'short description',
-            title: 'test 2',
-        }
+        const newPost = testSeeder.createPostDto();
 
         const post = await req.post(SETTINGS.PATH.BLOGS + `/${blog.body.id}/posts`)
             .set('Authorization', process.env.AUTH_HEADER || '')

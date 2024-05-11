@@ -3,24 +3,31 @@ import {HTTP_STATUSES} from "../../src/settings";
 import {SETTINGS} from "../../src/settings";
 import {db} from "../../src/db/db";
 import {MongoMemoryServer} from 'mongodb-memory-server'
-import {IUserInputModel} from "../../src/users/types/user-types";
 import {testSeeder} from "../utils/test.seeder";
-import {createUser, createUsers} from "../utils/createUsers";
+import {serviceUsers} from "../utils/serviceUsers";
 
 describe("Users Tests", () => {
 
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create();
         await db.run(mongoServer.getUri());
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.drop();
     })
+
+    afterEach(async () => {
+        await db.drop();
+    })
+
+
+    afterAll(async () => {
+        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.drop();
+    })
+
 
     afterAll(async () => {
         await db.stop();
-    })
-
-    afterAll(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
 
     afterAll(done => done())
@@ -34,7 +41,7 @@ describe("Users Tests", () => {
     })
 
     it("should create user with correct authorization", async () => {
-        let newUser = testSeeder.creteUserDto();
+        let newUser = testSeeder.createUserDto();
 
         await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '').send(newUser).expect(HTTP_STATUSES.Created)
     })
@@ -64,7 +71,7 @@ describe("Users Tests", () => {
 
     it('should get users with query params', async () => {
 
-        const users = await createUsers(5)
+        const users = await serviceUsers.createUsers(5)
 
         const response = await req.get(SETTINGS.PATH.USERS + `?sortBy=login&sortDirection=asc&pageNumber=1&pageSize=4`).set('Authorization', process.env.AUTH_HEADER || '').expect(HTTP_STATUSES.Success);
 
