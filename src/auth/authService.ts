@@ -67,10 +67,13 @@ export const authService = {
         const successCreateUser = await authMongoRepositories.createUser(newUser);
 
         if (successCreateUser.data) {
-            nodemailerService.sendEmail(email, newUser.emailConfirmation?.confirmationCode!, emailExamples.registrationEmail).catch(e => {
-                console.log(e)
-            })
+            nodemailerService.sendEmail(email, newUser.emailConfirmation?.confirmationCode!, emailExamples.registrationEmail)
+                // .then(() => console.log('good'))
+                // .catch(e => {
+                //     console.log(e)
+                // })
         }
+
 
         return {
             status: ResultCode.NotContent,

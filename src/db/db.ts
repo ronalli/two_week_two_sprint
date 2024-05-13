@@ -1,4 +1,4 @@
-import {Db, MongoClient} from 'mongodb'
+import {CollectionInfo, Db, MongoClient} from 'mongodb'
 import {SETTINGS} from "../settings";
 import {IUserDBType} from "../users/types/user-types";
 import {IPostDBType} from "../posts/types/posts-types";
@@ -30,9 +30,9 @@ export const db = {
     async drop() {
         try {
 
-            const collections = await this.getDbName().listCollections().toArray();
+            const collections: CollectionInfo[] = await this.getDbName().listCollections({}, {nameOnly: true}).toArray();
 
-            for(const collection of collections) {
+            for (const collection of collections) {
                 const collectionName = collection.name;
                 await this.getDbName().collection(collectionName).deleteMany({});
             }

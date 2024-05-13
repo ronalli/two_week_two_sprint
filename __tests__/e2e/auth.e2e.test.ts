@@ -65,9 +65,9 @@ describe("Auth Tests", () => {
 
     it('should correct registration', async () => {
         let newUser = {
-            login: 'Bob',
+            login: 'Bob1',
             password: '12345678',
-            email: 'bob@gmail.com',
+            email: 'bob1@gmail.com',
         }
 
         await req.post(SETTINGS.PATH.AUTH + '/registration').send(newUser).expect(HTTP_STATUSES.NotContent)

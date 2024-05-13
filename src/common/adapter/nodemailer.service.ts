@@ -11,13 +11,6 @@ export const nodemailerService = {
                 pass: process.env.PASSWORD_EMAIL,
             }
         })
-        // let transporter = nodemailer.createTransport({
-        //    service: 'gmail',
-        //     auth: {
-        //         user: process.env.EMAIL,
-        //         pass: process.env.PASSWORD_EMAIL,
-        //     }
-        // })
 
         let info = await transporter.sendMail({
             from: `${process.env.EMAIL}`,
