@@ -8,9 +8,11 @@ export const serviceLogin = {
         const newUser = await serviceUsers.createUser();
         //response jwt-token
         const response = await req.post(SETTINGS.PATH.AUTH + '/login').send({
-            login: 'testing',
+            loginOrEmail: 'testing',
             password: '12345678',
         }).expect(HTTP_STATUSES.Success)
+
+        // console.log(response.body)
 
         return response.body
     }

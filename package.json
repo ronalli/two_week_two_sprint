@@ -22,7 +22,7 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "yarn nodemon --inspect dist/index.js",
-    "jest": "jest -i --coverage"
+    "jest": "jest -i --coverage --runInBand"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

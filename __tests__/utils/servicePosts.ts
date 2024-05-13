@@ -7,7 +7,15 @@ import {IPostInputModel, IPostViewModel} from "../../src/posts/types/posts-types
 export const servicePosts = {
 
     createPost: async ():Promise<IPostViewModel> => {
-        const response = await req.post(SETTINGS.PATH.POSTS).set('Authorization', process.env.AUTH_HEADER || '').send(testSeeder.createPostDto()).expect(HTTP_STATUSES.Created)
+
+        const blog = await serviceBlogs.createBlog();
+
+        const response = await req.post(SETTINGS.PATH.POSTS).set('Authorization', process.env.AUTH_HEADER || '').send({
+            blogId: blog.id,
+            title: `valid title`,
+            content: `content valid post`,
+            shortDescription: `post short description valid`,
+        }).expect(HTTP_STATUSES.Created)
         return response.body
     },
 

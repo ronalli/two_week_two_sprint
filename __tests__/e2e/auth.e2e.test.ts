@@ -5,6 +5,7 @@ import {db} from "../../src/db/db";
 
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {testSeeder} from "../utils/test.seeder";
+import {serviceUsers} from "../utils/serviceUsers";
 
 describe("Auth Tests", () => {
     beforeAll(async () => {
@@ -77,6 +78,28 @@ describe("Auth Tests", () => {
         let newUser = testSeeder.createUserDto()
 
         await req.post(SETTINGS.PATH.AUTH + '/registration').send(newUser).expect(HTTP_STATUSES.BadRequest)
+
+    })
+
+    it('shouldn\'t correct login', async () => {
+
+        await req.post(SETTINGS.PATH.AUTH + '/login').send({
+            loginOrEmail: '',
+            password: '',
+        }).expect(HTTP_STATUSES.BadRequest)
+
+        await req.post(SETTINGS.PATH.AUTH + '/login').send({
+            loginOrEmail: 'rest',
+            password: 'res',
+        }).expect(HTTP_STATUSES.Unauthorized)
+
+    })
+
+    it('should incorrect resend code, since the user was created by admin and isConfirmed = true', async () => {
+
+       const user = await serviceUsers.createUser();
+
+       await req.post(SETTINGS.PATH.AUTH + '/registration-email-resending').send({email: user.email}).expect(HTTP_STATUSES.BadRequest)
 
     })
 

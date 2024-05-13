@@ -19,6 +19,7 @@ export const authController = {
         res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
         return
     },
+
     me: async (req: Request, res: Response) => {
         const userId = req.userId!;
         if (userId !== null) {
@@ -34,7 +35,6 @@ export const authController = {
         res.status(HTTP_STATUSES.BadRequest).send({errorMessage: "Something went wrong", data: null})
         return
     },
-
 
     registration: async (req: Request, res: Response) => {
         const data: IUserInputModelRegistration = req.body
