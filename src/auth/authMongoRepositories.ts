@@ -23,6 +23,7 @@ export const authMongoRepositories = {
             const result = await usersMongoRepositories.findUserById(String(insertUser.insertedId))
 
             if(result.data) {
+
                 return {
                     status: ResultCode.Created,
                     data: result.data,

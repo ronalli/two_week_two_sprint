@@ -3,27 +3,29 @@ import {db} from "../../src/db/db";
 import {req} from "../test-helpers";
 import {HTTP_STATUSES, SETTINGS} from "../../src/settings";
 import {serviceComments} from "../utils/serviceComments";
-import {serviceUsers} from "../utils/serviceUsers";
+
 
 describe("Comments Tests", () => {
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create();
         await db.run(mongoServer.getUri());
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
 
 
     afterEach(async () => {
-        await db.drop();
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
 
     afterAll(async () => {
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.drop();
-    })
-
-    afterAll(async () => {
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        // await db.drop();
         await db.stop();
     })
+
+    // afterAll(async () => {
+    //     await db.stop();
+    // })
 
 
     afterAll(done => done())

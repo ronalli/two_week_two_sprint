@@ -20,4 +20,8 @@ authRouter.post('/registration', ...validationInputRegistrationUser, inputCheckE
 authRouter.post('/registration-confirmation', validationCode, inputCheckErrorsMiddleware, authController.confirmationEmail)
 
 
-authRouter.post('/registration-email-resending', validatorEmail, inputCheckErrorsMiddleware, authController.resendConfirmationCode )
+authRouter.post('/registration-email-resending', validatorEmail, inputCheckErrorsMiddleware, authController.resendConfirmationCode)
+
+authRouter.post('/refresh-token')
+
+authRouter.post('/logout')

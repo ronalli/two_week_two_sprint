@@ -11,22 +11,11 @@ describe("Users Tests", () => {
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create();
         await db.run(mongoServer.getUri());
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.drop();
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
-
-    afterEach(async () => {
-        await db.drop();
-    })
-
 
     afterAll(async () => {
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.drop();
-    })
-
-
-    afterAll(async () => {
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
         await db.stop();
     })
 
@@ -55,9 +44,9 @@ describe("Users Tests", () => {
     })
 
     it('should correct delete user', async() => {
-        const user = await req.get(SETTINGS.PATH.USERS).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.Success)
+        const response = await req.get(SETTINGS.PATH.USERS).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.Success)
 
-        await req.delete(SETTINGS.PATH.USERS + `/${user.body.items[0].id}`).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.NotContent)
+        await req.delete(SETTINGS.PATH.USERS + `/${response.body.items[0].id}`).auth(process.env.USER || '', process.env.PASSWORD || '').expect(HTTP_STATUSES.NotContent)
 
         const result = await req.get(SETTINGS.PATH.USERS).auth(process.env.USER || '', process.env.PASSWORD || '')
 

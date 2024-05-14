@@ -24,22 +24,27 @@ export const authService = {
         // }
 
         if (result.data) {
+
             const success = await bcryptService.checkPassword(data.password, result.data.hash);
             if (success) {
-                const token = await jwtService.createdJWT(result.data)
-                return {status: ResultCode.Success, data: token};
+                const accessToken = await jwtService.createdJWT(result.data, '10s')
+                const refreshToken = await jwtService.createdJWT(result.data, '20s')
+
+                return {status: ResultCode.Success, data: {accessToken, refreshToken}};
+            } else {
+                return {
+                    status: ResultCode.Unauthorized,
+                    errorMessage: 'Incorrect data entered',
+                    data: null
+                };
             }
-            return {
-                status: ResultCode.Unauthorized,
-                errorMessage: 'Incorrect data entered',
-                data: result.data
-            };
         }
-        return {status: result.status, errorMessage: result.errorMessage, data: result.data};
+        return {status: result.status, errorMessage: result.errorMessage, data: null};
     },
     registration: async (data: IUserInputModelRegistration) => {
         const {login, email, password} = data;
         const result = await usersQueryRepositories.doesExistByLoginOrEmail(login, email);
+
         if (result.message) {
             return {
                 status: result.status,
@@ -68,10 +73,10 @@ export const authService = {
 
         if (successCreateUser.data) {
             nodemailerService.sendEmail(email, newUser.emailConfirmation?.confirmationCode!, emailExamples.registrationEmail)
-                // .then(() => console.log('good'))
-                // .catch(e => {
-                //     console.log(e)
-                // })
+            // .then(() => console.log('good'))
+            // .catch(e => {
+            //     console.log(e)
+            // })
         }
 
 
@@ -177,6 +182,8 @@ export const authService = {
         }
 
     },
+
+
     checkUserCredential: async (login: string) => {
         return await authMongoRepositories.findByEmail(login);
     },

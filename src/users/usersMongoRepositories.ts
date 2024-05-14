@@ -3,9 +3,22 @@ import {usersCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {bcryptService} from "../common/adapter/bcrypt.service";
 import {ResultCode} from "../types/resultCode";
+import {usersQueryRepositories} from "./usersQueryRepositories";
 
 export const usersMongoRepositories = {
     createUser: async (data: IUserInputModel) => {
+
+        const response = await usersQueryRepositories.doesExistByLoginOrEmail(data.login, data.email)
+
+
+        if (response.status === ResultCode.BadRequest) {
+
+            return {
+                errorMessage: 'User founded',
+                status: ResultCode.BadRequest,
+                data: null
+            }
+        }
 
         const hash = await bcryptService.generateHash(data.password);
 
@@ -25,7 +38,7 @@ export const usersMongoRepositories = {
             const insertUser = await usersCollection.insertOne(newUser);
             const result = await usersMongoRepositories.findUserById(String(insertUser.insertedId))
 
-            if(result.data) {
+            if (result.data) {
                 const outViewModelUser = usersMongoRepositories._maping(result.data);
                 return {
                     status: ResultCode.Created,
@@ -41,7 +54,7 @@ export const usersMongoRepositories = {
     findUserById: async (id: string) => {
         try {
             const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
-            if(foundUser) {
+            if (foundUser) {
                 return {
                     status: ResultCode.Success,
                     data: foundUser
@@ -54,24 +67,24 @@ export const usersMongoRepositories = {
         }
     },
     deleteUser: async (id: string) => {
-    try {
-        const foundUser = await usersCollection.findOne({_id: new ObjectId(id)});
-        if(!foundUser) {
+        try {
+            const foundUser = await usersCollection.findOne({_id: new ObjectId(id)});
+            if (!foundUser) {
+                return {
+                    errorMessage: 'Not found user',
+                    status: ResultCode.NotFound,
+                    data: null
+                }
+            }
+            await usersCollection.findOneAndDelete({_id: new ObjectId(id)});
             return {
-                errorMessage: 'Not found user',
-                status: ResultCode.NotFound,
+                status: ResultCode.NotContent,
                 data: null
             }
-        }
-        await usersCollection.findOneAndDelete({_id: new ObjectId(id)});
-        return {
-            status: ResultCode.NotContent,
-            data: null
-        }
 
-    }  catch (e) {
-        return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
-    }
+        } catch (e) {
+            return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
+        }
 
     },
     _maping: (user: IUserDBType): IUserViewModel => {

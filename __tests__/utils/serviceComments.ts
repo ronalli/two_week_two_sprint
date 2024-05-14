@@ -9,7 +9,6 @@ export const serviceComments = {
     createComment: async (): Promise<ICommentViewModel> => {
         const post = await servicePosts.createPost();
         const jwtToken = await serviceLogin.user();
-
         const comment = testSeeder.createCommentDto()
 
         const response = await req.post(SETTINGS.PATH.POSTS + `/${post.id}/comments`).set('Authorization', `Bearer ${jwtToken.accessToken}`).send(comment).expect(HTTP_STATUSES.Created)

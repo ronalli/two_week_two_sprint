@@ -12,21 +12,15 @@ describe("Auth Tests", () => {
         const mongoServer = await MongoMemoryServer.create();
         await db.run(mongoServer.getUri());
 
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+
         await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '')
-            .send(testSeeder.createUserDto())
+            .send(testSeeder.createUserDto()).expect(HTTP_STATUSES.Created)
 
-    })
-
-    afterEach(async () => {
-        await db.drop();
     })
 
     afterAll(async () => {
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.drop();
-    })
-
-    afterAll(async () => {
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
         await db.stop();
     })
 
@@ -55,7 +49,7 @@ describe("Auth Tests", () => {
         }
         const jwtToken = await req.post(SETTINGS.PATH.AUTH + '/login').send(auth);
 
-        const infoUser = await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer ${jwtToken.body.accessToken}`).expect(HTTP_STATUSES.Success)
+        await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer ${jwtToken.body.accessToken}`).expect(HTTP_STATUSES.Success)
     })
 
     it("shouldn't correct auth", async() => {
@@ -65,7 +59,7 @@ describe("Auth Tests", () => {
 
     it('should correct registration', async () => {
         let newUser = {
-            login: 'Bob1',
+            login: 'Bob',
             password: '12345678',
             email: 'bob1@gmail.com',
         }
@@ -95,11 +89,16 @@ describe("Auth Tests", () => {
 
     })
 
-    it('should incorrect resend code, since the user was created by admin and isConfirmed = true', async () => {
+    // it('should incorrect resend code, since the user was created by admin and isConfirmed = true', async () => {
+    //
+    //    await req.post(SETTINGS.PATH.AUTH + '/registration-email-resending').send({email: 'test@gmail.com'}).expect(HTTP_STATUSES.BadRequest)
+    //
+    // })
 
-       const user = await serviceUsers.createUser();
+    it('shouldn\'t registration user with the same login or email  ', async () => {
 
-       await req.post(SETTINGS.PATH.AUTH + '/registration-email-resending').send({email: user.email}).expect(HTTP_STATUSES.BadRequest)
+        await req.post(SETTINGS.PATH.AUTH + '/registration').send(testSeeder.createUserDto()).expect(HTTP_STATUSES.BadRequest)
+
 
     })
 

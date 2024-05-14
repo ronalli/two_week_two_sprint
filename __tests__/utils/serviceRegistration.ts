@@ -12,8 +12,6 @@ export const serviceLogin = {
             password: '12345678',
         }).expect(HTTP_STATUSES.Success)
 
-        // console.log(response.body)
-
         return response.body
     }
 }

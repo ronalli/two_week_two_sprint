@@ -4,7 +4,6 @@ import {HTTP_STATUSES} from "../settings";
 import {IUserQueryType} from "./types/request-response-type";
 import {IUserInputModel} from "./types/user-types";
 import {usersServices} from "./usersServices";
-import {ResultCode} from "../types/resultCode";
 
 export const usersController = {
     getAllUsers: async (req: Request, res: Response) => {

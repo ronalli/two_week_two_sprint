@@ -64,17 +64,18 @@ export const usersQueryRepositories = {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null};
         }
     },
+    // !!!!!!
     doesExistByLoginOrEmail: async (login: string, email: string) => {
-        const filter = {
-            $or: [
-                {login: {$regex: login, $options: 'i'}},
-                {email: {$regex: email, $options: 'i'}}
-            ]
-        }
         try {
-            const user = await usersCollection.findOne(filter);
-            if(user) return {message: 'User founded', status: ResultCode.BadRequest, field: user.login === login ? 'login' : 'email'}
-            return {status: ResultCode.Success, data: null}
+            const user = await usersCollection.findOne({
+                $or: [{login: login}, {email: email}]
+            });
+
+            if(user) {
+                return {message: 'User founded', status: ResultCode.BadRequest, field: user.login === login ? 'login' : 'email'}
+            } else {
+                return {status: ResultCode.Success, data: null}
+            }
         } catch (e) {
             return {message: 'Error DB', status: ResultCode.InternalServerError, field: 'DB'};
         }

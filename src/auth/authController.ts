@@ -13,7 +13,7 @@ export const authController = {
         const authData: ILoginBody = req.body;
         const result = await authService.login(authData);
         if (result.data) {
-            res.status(HTTP_STATUSES[result.status]).send({"accessToken": result.data})
+            res.status(HTTP_STATUSES[result.status]).send({"accessToken": result.data.accessToken})
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
@@ -67,6 +67,14 @@ export const authController = {
         }
         res.status(HTTP_STATUSES[result.status]).send({})
         return
+
+    },
+
+    logout: async (req: Request, res: Response) => {
+
+    },
+
+    refreshToken: async (req: Request, res: Response) => {
 
     },
 

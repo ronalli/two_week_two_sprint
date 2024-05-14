@@ -6,10 +6,13 @@ import {testingRouter} from "./routes/testing-router";
 import {usersRouter} from "./routes/users-router";
 import {authRouter} from "./routes/auth-router";
 import {commentsRouter} from "./routes/comments-router";
+import cookieParser from "cookie-parser";
 
 export const app = express();
 
 app.use(express.json());
+
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
     res.status(HTTP_STATUSES.Success).send({version: "1.0"})

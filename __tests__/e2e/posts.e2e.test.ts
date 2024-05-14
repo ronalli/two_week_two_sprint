@@ -10,18 +10,13 @@ describe('Posts Tests', () => {
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create();
         await db.run(mongoServer.getUri());
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.drop();
-    })
-
-
-    afterEach(async () => {
-        await db.drop();
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
 
     afterAll(async () => {
-        await db.drop();
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        // await db.drop();
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.stop()
     })
 
     it('shouldn\'t create post, as not found blogId', async () => {

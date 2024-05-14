@@ -3,7 +3,6 @@ import {db} from '../../src/db/db'
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {HTTP_STATUSES} from "../../src/settings";
 import {SETTINGS} from "../../src/settings";
-import {IBlogInputModel} from "../../src/blogs/types/blogs-types";
 import {testSeeder} from "../utils/test.seeder";
 
 
@@ -14,16 +13,8 @@ describe('Blogs Tests', () => {
         await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
 
-    afterEach(async () => {
-        await db.drop();
-    })
-
     afterAll(async () => {
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.drop();
-    })
-
-    afterAll(async () => {
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
         await db.stop();
     })
 

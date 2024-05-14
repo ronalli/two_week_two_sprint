@@ -4,30 +4,24 @@ import {authService} from "../../src/auth/authService";
 import {nodemailerService} from "../../src/common/adapter/nodemailer.service";
 import {testSeeder} from "../utils/test.seeder";
 import {ResultCode} from "../../src/types/resultCode";
-import {SETTINGS} from "../../src/settings";
-import {req} from "../test-helpers";
 
 describe('auth-integration', () => {
 
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create();
         await db.run(mongoServer.getUri());
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
 
     beforeEach(async () => {
         await db.drop();
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
 
     afterEach(async () => {
-        // await db.drop();
-        // await req.get(SETTINGS.PATH.ALL_DELETE + '/all-data')
+
     })
 
     afterAll(async () => {
         await db.drop();
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
         await db.stop();
     })
 
@@ -46,7 +40,6 @@ describe('auth-integration', () => {
             const userDto = testSeeder.createUserDto();
             const result = await registerUser(userDto);
 
-            // console.log(result)
             expect(result.status).toBe(ResultCode.NotContent);
 
             expect(nodemailerService.sendEmail).toHaveBeenCalled();
