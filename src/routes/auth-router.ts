@@ -19,9 +19,8 @@ authRouter.get('/me', authJwtMiddleware, authController.me)
 authRouter.post('/registration', ...validationInputRegistrationUser, inputCheckErrorsMiddleware, authController.registration)
 authRouter.post('/registration-confirmation', validationCode, inputCheckErrorsMiddleware, authController.confirmationEmail)
 
-
 authRouter.post('/registration-email-resending', validatorEmail, inputCheckErrorsMiddleware, authController.resendConfirmationCode)
 
-authRouter.post('/refresh-token')
+authRouter.post('/refresh-token', authController.refreshToken)
 
 authRouter.get('/logout', authController.logout)

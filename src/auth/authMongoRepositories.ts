@@ -2,6 +2,7 @@ import {usersCollection} from "../db/mongo-db";
 import {ResultCode} from "../types/resultCode";
 import {IUserDBType, IUserInputModel} from "../users/types/user-types";
 import {usersMongoRepositories} from "../users/usersMongoRepositories";
+import {mappingUser} from "../common/utils/mappingUser";
 
 export const authMongoRepositories = {
     findByLoginOrEmail: async (loginOrEmail: string) => {

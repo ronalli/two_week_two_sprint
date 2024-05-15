@@ -4,6 +4,8 @@ import {SETTINGS} from "../../src/settings";
 import {db} from "../../src/db/db";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {testSeeder} from "../utils/test.seeder";
+import cookie from "cookie";
+
 
 describe("Auth Tests", () => {
     beforeAll(async () => {
@@ -32,15 +34,17 @@ describe("Auth Tests", () => {
         await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Unauthorized)
     })
 
-    it("should correct authorization", async() => {
+    it("should correct authorization", async () => {
         const auth = {
             loginOrEmail: 'testing',
             password: '12345678',
         }
-        await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Success)
+        const res = await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Success)
+
+        expect(res.body.accessToken).toEqual(expect.any(String))
     })
 
-    it("should correct getting info for user login", async() => {
+    it("should correct getting info for user login", async () => {
         const auth = {
             loginOrEmail: 'testing',
             password: '12345678',
@@ -50,7 +54,7 @@ describe("Auth Tests", () => {
         await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer ${jwtToken.body.accessToken}`).expect(HTTP_STATUSES.Success)
     })
 
-    it("shouldn't correct auth", async() => {
+    it("shouldn't correct auth", async () => {
 
         const infoUser = await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer e5rt78ert9er.54354.24fs4df432s`).expect(HTTP_STATUSES.Unauthorized)
     })
@@ -94,10 +98,37 @@ describe("Auth Tests", () => {
     // })
 
     it('shouldn\'t registration user with the same login or email  ', async () => {
-
         await req.post(SETTINGS.PATH.AUTH + '/registration').send(testSeeder.createUserDto()).expect(HTTP_STATUSES.BadRequest)
+    })
+
+    it('shouldn\'t get refreshToken and accessToken because of refreshToken be out in cookie', async () => {
+        await req.post(SETTINGS.PATH.AUTH + '/refresh-token').expect(HTTP_STATUSES.Unauthorized)
+    })
+
+    it('should correct get refresh token', async () => {
+
+        const auth = {
+            loginOrEmail: 'testing',
+            password: '12345678',
+        }
+
+        const response = await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Success)
+
+        const cookies = cookie.parse(String(response.headers['set-cookie']));
+
+        expect(cookies).toBeDefined();
+
+        // cookies.refreshToken
+
+        const res = await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', `refreshToken=${cookies.refreshToken}`).expect(HTTP_STATUSES.Success);
+
+
+        expect(res.body.accessToken).toEqual(expect.any(String))
+
+        // console.log(res.body)
 
 
     })
+
 
 })

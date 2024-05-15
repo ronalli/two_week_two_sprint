@@ -74,18 +74,23 @@ export const authController = {
     },
 
     logout: async (req: Request, res: Response) => {
-
         const cookie = req.cookies.refreshToken;
-
         const response = await authService.logout(cookie);
 
-
-
-        res.status(HTTP_STATUSES.Success).send({})
+        res.status(HTTP_STATUSES[response.status]).send({})
 
     },
 
     refreshToken: async (req: Request, res: Response) => {
+        const cookie = req.cookies.refreshToken;
+        const response = await authService.refreshToken(cookie)
+
+        if(response.data) {
+            res.cookie('refreshToken', response.data.refreshToken, {httpOnly: true, secure: true})
+            res.status(HTTP_STATUSES[response.status]).send({'accessToken': response.data.accessToken})
+        }
+
+        res.status(HTTP_STATUSES[response.status]).send(response.errorMessage)
 
     },
 

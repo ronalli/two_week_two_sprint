@@ -12,8 +12,8 @@ import {nodemailerService} from "../common/adapter/nodemailer.service";
 import {emailExamples} from "../common/adapter/emailExamples";
 import {refreshTokenCollection, usersCollection} from "../db/mongo-db";
 import {IUserDBType} from "../users/types/user-types";
-import {IRefreshTokenDBType} from "../types/refresh-token-type";
-import jwt from "jsonwebtoken";
+import {mappingUser} from "../common/utils/mappingUser";
+import {ObjectId} from "mongodb";
 
 
 export const authService = {
@@ -29,9 +29,10 @@ export const authService = {
 
             const success = await bcryptService.checkPassword(data.password, result.data.hash);
             if (success) {
-                const accessToken = await jwtService.createdJWT(result.data, '10s')
 
-                const refreshToken = await jwtService.createdJWT(result.data, '20s')
+                const accessToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(result.data), '10s')
+
+                const refreshToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(result.data), '20s')
 
                 return {status: ResultCode.Success, data: {accessToken, refreshToken}};
             } else {
@@ -204,6 +205,31 @@ export const authService = {
                 filed: 'token'
             }
         }
+    },
+
+    refreshToken: async (token: string) => {
+        const validId = await jwtService.getUserIdByToken(token);
+
+        const findedToken = await refreshTokenCollection.findOne({refreshToken: token});
+
+
+        if(validId && !findedToken) {
+            const user = await usersCollection.findOne({_id: new ObjectId(validId)});
+            if(user) {
+                const accessToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(user), '10s')
+                const refreshToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(user), '20s')
+                return {status: ResultCode.Success, data: {accessToken, refreshToken}};
+            }
+        }
+        return {
+            status: ResultCode.Unauthorized,
+            data: null,
+            errorMessage: {
+                message: 'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+                field: 'refreshToken'
+            }
+        }
+
     },
 
     checkUserCredential: async (login: string) => {
