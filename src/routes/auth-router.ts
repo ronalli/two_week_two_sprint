@@ -24,4 +24,4 @@ authRouter.post('/registration-email-resending', validatorEmail, inputCheckError
 
 authRouter.post('/refresh-token')
 
-authRouter.post('/logout')
+authRouter.get('/logout', authController.logout)

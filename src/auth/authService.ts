@@ -10,8 +10,10 @@ import {IUserInputModelRegistration} from "./types/registration-type";
 import {usersQueryRepositories} from "../users/usersQueryRepositories";
 import {nodemailerService} from "../common/adapter/nodemailer.service";
 import {emailExamples} from "../common/adapter/emailExamples";
-import {usersCollection} from "../db/mongo-db";
+import {refreshTokenCollection, usersCollection} from "../db/mongo-db";
 import {IUserDBType} from "../users/types/user-types";
+import {IRefreshTokenDBType} from "../types/refresh-token-type";
+import jwt from "jsonwebtoken";
 
 
 export const authService = {
@@ -28,6 +30,7 @@ export const authService = {
             const success = await bcryptService.checkPassword(data.password, result.data.hash);
             if (success) {
                 const accessToken = await jwtService.createdJWT(result.data, '10s')
+
                 const refreshToken = await jwtService.createdJWT(result.data, '20s')
 
                 return {status: ResultCode.Success, data: {accessToken, refreshToken}};
@@ -183,6 +186,25 @@ export const authService = {
 
     },
 
+    logout: async (token: string) => {
+        const success = await jwtService.getUserIdByToken(token);
+        await refreshTokenCollection.insertOne({refreshToken: token});
+        if(success) {
+            return {
+                status: ResultCode.NotContent,
+                data: null
+            }
+        }
+
+        return {
+            status: ResultCode.Unauthorized,
+            data: null,
+            errorMessage: {
+                message: 'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+                filed: 'token'
+            }
+        }
+    },
 
     checkUserCredential: async (login: string) => {
         return await authMongoRepositories.findByEmail(login);

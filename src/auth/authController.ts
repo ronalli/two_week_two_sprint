@@ -7,12 +7,15 @@ import {IUserDBType} from "../users/types/user-types";
 import {IMeViewModel} from "./types/me-types";
 import {IUserInputModelRegistration} from "./types/registration-type";
 import {mapingErrors} from "../common/adapter/mapingErrors";
+import {jwtService} from "../utils/jwt-services";
 
 export const authController = {
     login: async (req: Request, res: Response) => {
         const authData: ILoginBody = req.body;
         const result = await authService.login(authData);
         if (result.data) {
+
+            res.cookie('refreshToken', result.data.refreshToken,  {httpOnly: true, secure: true});
             res.status(HTTP_STATUSES[result.status]).send({"accessToken": result.data.accessToken})
             return
         }
@@ -71,6 +74,14 @@ export const authController = {
     },
 
     logout: async (req: Request, res: Response) => {
+
+        const cookie = req.cookies.refreshToken;
+
+        const response = await authService.logout(cookie);
+
+
+
+        res.status(HTTP_STATUSES.Success).send({})
 
     },
 

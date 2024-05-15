@@ -2,10 +2,8 @@ import {req} from "../test-helpers";
 import {HTTP_STATUSES} from "../../src/settings";
 import {SETTINGS} from "../../src/settings";
 import {db} from "../../src/db/db";
-
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {testSeeder} from "../utils/test.seeder";
-import {serviceUsers} from "../utils/serviceUsers";
 
 describe("Auth Tests", () => {
     beforeAll(async () => {

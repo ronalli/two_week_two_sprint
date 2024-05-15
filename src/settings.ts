@@ -18,6 +18,7 @@ export const SETTINGS = {
     POSTS_COLLECTION_NAME: 'posts',
     USERS_COLLECTION_NAME: 'users',
     COMMENTS_COLLECTION_NAME: 'comments',
+    REFRESH_TOKENS_COLLECTION_NAME: 'oldTokens',
 }
 
 // export const HTTP_STATUSES = {
