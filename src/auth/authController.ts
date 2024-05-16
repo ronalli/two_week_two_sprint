@@ -7,7 +7,6 @@ import {IUserDBType} from "../users/types/user-types";
 import {IMeViewModel} from "./types/me-types";
 import {IUserInputModelRegistration} from "./types/registration-type";
 import {mapingErrors} from "../common/adapter/mapingErrors";
-import {jwtService} from "../utils/jwt-services";
 
 export const authController = {
     login: async (req: Request, res: Response) => {
@@ -75,22 +74,38 @@ export const authController = {
 
     logout: async (req: Request, res: Response) => {
         const cookie = req.cookies.refreshToken;
+
+        if(!cookie) {
+            res.status(HTTP_STATUSES.Unauthorized).send({})
+            return
+        }
+
         const response = await authService.logout(cookie);
 
         res.status(HTTP_STATUSES[response.status]).send({})
+        return
 
     },
 
     refreshToken: async (req: Request, res: Response) => {
         const cookie = req.cookies.refreshToken;
+
+        if(!cookie) {
+            res.status(HTTP_STATUSES.Unauthorized).send({})
+            return
+        }
+
         const response = await authService.refreshToken(cookie)
 
         if(response.data) {
+
             res.cookie('refreshToken', response.data.refreshToken, {httpOnly: true, secure: true})
             res.status(HTTP_STATUSES[response.status]).send({'accessToken': response.data.accessToken})
+            return
         }
 
         res.status(HTTP_STATUSES[response.status]).send(response.errorMessage)
+        return
 
     },
 

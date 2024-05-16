@@ -56,7 +56,7 @@ describe("Auth Tests", () => {
 
     it("shouldn't correct auth", async () => {
 
-        const infoUser = await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer e5rt78ert9er.54354.24fs4df432s`).expect(HTTP_STATUSES.Unauthorized)
+        await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer e5rt78ert9er.54354.24fs4df432s`).expect(HTTP_STATUSES.Unauthorized)
     })
 
     it('should correct registration', async () => {
@@ -130,5 +130,50 @@ describe("Auth Tests", () => {
 
     })
 
+    it('shouldn\'t return tokens with invalid refresh token', async () => {
+        const res = await req.post(SETTINGS.PATH.AUTH + '/logout').set('Cookie', `refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjQ2MjI5Njc2MzE3NzFjNWY1OWUzN2EiLCJpYXQiOjE3MTU4NzI0MDcsImV4cCI6MTcxNTg3MjQyN30.M2vM7RX1o28QH2e8jICFVsOD67Dk_5Y07XZBI73EPqc`).expect(HTTP_STATUSES.Unauthorized)
 
+    })
+
+    it('shouldn\'t return tokens with refresh token is not found in cookies', async () => {
+        await req.post(SETTINGS.PATH.AUTH + '/logout').expect(HTTP_STATUSES.Unauthorized)
+    })
+
+
+    it('should ', async () => {
+        const res = await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', 'refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjQ2MjUxOTE2MmZhZTVhY2IyOGU2ZmYiLCJpYXQiOjE3MTU4NzMwNzgsImV4cCI6MTcxNTg3MzA5OH0.4h63x8D3cR-qLeUx2jkCOPGIkhEIvQcrcYxG2fj3D5o').expect(HTTP_STATUSES.Unauthorized)
+
+        // console.log(res.body)
+    });
+
+    it('should correct logout', async () => {
+
+        const auth = {
+            loginOrEmail: 'testing',
+            password: '12345678',
+        }
+
+        const response = await req.post(SETTINGS.PATH.AUTH + '/login').send(auth).expect(HTTP_STATUSES.Success)
+
+        const cookies = cookie.parse(String(response.headers['set-cookie']));
+
+        expect(cookies).toBeDefined();
+
+        // cookies.refreshToken
+
+        const res = await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', `refreshToken=${cookies.refreshToken}`).expect(HTTP_STATUSES.Success);
+
+        // console.log(res.body)
+
+        const cok = cookie.parse(String(res.headers['set-cookie']));
+        //
+        await req.post(SETTINGS.PATH.AUTH + '/logout').expect(HTTP_STATUSES.Unauthorized);
+
+        await req.post(SETTINGS.PATH.AUTH + '/logout').set('Cookie', `refreshToken=${cok.refreshToken}`).expect(HTTP_STATUSES.Unauthorized);
+
+
+        // console.log(res.body)
+
+
+    })
 })

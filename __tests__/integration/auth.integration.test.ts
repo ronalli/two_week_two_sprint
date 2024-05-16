@@ -52,7 +52,6 @@ describe('auth-integration', () => {
             const user = testSeeder.createUserDto();
             await testSeeder.registerUser(user)
 
-
             const result = await registerUser(user);
             expect(result.status).toBe(ResultCode.BadRequest);
         })

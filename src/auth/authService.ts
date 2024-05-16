@@ -188,8 +188,21 @@ export const authService = {
     },
 
     logout: async (token: string) => {
+        const foundedToken = await refreshTokenCollection.findOne({refreshToken: token})
+        if (foundedToken) {
+            return {
+                status: ResultCode.Unauthorized,
+                data: null,
+                errorMessage: {
+                    message: 'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+                    filed: 'token'
+                }
+            }
+        }
         const success = await jwtService.getUserIdByToken(token);
+
         await refreshTokenCollection.insertOne({refreshToken: token});
+
         if(success) {
             return {
                 status: ResultCode.NotContent,
@@ -212,8 +225,19 @@ export const authService = {
 
         const findedToken = await refreshTokenCollection.findOne({refreshToken: token});
 
+        if(findedToken) {
+            return {
+                status: ResultCode.Unauthorized,
+                data: null,
+                errorMessage: {
+                    message: 'If the JWT refreshToken - invalid',
+                    field: 'refreshToken'
+                }
+            }
+        }
 
         if(validId && !findedToken) {
+            await refreshTokenCollection.insertOne({refreshToken: token})
             const user = await usersCollection.findOne({_id: new ObjectId(validId)});
             if(user) {
                 const accessToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(user), '10s')
