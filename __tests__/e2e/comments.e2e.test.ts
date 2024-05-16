@@ -48,6 +48,8 @@ describe("Comments Tests", () => {
 
         const comment = await serviceComments.createComment()
 
+        // console.log(comment)
+
         await req.get(SETTINGS.PATH.COMMENTS + `/${comment.id}`).expect(HTTP_STATUSES.Success)
 
     })
@@ -60,7 +62,7 @@ describe("Comments Tests", () => {
             password: '12345678'
         }).expect(HTTP_STATUSES.Success)
 
-        await req.put(SETTINGS.PATH.COMMENTS + `/${comment.id}`).set('Authorization', `Barer ${response.body.accessToken}`).send({"content": "hello my friend and all people"}).expect(HTTP_STATUSES.NotContent)
+        await req.put(SETTINGS.PATH.COMMENTS + `/${comment.id}`).set('Authorization', `Bearer ${response.body.accessToken}`).send({"content": "hello my friend and all people"}).expect(HTTP_STATUSES.NotContent)
 
     });
 
@@ -79,7 +81,7 @@ describe("Comments Tests", () => {
             password: '12345678'
         }).expect(HTTP_STATUSES.Success)
 
-        await req.put(SETTINGS.PATH.COMMENTS + `/${comment.id}`).set('Authorization', `Barer ${response.body.accessToken}`).send({"content": "hello my friend and all people"}).expect(HTTP_STATUSES.Forbidden)
+        await req.put(SETTINGS.PATH.COMMENTS + `/${comment.id}`).set('Authorization', `Bearer ${response.body.accessToken}`).send({"content": "hello my friend and all people"}).expect(HTTP_STATUSES.Forbidden)
 
     });
 

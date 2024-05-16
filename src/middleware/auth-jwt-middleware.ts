@@ -1,19 +1,21 @@
 import {Response, Request, NextFunction} from 'express';
 import {HTTP_STATUSES} from "../settings";
-import {jwtService} from "../utils/jwt-services";
+import {authService} from "../auth/authService";
+import {ResultCode} from "../types/resultCode";
 
 export const authJwtMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if(!req.headers.authorization) {
         res.status(HTTP_STATUSES.Unauthorized).send({})
-        return;
+        return
     }
-    const token = req.headers.authorization.split(" ")[1];
-    const userId = await jwtService.getUserIdByToken(token);
-    if(userId) {
-        req.userId = String(userId);
-        next();
-        return;
+
+    const result = await authService.checkAccessToken(req.headers.authorization)
+
+    if(result.status === ResultCode.Success && result.data) {
+        req.userId = result.data
+        return next()
     }
-    res.status(HTTP_STATUSES.Unauthorized).send({})
+
+    res.status(HTTP_STATUSES[result.status]).send(result.errorMessage)
     return
 }

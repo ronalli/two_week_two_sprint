@@ -14,6 +14,7 @@ import {refreshTokenCollection, usersCollection} from "../db/mongo-db";
 import {IUserDBType} from "../users/types/user-types";
 import {mappingUser} from "../common/utils/mappingUser";
 import {ObjectId} from "mongodb";
+import {usersMongoRepositories} from "../users/usersMongoRepositories";
 
 
 export const authService = {
@@ -259,5 +260,53 @@ export const authService = {
     checkUserCredential: async (login: string) => {
         return await authMongoRepositories.findByEmail(login);
     },
+
+    checkAccessToken: async (authHeader: string) => {
+        const token = authHeader.split(" ");
+        if(token[0] !== 'Bearer') {
+            return {
+                status: ResultCode.Unauthorized,
+                data: null,
+                errorMessage: {
+                    message: 'Wrong authorization',
+                    field: 'header'
+                }
+            }
+        }
+
+        const id = await jwtService.getUserIdByToken(token[1]);
+        if(!id) {
+            return {
+                data: null,
+                status: ResultCode.Unauthorized,
+                errorMessage: {
+                    message: 'Wrong access token',
+                    field: 'token'
+                }
+            }
+        }
+
+
+        const doesExist = await usersMongoRepositories.findUserById(id);
+
+        if(!doesExist.data) {
+            return {
+                status: ResultCode.Unauthorized,
+                data: null,
+                errorMessage: {
+                    message: 'User not found',
+                    field: 'token'
+                }
+            }
+        }
+
+        return {
+            status: ResultCode.Success,
+            data: id
+        }
+
+
+    }
+
 
 }
