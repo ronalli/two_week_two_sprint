@@ -35,6 +35,7 @@ export const authMongoRepositories = {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
     },
+
     findByEmail: async (email: string) => {
         try {
             const user = await usersCollection.findOne({email: email})

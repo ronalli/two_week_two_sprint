@@ -87,6 +87,16 @@ export const usersMongoRepositories = {
         }
 
     },
+
+    doesExistById: async (id: string) => {
+        const findedUser = await usersCollection.findOne({_id: new ObjectId(id)});
+
+        if(findedUser) {
+            return usersMongoRepositories._maping(findedUser);
+        }
+        return null;
+    },
+
     _maping: (user: IUserDBType): IUserViewModel => {
         return {
             id: String(user._id),

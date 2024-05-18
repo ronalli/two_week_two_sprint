@@ -286,10 +286,9 @@ export const authService = {
             }
         }
 
+        const payload = await usersMongoRepositories.doesExistById(id);
 
-        const doesExist = await usersMongoRepositories.findUserById(id);
-
-        if(!doesExist.data) {
+        if(!payload) {
             return {
                 status: ResultCode.Unauthorized,
                 data: null,
@@ -302,7 +301,7 @@ export const authService = {
 
         return {
             status: ResultCode.Success,
-            data: id
+            data: payload.id
         }
 
 

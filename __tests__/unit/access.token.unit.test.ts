@@ -48,8 +48,8 @@ describe('auth-integration', () => {
             return 'fsr4gd354'
         })
 
-        usersMongoRepositories.findUserById = jest.fn().mockImplementation((userId: string) => {
-            return false;
+        usersMongoRepositories.doesExistById = jest.fn().mockImplementation((userId: string) => {
+            return null;
         })
 
         const result = await checkAccessTokenUseCase('Bearer grt43fs466')
@@ -62,8 +62,7 @@ describe('auth-integration', () => {
         jwtService.getUserIdByToken = jest.fn().mockImplementation((token: string) => {
             return 'df45sdg543'
         })
-
-        usersMongoRepositories.findUserById = jest.fn().mockImplementation((userId: string) => {
+        usersMongoRepositories.doesExistById = jest.fn().mockImplementation((userId: string) => {
             return {
                 data: 'fd6sfs8d'
             }
