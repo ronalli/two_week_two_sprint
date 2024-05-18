@@ -24,6 +24,8 @@ export const serviceBlogs = {
             blogs.push(response.body);
         }
 
+
+
         return blogs;
     }
 }
