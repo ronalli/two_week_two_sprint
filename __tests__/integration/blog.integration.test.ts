@@ -127,7 +127,7 @@ describe('blog-integration', () => {
 
             const res = await req.get(SETTINGS.PATH.BLOGS + `/${blog.id}`)
 
-            expect(res.body.errorsMessages[0].field).toEqual('blogId')
+            expect(res.status).toEqual(404)
         })
 
     });
