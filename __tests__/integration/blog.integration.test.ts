@@ -5,6 +5,7 @@ import {blogsCollection} from "../../src/db/mongo-db";
 import {ObjectId} from "mongodb";
 import {req} from "../test-helpers";
 import {SETTINGS} from "../../src/settings";
+import {response} from "express";
 
 describe('blog-integration', () => {
 
@@ -113,7 +114,8 @@ describe('blog-integration', () => {
         it('should not correct get blog by id', async () => {
 
             const res = await req.get(SETTINGS.PATH.BLOGS + '/5we4etr45ew534te4rd')
-            expect(res.body.errorsMessages[0].field).toEqual('blogId')
+
+            expect(res.status).toBe(404)
 
         })
 
