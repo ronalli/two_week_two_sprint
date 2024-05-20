@@ -5,18 +5,20 @@ import {db} from "../../src/db/db";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {testSeeder} from "../utils/test.seeder";
 import cookie from "cookie";
+import {usersServices} from "../../src/users/usersServices";
+import {serviceUsers} from "../utils/serviceUsers";
 
 
 describe("Auth Tests", () => {
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create();
         await db.run(mongoServer.getUri());
+        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
 
+    })
+
+    afterEach(async () => {
         await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-
-        await req.post(SETTINGS.PATH.USERS).set('Authorization', process.env.AUTH_HEADER || '')
-            .send(testSeeder.createUserDto()).expect(HTTP_STATUSES.Created)
-
     })
 
     afterAll(async () => {
@@ -35,6 +37,9 @@ describe("Auth Tests", () => {
     })
 
     it("should correct authorization", async () => {
+
+        const user = await serviceUsers.createUser()
+
         const auth = {
             loginOrEmail: 'testing',
             password: '12345678',
@@ -45,6 +50,9 @@ describe("Auth Tests", () => {
     })
 
     it("should correct getting info for user login", async () => {
+
+        const user = await serviceUsers.createUser()
+
         const auth = {
             loginOrEmail: 'testing',
             password: '12345678',
@@ -71,6 +79,8 @@ describe("Auth Tests", () => {
     })
 
     it('shouldn\'t correct registration (email/login founded by DB)', async () => {
+        const user = await serviceUsers.createUser()
+
         let newUser = testSeeder.createUserDto()
 
         await req.post(SETTINGS.PATH.AUTH + '/registration').send(newUser).expect(HTTP_STATUSES.BadRequest)
@@ -98,6 +108,9 @@ describe("Auth Tests", () => {
     // })
 
     it('shouldn\'t registration user with the same login or email  ', async () => {
+
+        const user = await serviceUsers.createUser()
+
         await req.post(SETTINGS.PATH.AUTH + '/registration').send(testSeeder.createUserDto()).expect(HTTP_STATUSES.BadRequest)
     })
 
@@ -106,6 +119,8 @@ describe("Auth Tests", () => {
     })
 
     it('should correct get refresh token', async () => {
+
+        const user = await serviceUsers.createUser()
 
         const auth = {
             loginOrEmail: 'testing',
@@ -147,6 +162,8 @@ describe("Auth Tests", () => {
     });
 
     it('should correct logout', async () => {
+
+        const user = await serviceUsers.createUser()
 
         const auth = {
             loginOrEmail: 'testing',

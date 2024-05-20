@@ -67,8 +67,6 @@ describe('post-integration', () => {
 
             const response = await req.get(SETTINGS.PATH.POSTS + '/5we4etr45ew534te4rd')
 
-            // console.log(response.body)
-
             expect(response.status).toBe(404)
 
         })

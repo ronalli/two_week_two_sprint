@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import {IUserDBType, IUserViewModel} from "../users/types/user-types";
+import {IUserViewModel} from "../users/types/user-types";
 
 export const jwtService = {
     createdJWT: async (user: IUserViewModel, time: string) => {
