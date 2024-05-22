@@ -1,6 +1,5 @@
 import {add} from 'date-fns'
 import {randomUUID} from "node:crypto";
-
 import {ILoginBody} from "./types/login-types";
 import {authMongoRepositories} from "./authMongoRepositories";
 import {bcryptService} from "../common/adapter/bcrypt.service";
@@ -15,10 +14,12 @@ import {IUserDBType} from "../users/types/user-types";
 import {mappingUser} from "../common/utils/mappingUser";
 import {ObjectId} from "mongodb";
 import {usersMongoRepositories} from "../users/usersMongoRepositories";
+import {IHeadersSession} from "./types/sessions-types";
+import {securityServices} from "../security/securityServices";
 
 
 export const authService = {
-    login: async (data: ILoginBody) => {
+    login: async (data: ILoginBody, dataSession: IHeadersSession) => {
         const {loginOrEmail}: ILoginBody = data;
         const result = await authMongoRepositories.findByLoginOrEmail(loginOrEmail)
 
@@ -34,6 +35,8 @@ export const authService = {
                 const accessToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(result.data), '10s')
 
                 const refreshToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(result.data), '20s')
+
+                await securityServices.createAuthSessions(refreshToken, dataSession)
 
                 return {status: ResultCode.Success, data: {accessToken, refreshToken}};
             } else {

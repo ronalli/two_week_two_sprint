@@ -20,6 +20,7 @@ export const SETTINGS = {
     USERS_COLLECTION_NAME: 'users',
     COMMENTS_COLLECTION_NAME: 'comments',
     REFRESH_TOKENS_COLLECTION_NAME: 'oldTokens',
+    SESSIONS_COLLECTION_NAME: 'sessions',
 }
 
 // export const HTTP_STATUSES = {
@@ -41,4 +42,5 @@ export const HTTP_STATUSES = {
     NotContent: 204,
     Created: 201,
     InternalServerError: 500,
+    TooManyRequests: 429
 }

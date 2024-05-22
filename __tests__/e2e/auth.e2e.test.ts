@@ -5,7 +5,6 @@ import {db} from "../../src/db/db";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import {testSeeder} from "../utils/test.seeder";
 import cookie from "cookie";
-import {usersServices} from "../../src/users/usersServices";
 import {serviceUsers} from "../utils/serviceUsers";
 
 
