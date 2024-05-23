@@ -1,6 +1,6 @@
 export interface ISessionType {
     userId: string,
-    deviceId: string,
+    devicedId: string,
     iat: string,
     deviceName: string,
     ip: string,

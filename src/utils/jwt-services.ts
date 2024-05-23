@@ -1,9 +1,15 @@
 import jwt from "jsonwebtoken";
-import {IUserViewModel} from "../users/types/user-types";
+
+
+interface IJWTToken {
+    userId: string,
+    devicedId: string
+}
+
 
 export const jwtService = {
-    createdJWT: async (user: IUserViewModel, time: string) => {
-        return jwt.sign({userId: user.id}, process.env.SECRET_PASSWORD!, {expiresIn: time})
+    createdJWT: async (data: IJWTToken, time: string) => {
+        return jwt.sign({...data}, process.env.SECRET_PASSWORD!, {expiresIn: time})
     },
     getUserIdByToken: async (token: string) => {
         try {

@@ -32,9 +32,12 @@ export const authService = {
             const success = await bcryptService.checkPassword(data.password, result.data.hash);
             if (success) {
 
-                const accessToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(result.data), '10s')
+                // const user = mappingUser.inputViewModelUser(result.data);
+                const devicedId = randomUUID();
 
-                const refreshToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(result.data), '20s')
+                const accessToken = await jwtService.createdJWT({devicedId, userId: String(result.data._id)}, '10s')
+
+                const refreshToken = await jwtService.createdJWT({devicedId, userId: String(result.data._id)}, '20s')
 
                 await securityServices.createAuthSessions(refreshToken, dataSession)
 
@@ -244,8 +247,16 @@ export const authService = {
             await refreshTokenCollection.insertOne({refreshToken: token})
             const user = await usersCollection.findOne({_id: new ObjectId(validId)});
             if(user) {
-                const accessToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(user), '10s')
-                const refreshToken = await jwtService.createdJWT(mappingUser.inputViewModelUser(user), '20s')
+
+                ///нужно переделать!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                console.log('нужно переделать authService 252 строка')
+
+
+                const devicedId = randomUUID();
+
+
+                const accessToken = await jwtService.createdJWT({devicedId, userId: String(user._id)}, '10s')
+                const refreshToken = await jwtService.createdJWT({devicedId, userId: String(user._id)}, '20s')
                 return {status: ResultCode.Success, data: {accessToken, refreshToken}};
             }
         }

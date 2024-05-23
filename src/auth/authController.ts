@@ -12,15 +12,7 @@ import {mappingRequestHeaders} from "../common/utils/mappingRequestHeaders";
 export const authController = {
     login: async (req: Request, res: Response) => {
 
-        // undefined
-        // PostmanRuntime/7.37.3
-        //     ::1
-        //     ::1
-        // undefined
-
         const dataSession = mappingRequestHeaders.getHeadersForCreateSession(req)
-
-
 
         const authData: ILoginBody = req.body;
         const result = await authService.login(authData, dataSession);

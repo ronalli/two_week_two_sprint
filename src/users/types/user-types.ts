@@ -13,6 +13,7 @@ export interface IUserViewModel {
     createdAt: string;
 }
 
+
 export interface IUserDBType  {
     _id?: ObjectId;
     login: string;
