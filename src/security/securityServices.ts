@@ -1,22 +1,24 @@
 import {IHeadersSession, ISessionType} from "../auth/types/sessions-types";
-import {jwtService} from "../utils/jwt-services";
 import {sessionsCollection} from "../db/mongo-db";
+import {decodeToken} from "../common/utils/decodeToken";
 
 export const securityServices = {
     createAuthSessions: async (token: string, data: IHeadersSession) => {
 
-       const payload = await jwtService.decodeToken(token)
+        const payload = await decodeToken(token)
 
-        if(payload && typeof payload === 'object' ) {
-           const session: ISessionType = {
+        if (payload) {
+            const session: ISessionType = {
                 ...data,
-               devicedId: payload.devicedId,
-               userId: payload.userId,
-               exp: new Date(payload.exp! * 1000).toISOString(),
-               iat: new Date(payload.iat! * 1000).toISOString(),
+                ...payload
             };
             await sessionsCollection.insertOne({...session})
         }
+    },
 
+    deleteAuthSession: async (data: Omit<ISessionType, 'ip' | 'deviceName' | 'exp'>) => {
+        const {iat, userId, devicedId} = data;
+        await sessionsCollection.findOneAndDelete({iat: iat,})
     }
+
 }

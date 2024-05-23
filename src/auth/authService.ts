@@ -16,6 +16,7 @@ import {ObjectId} from "mongodb";
 import {usersMongoRepositories} from "../users/usersMongoRepositories";
 import {IHeadersSession} from "./types/sessions-types";
 import {securityServices} from "../security/securityServices";
+import {decodeToken} from "../common/utils/decodeToken";
 
 
 export const authService = {
@@ -211,6 +212,11 @@ export const authService = {
         await refreshTokenCollection.insertOne({refreshToken: token});
 
         if(success) {
+
+            const data = await decodeToken(token);
+            data && await securityServices.deleteAuthSession(data);
+
+
             return {
                 status: ResultCode.NotContent,
                 data: null
@@ -246,7 +252,12 @@ export const authService = {
         if(validId && !findedToken) {
             await refreshTokenCollection.insertOne({refreshToken: token})
             const user = await usersCollection.findOne({_id: new ObjectId(validId)});
+
             if(user) {
+
+                const decode = await jwtService.decodeToken(token);
+
+                console.log(decode)
 
                 ///нужно переделать!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 console.log('нужно переделать authService 252 строка')
