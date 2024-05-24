@@ -11,7 +11,6 @@ import {nodemailerService} from "../common/adapter/nodemailer.service";
 import {emailExamples} from "../common/adapter/emailExamples";
 import {refreshTokenCollection, usersCollection} from "../db/mongo-db";
 import {IUserDBType} from "../users/types/user-types";
-import {mappingUser} from "../common/utils/mappingUser";
 import {ObjectId} from "mongodb";
 import {usersMongoRepositories} from "../users/usersMongoRepositories";
 import {IHeadersSession} from "./types/sessions-types";
@@ -24,10 +23,6 @@ export const authService = {
         const {loginOrEmail}: ILoginBody = data;
         const result = await authMongoRepositories.findByLoginOrEmail(loginOrEmail)
 
-        // if(result.data && !result.data.emailConfirmation?.isConfirmed) {
-        //     return {status: ResultCode.BadRequest, message: 'Email not confirmed', field: 'email'}
-        // }
-
         if (result.data) {
 
             const success = await bcryptService.checkPassword(data.password, result.data.hash);
@@ -36,9 +31,9 @@ export const authService = {
                 // const user = mappingUser.inputViewModelUser(result.data);
                 const devicedId = randomUUID();
 
-                const accessToken = await jwtService.createdJWT({devicedId, userId: String(result.data._id)}, '10s')
+                const accessToken = await jwtService.createdJWT({devicedId: devicedId, userId: String(result.data._id)}, '10s')
 
-                const refreshToken = await jwtService.createdJWT({devicedId, userId: String(result.data._id)}, '20s')
+                const refreshToken = await jwtService.createdJWT({devicedId: devicedId, userId: String(result.data._id)}, '20s')
 
                 await securityServices.createAuthSessions(refreshToken, dataSession)
 

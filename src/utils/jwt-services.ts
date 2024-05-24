@@ -9,6 +9,7 @@ interface IJWTToken {
 
 export const jwtService = {
     createdJWT: async (data: IJWTToken, time: string) => {
+
         return jwt.sign({...data}, process.env.SECRET_PASSWORD!, {expiresIn: time})
     },
     getUserIdByToken: async (token: string) => {

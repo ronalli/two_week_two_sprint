@@ -6,6 +6,9 @@ export interface IRefreshTokenDBType {
 }
 
 
-// export interface IBlackListRefreshToken {
-//     [key: string]: IRefreshTokenDBType
-// }
+export interface IDecodeRefreshToken {
+    devicedId: string,
+    iat: string,
+    userId: string,
+    exp: string,
+}
