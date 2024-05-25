@@ -45,6 +45,7 @@ export const securityController = {
             }
 
             res.status(HTTP_STATUSES[response.status]).send({})
+            return
         }
     },
 

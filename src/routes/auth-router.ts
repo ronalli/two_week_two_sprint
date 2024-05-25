@@ -8,6 +8,7 @@ import {
     validatorEmail
 } from "../auth/middleware/input-registarion-validation-middleware";
 import {validationCode} from "../auth/middleware/input-registration-confirmation-middleware";
+import {guardRefreshToken} from "../middleware/guardRefreshToken";
 
 
 export const authRouter = Router({});
@@ -21,6 +22,6 @@ authRouter.post('/registration-confirmation', validationCode, inputCheckErrorsMi
 
 authRouter.post('/registration-email-resending', validatorEmail, inputCheckErrorsMiddleware, authController.resendConfirmationCode)
 
-authRouter.post('/refresh-token', authController.refreshToken)
+authRouter.post('/refresh-token', guardRefreshToken, authController.refreshToken)
 
-authRouter.post('/logout', authController.logout)
+authRouter.post('/logout', guardRefreshToken, authController.logout)

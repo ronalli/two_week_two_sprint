@@ -79,11 +79,6 @@ export const authController = {
     logout: async (req: Request, res: Response) => {
         const cookie = req.cookies.refreshToken;
 
-        if(!cookie) {
-            res.status(HTTP_STATUSES.Unauthorized).send({})
-            return
-        }
-
         const response = await authService.logout(cookie);
 
         res.status(HTTP_STATUSES[response.status]).send({})
@@ -94,15 +89,9 @@ export const authController = {
     refreshToken: async (req: Request, res: Response) => {
         const cookie = req.cookies.refreshToken;
 
-        if(!cookie) {
-            res.status(HTTP_STATUSES.Unauthorized).send({})
-            return
-        }
-
         const response = await authService.refreshToken(cookie)
 
         if(response.data) {
-
             res.cookie('refreshToken', response.data.refreshToken, {httpOnly: true, secure: true})
             res.status(HTTP_STATUSES[response.status]).send({'accessToken': response.data.accessToken})
             return

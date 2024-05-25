@@ -18,6 +18,23 @@ import {securityServices} from "../security/securityServices";
 import {decodeToken} from "../common/utils/decodeToken";
 
 
+
+// _id
+// 6651f5115fd92bdf90a0b554
+// deviceName
+// "linux 24"
+// ip
+// "::1"
+// deviceId
+// "2cae6fcb-ec08-4b07-8028-4e149a764ce4"
+// iat
+// "2024-05-25T14:26:25.000Z"
+// userId
+// "664e42a2fe3d7f3132f1d911"
+// exp
+// "2024-05-25T14:27:25.000Z"
+
+
 export const authService = {
     login: async (data: ILoginBody, dataSession: IHeadersSession) => {
         const {loginOrEmail}: ILoginBody = data;
@@ -31,9 +48,9 @@ export const authService = {
                 // const user = mappingUser.inputViewModelUser(result.data);
                 const devicedId = randomUUID();
 
-                const accessToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '1h')
+                const accessToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '10s')
 
-                const refreshToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '2h')
+                const refreshToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '60s')
 
                 await securityServices.createAuthSessions(refreshToken, dataSession)
 
@@ -247,23 +264,28 @@ export const authService = {
         if(validId && !findedToken) {
             await refreshTokenCollection.insertOne({refreshToken: token})
             const user = await usersCollection.findOne({_id: new ObjectId(validId)});
-
             if(user) {
 
-                const decode = await jwtService.decodeToken(token);
+                ///????!!!!
+                const decode = await decodeToken(token);
 
-                console.log(decode)
+                if(decode) {
+                    const deviceId = decode.deviceId;
 
-                ///нужно переделать!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                console.log('нужно переделать authService 252 строка')
-
-
-                const deviceId = randomUUID();
+                    const accessToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '10s')
+                    const refreshToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '60s')
 
 
-                const accessToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '10s')
-                const refreshToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '20s')
-                return {status: ResultCode.Success, data: {accessToken, refreshToken}};
+                    const response = await securityServices.updateVersionSession(refreshToken);
+
+
+                    if(response.status === ResultCode.Success) {
+
+
+                        return {status: ResultCode.Success, data: {accessToken, refreshToken}};
+                    }
+                }
+
             }
         }
         return {

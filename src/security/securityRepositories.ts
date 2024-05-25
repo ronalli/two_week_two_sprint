@@ -6,10 +6,10 @@ export const securityRepositories = {
     deleteDevice: async (iat: string) => {
 
         try {
-           const success = await sessionsCollection.findOneAndDelete({iat: iat})
+            const success = await sessionsCollection.findOneAndDelete({iat: iat})
 
             return {
-               status: ResultCode.NotContent, data: null
+                status: ResultCode.NotContent, data: null
             }
 
         } catch (e) {
@@ -37,8 +37,7 @@ export const securityRepositories = {
                 status: ResultCode.NotContent,
                 data: null
             }
-        }
-        catch (e) {
+        } catch (e) {
             return {
                 status: ResultCode.InternalServerError,
                 data: null,
@@ -54,11 +53,11 @@ export const securityRepositories = {
     getDevices: async (id: string, deviceId: string) => {
         try {
             const findedSession = await sessionsCollection.findOne({userId: id, deviceId: deviceId})
-                return {
-                    status: ResultCode.Success,
-                    data: findedSession
-                }
-        } catch(e) {
+            return {
+                status: ResultCode.Success,
+                data: findedSession
+            }
+        } catch (e) {
             return {
                 status: ResultCode.InternalServerError,
                 errorsMessage: [
@@ -69,6 +68,23 @@ export const securityRepositories = {
                 ]
             }
         }
+
+    },
+
+    updateDevice: async (data: IDecodeRefreshToken) => {
+
+        const {iat, deviceId, userId, exp} = data;
+
+
+        const res = await sessionsCollection.findOneAndUpdate({$and: [{deviceId: deviceId}, {userId: userId}]}, {
+            $set: {
+                iat: iat,
+                exp: exp
+            }
+        }, { returnDocument: 'after' })
+
+
+        return res;
 
     }
 }

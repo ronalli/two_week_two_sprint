@@ -85,6 +85,40 @@ export const securityServices = {
 
         return await securityRepositories.deleteDevicesButCurrent(decode)
 
+    },
+
+    updateVersionSession: async (token: string) => {
+        const data = await decodeToken(token)
+
+        if(!data) {
+            return {
+                status: ResultCode.Unauthorized,
+                data: null,
+                errorsMessage: [{
+                    message: 'Something went1 wrong',
+                    field: 'token'
+                }]
+            }
+        }
+
+        const response = await securityRepositories.updateDevice(data);
+
+        if(!response) {
+            return {
+                status: ResultCode.Unauthorized,
+                data: null,
+                errorsMessage: [{
+                    message: 'Something went2 wrong',
+                    field: 'token'
+                }]
+            }
+        }
+
+        return {
+            status: ResultCode.Success,
+            data: null,
+        }
+
     }
 
 }
