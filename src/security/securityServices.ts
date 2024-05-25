@@ -70,6 +70,21 @@ export const securityServices = {
         }
 
         return true;
+    },
+
+    deleteDevices: async (token: string) => {
+
+        const decode = await decodeToken(token);
+
+        if(!decode) {
+            return {
+                status: ResultCode.Unauthorized,
+                data: null,
+            }
+        }
+
+        return await securityRepositories.deleteDevicesButCurrent(decode)
+
     }
 
 }

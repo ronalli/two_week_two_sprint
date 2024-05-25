@@ -50,7 +50,14 @@ export const securityController = {
 
     deleteAllDevices: async (req: Request, res: Response) => {
 
-        res.send('good')
+        const refreshToken = req.cookies.refreshToken;
+
+        const response = await securityServices.deleteDevices(refreshToken)
+
+        if(HTTP_STATUSES[response.status] === HTTP_STATUSES.NotContent) {
+            res.status(HTTP_STATUSES.NotContent).send({})
+        }
+        res.status(HTTP_STATUSES[response.status]).send({})
     }
 
 }
