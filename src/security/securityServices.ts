@@ -20,10 +20,10 @@ export const securityServices = {
         }
     },
 
-    deleteAuthSession: async (data: IDecodeRefreshToken, deviceIdParam: string) => {
+    deleteAuthSessionWithParam: async (data: IDecodeRefreshToken, deviceIdParam: string) => {
         const {iat, userId, deviceId} = data;
 
-        const res = await securityRepositories.getDevices(userId, deviceId);
+        const res = await securityRepositories.getDevices(userId, deviceIdParam);
 
         if(!res.data) {
             return {
@@ -56,6 +56,20 @@ export const securityServices = {
 
         return response;
 
+    },
+
+    deleteCurrentSession: async (data: IDecodeRefreshToken) => {
+        const {iat, userId, deviceId} = data;
+
+        const response = await securityRepositories.deleteDevice(iat)
+
+        if(response.errorsMessage) {
+            return {
+                ...response
+            }
+        }
+
+        return true;
     }
 
 }

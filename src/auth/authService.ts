@@ -209,12 +209,12 @@ export const authService = {
         if(success) {
 
             const data = await decodeToken(token);
-            // data && await securityServices.deleteAuthSession(data);
 
-
-            return {
-                status: ResultCode.NotContent,
-                data: null
+            if(data && await securityServices.deleteCurrentSession(data)) {
+                return {
+                    status: ResultCode.NotContent,
+                    data: null
+                }
             }
         }
 

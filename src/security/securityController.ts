@@ -37,7 +37,7 @@ export const securityController = {
         const decode = await decodeToken(refreshToken);
 
         if (decode) {
-            const response = await securityServices.deleteAuthSession(decode, deviceId)
+            const response = await securityServices.deleteAuthSessionWithParam(decode, deviceId)
 
             if(HTTP_STATUSES[response.status] === HTTP_STATUSES.NotContent) {
                 res.status(HTTP_STATUSES.NotContent).send({})
