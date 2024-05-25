@@ -21,6 +21,7 @@ export const SETTINGS = {
     COMMENTS_COLLECTION_NAME: 'comments',
     REFRESH_TOKENS_COLLECTION_NAME: 'oldTokens',
     SESSIONS_COLLECTION_NAME: 'sessions',
+    RATE_LIMIT_COLLECTION_NAME: 'rateLimit',
 }
 
 // export const HTTP_STATUSES = {

@@ -33,6 +33,7 @@ export const securityController = {
 
         if(!refreshToken || !deviceId) {
             res.status(HTTP_STATUSES.NotFound).send({})
+            return
         }
         const decode = await decodeToken(refreshToken);
 
@@ -57,8 +58,10 @@ export const securityController = {
 
         if(HTTP_STATUSES[response.status] === HTTP_STATUSES.NotContent) {
             res.status(HTTP_STATUSES.NotContent).send({})
+            return
         }
         res.status(HTTP_STATUSES[response.status]).send({})
+        return
     }
 
 }

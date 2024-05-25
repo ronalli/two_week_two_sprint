@@ -9,18 +9,19 @@ import {
 } from "../auth/middleware/input-registarion-validation-middleware";
 import {validationCode} from "../auth/middleware/input-registration-confirmation-middleware";
 import {guardRefreshToken} from "../middleware/guardRefreshToken";
+import {rateLimitGuard} from "../common/guard/customRateLimit";
 
 
 export const authRouter = Router({});
 
-authRouter.post('/login', ...validationInputAuth, inputCheckErrorsMiddleware, authController.login);
+authRouter.post('/login', rateLimitGuard, ...validationInputAuth, inputCheckErrorsMiddleware, authController.login);
 authRouter.get('/me', authJwtMiddleware, authController.me)
 
 
-authRouter.post('/registration', ...validationInputRegistrationUser, inputCheckErrorsMiddleware, authController.registration)
-authRouter.post('/registration-confirmation', validationCode, inputCheckErrorsMiddleware, authController.confirmationEmail)
+authRouter.post('/registration', rateLimitGuard, ...validationInputRegistrationUser, inputCheckErrorsMiddleware, authController.registration)
+authRouter.post('/registration-confirmation', rateLimitGuard, validationCode, inputCheckErrorsMiddleware, authController.confirmationEmail)
 
-authRouter.post('/registration-email-resending', validatorEmail, inputCheckErrorsMiddleware, authController.resendConfirmationCode)
+authRouter.post('/registration-email-resending', rateLimitGuard, validatorEmail, inputCheckErrorsMiddleware, authController.resendConfirmationCode)
 
 authRouter.post('/refresh-token', guardRefreshToken, authController.refreshToken)
 

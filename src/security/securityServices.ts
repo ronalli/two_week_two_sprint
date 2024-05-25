@@ -23,9 +23,20 @@ export const securityServices = {
     deleteAuthSessionWithParam: async (data: IDecodeRefreshToken, deviceIdParam: string) => {
         const {iat, userId, deviceId} = data;
 
-        const res = await securityRepositories.getDevices(userId, deviceIdParam);
+        const res = await securityRepositories.getDevice(deviceIdParam);
+
+        if (res.errorsMessage) {
+            return res;
+        }
 
         if(!res.data) {
+            return {
+                status: ResultCode.NotFound,
+                data: null
+            }
+        }
+
+        if (res.data.userId !== userId) {
             return {
                 status: ResultCode.Forbidden,
                 data: null,
@@ -35,13 +46,7 @@ export const securityServices = {
                 }]
             }
         }
-
-        if(res.status === ResultCode.Success) {
-           return await securityRepositories.deleteDevice(res.data.iat)
-
-        }
-
-        return res;
+        return await securityRepositories.deleteDevice(res.data.iat)
     },
 
     getAllSessions: async (data: IDecodeRefreshToken) => {
@@ -50,7 +55,7 @@ export const securityServices = {
 
         const response = await securityQueryRepositories.allSessionsUser(userId)
 
-        if(response.status === ResultCode.Success) {
+        if (response.status === ResultCode.Success) {
             return response
         }
 
@@ -63,7 +68,7 @@ export const securityServices = {
 
         const response = await securityRepositories.deleteDevice(iat)
 
-        if(response.errorsMessage) {
+        if (response.errorsMessage) {
             return {
                 ...response
             }
@@ -76,7 +81,7 @@ export const securityServices = {
 
         const decode = await decodeToken(token);
 
-        if(!decode) {
+        if (!decode) {
             return {
                 status: ResultCode.Unauthorized,
                 data: null,
@@ -90,7 +95,7 @@ export const securityServices = {
     updateVersionSession: async (token: string) => {
         const data = await decodeToken(token)
 
-        if(!data) {
+        if (!data) {
             return {
                 status: ResultCode.Unauthorized,
                 data: null,
@@ -103,7 +108,7 @@ export const securityServices = {
 
         const response = await securityRepositories.updateDevice(data);
 
-        if(!response) {
+        if (!response) {
             return {
                 status: ResultCode.Unauthorized,
                 data: null,

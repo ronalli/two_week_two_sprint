@@ -50,12 +50,13 @@ export const securityRepositories = {
 
     },
 
-    getDevices: async (id: string, deviceId: string) => {
+    getDevice: async (deviceId: string) => {
         try {
-            const findedSession = await sessionsCollection.findOne({userId: id, deviceId: deviceId})
+            const res = await sessionsCollection.findOne({deviceId: deviceId})
+
             return {
                 status: ResultCode.Success,
-                data: findedSession
+                data: res
             }
         } catch (e) {
             return {
@@ -75,16 +76,11 @@ export const securityRepositories = {
 
         const {iat, deviceId, userId, exp} = data;
 
-
-        const res = await sessionsCollection.findOneAndUpdate({$and: [{deviceId: deviceId}, {userId: userId}]}, {
+        return await sessionsCollection.findOneAndUpdate({$and: [{deviceId: deviceId}, {userId: userId}]}, {
             $set: {
                 iat: iat,
                 exp: exp
             }
         }, { returnDocument: 'after' })
-
-
-        return res;
-
     }
 }

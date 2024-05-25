@@ -48,9 +48,9 @@ export const authService = {
                 // const user = mappingUser.inputViewModelUser(result.data);
                 const devicedId = randomUUID();
 
-                const accessToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '10s')
+                const accessToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '30m')
 
-                const refreshToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '60s')
+                const refreshToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '2h')
 
                 await securityServices.createAuthSessions(refreshToken, dataSession)
 
@@ -272,8 +272,8 @@ export const authService = {
                 if(decode) {
                     const deviceId = decode.deviceId;
 
-                    const accessToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '10s')
-                    const refreshToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '60s')
+                    const accessToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '30m')
+                    const refreshToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '1h')
 
 
                     const response = await securityServices.updateVersionSession(refreshToken);

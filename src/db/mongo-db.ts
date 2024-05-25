@@ -6,6 +6,7 @@ import {IPostDBType} from "../posts/types/posts-types";
 import {ICommentDBType} from "../comments/types/comments-types";
 import {IRefreshTokenDBType} from "../types/refresh-token-type";
 import {ISessionType} from "../auth/types/sessions-types";
+import {IRateLimitTypeDB} from "../types/rate-limit-type";
 
 const client = new MongoClient(SETTINGS.MONGO_URL);
 export const db: Db = client.db(SETTINGS.DB_NAME);
@@ -16,6 +17,7 @@ export const usersCollection: Collection<IUserDBType> = db.collection<IUserDBTyp
 export const commentsCollection: Collection<ICommentDBType> = db.collection<ICommentDBType>(SETTINGS.COMMENTS_COLLECTION_NAME);
 export const refreshTokenCollection: Collection<IRefreshTokenDBType> = db.collection<IRefreshTokenDBType>(SETTINGS.REFRESH_TOKENS_COLLECTION_NAME)
 export const sessionsCollection: Collection<ISessionType> = db.collection<ISessionType>(SETTINGS.SESSIONS_COLLECTION_NAME);
+export const rateLimitCollection: Collection<IRateLimitTypeDB> = db.collection<IRateLimitTypeDB>(SETTINGS.RATE_LIMIT_COLLECTION_NAME)
 
 
 export const connectToDB = async () => {
