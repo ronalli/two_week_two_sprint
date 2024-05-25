@@ -3,7 +3,7 @@ import {ObjectId} from "mongodb";
 export interface ISessionType {
     _id?: ObjectId,
     userId: string,
-    devicedId: string,
+    deviceId: string,
     iat: string,
     deviceName: string,
     ip: string,

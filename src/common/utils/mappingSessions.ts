@@ -6,7 +6,7 @@ export const mappingSessions = (data: ISessionType[]): IDeviceViewModel[] => {
                 ip: deviceDB.ip,
                 title: deviceDB.deviceName,
                 lastActiveDate: deviceDB.iat,
-                deviceId: deviceDB.devicedId,
+                deviceId: deviceDB.deviceId,
             }
         })
 }

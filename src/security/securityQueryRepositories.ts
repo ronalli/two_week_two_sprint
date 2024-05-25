@@ -5,7 +5,7 @@ export const securityQueryRepositories = {
 
     allSessionsUser: async (id: string) => {
         try {
-            const result = await sessionsCollection.find({userId: id}).toArray();
+            const result = await sessionsCollection.find({userId: id, exp: {$gt: new Date().toISOString()}}).toArray();
 
             return {
                 status: ResultCode.Success,

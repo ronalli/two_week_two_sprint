@@ -6,5 +6,5 @@ export const securityRouter = Router({});
 
 
 securityRouter.get('/', guardRefreshToken, securityController.getSessions)
-securityRouter.delete('/')
-securityRouter.delete('/deviceId')
+securityRouter.delete('/', guardRefreshToken, securityController.deleteAllDevices)
+securityRouter.delete('/:deviceId', guardRefreshToken, securityController.deleteDeviceById)

@@ -7,7 +7,7 @@ export interface IRefreshTokenDBType {
 
 
 export interface IDecodeRefreshToken {
-    devicedId: string,
+    deviceId: string,
     iat: string,
     userId: string,
     exp: string,

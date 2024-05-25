@@ -4,6 +4,7 @@ import {decodeToken} from "../common/utils/decodeToken";
 import {IDecodeRefreshToken} from "../types/refresh-token-type";
 import {securityQueryRepositories} from "./securityQueryRepositories";
 import {ResultCode} from "../types/resultCode";
+import {securityRepositories} from "./securityRepositories";
 
 export const securityServices = {
     createAuthSessions: async (token: string, data: IHeadersSession) => {
@@ -19,9 +20,28 @@ export const securityServices = {
         }
     },
 
-    deleteAuthSession: async (data: Omit<ISessionType, 'ip' | 'deviceName' | 'exp'>) => {
-        const {iat, userId, devicedId} = data;
-        await sessionsCollection.findOneAndDelete({iat: iat})
+    deleteAuthSession: async (data: IDecodeRefreshToken, deviceIdParam: string) => {
+        const {iat, userId, deviceId} = data;
+
+        const res = await securityRepositories.getDevices(userId, deviceId);
+
+        if(!res.data) {
+            return {
+                status: ResultCode.Forbidden,
+                data: null,
+                errorsMessage: [{
+                    message: 'Forbidden',
+                    field: 'token'
+                }]
+            }
+        }
+
+        if(res.status === ResultCode.Success) {
+           return await securityRepositories.deleteDevice(res.data.iat)
+
+        }
+
+        return res;
     },
 
     getAllSessions: async (data: IDecodeRefreshToken) => {

@@ -6,7 +6,7 @@ export const decodeToken = async (token: string): Promise<IDecodeRefreshToken | 
 
     if(data && typeof data === 'object') {
         return {
-            devicedId: data.devicedId,
+            deviceId: data.deviceId,
             iat: new Date(data.iat! * 1000).toISOString(),
             userId: data.userId,
             exp: new Date(data.exp! * 1000).toISOString(),

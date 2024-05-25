@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 interface IJWTToken {
     userId: string,
-    devicedId: string
+    deviceId: string
 }
 
 
