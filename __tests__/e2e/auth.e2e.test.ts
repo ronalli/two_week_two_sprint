@@ -6,6 +6,7 @@ import {MongoMemoryServer} from "mongodb-memory-server";
 import {testSeeder} from "../utils/test.seeder";
 import cookie from "cookie";
 import {serviceUsers} from "../utils/serviceUsers";
+import {response} from "express";
 
 
 describe("Auth Tests", () => {
@@ -192,4 +193,19 @@ describe("Auth Tests", () => {
 
 
     })
+
+    // it('registration', async () => {
+    //     for (let i = 0; i < 15; i++) {
+    //         const user = {
+    //             login: `test${i}`,
+    //             password: '12345678',
+    //             email: `test${i}@mail.com`,
+    //         }
+    //
+    //         const a = await req.post(SETTINGS.PATH.AUTH + '/registration').send(user)
+    //
+    //         console.log(a.status)
+    //
+    //     }
+    // })
 })

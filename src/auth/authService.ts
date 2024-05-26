@@ -97,10 +97,10 @@ export const authService = {
 
         if (successCreateUser.data) {
             nodemailerService.sendEmail(email, newUser.emailConfirmation?.confirmationCode!, emailExamples.registrationEmail)
-            // .then(() => console.log('good'))
-            // .catch(e => {
-            //     console.log(e)
-            // })
+            .then(() => console.log('good'))
+            .catch(e => {
+                console.log(e)
+            })
         }
 
 

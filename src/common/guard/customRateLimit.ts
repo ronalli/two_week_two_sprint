@@ -10,7 +10,7 @@ export const rateLimitGuard = async (req: Request, res: Response, next: NextFunc
         $and: [
             {ip: req.ip},
             {url: req.originalUrl},
-            {date: {$gte: new Date().getTime() - 1000}},
+            {date: {$gte: new Date().getTime() - 10000}},
         ]
     }).toArray()
 

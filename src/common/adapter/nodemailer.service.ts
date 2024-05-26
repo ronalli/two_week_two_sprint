@@ -2,24 +2,28 @@ import nodemailer from 'nodemailer';
 
 export const nodemailerService = {
     sendEmail: async (email: string, code: string, template: (code: string) => string) => {
-        let transporter = nodemailer.createTransport({
-            host: process.env.HOST,
-            port: Number(process.env.PORT_HOST),
-            secure: true,
-            auth: {
-                user: process.env.EMAIL,
-                pass: process.env.PASSWORD_EMAIL,
-            }
-        })
+        try {
+            let transporter = nodemailer.createTransport({
+                host: process.env.HOST,
+                port: Number(process.env.PORT_HOST),
+                secure: true,
+                auth: {
+                    user: process.env.EMAIL,
+                    pass: process.env.PASSWORD_EMAIL,
+                }
+            })
 
-        let info = await transporter.sendMail({
-            from: `${process.env.EMAIL}`,
-            to: email,
-            subject: 'Hello World',
-            html: template(code),
-        })
+            let info = await transporter.sendMail({
+                from: `${process.env.EMAIL}`,
+                to: email,
+                subject: 'Hello World',
+                html: template(code),
+            })
 
-        return !!info
+            return !!info
+        } catch (e) {
+            throw e;
+        }
     }
 
 }

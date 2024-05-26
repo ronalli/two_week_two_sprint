@@ -14,7 +14,7 @@ import {rateLimitGuard} from "../common/guard/customRateLimit";
 
 export const authRouter = Router({});
 
-authRouter.post('/login', rateLimitGuard, ...validationInputAuth, inputCheckErrorsMiddleware, authController.login);
+authRouter.post('/login', rateLimitGuard, ...validationInputAuth, inputCheckErrorsMiddleware, authController.login)
 authRouter.get('/me', authJwtMiddleware, authController.me)
 
 
