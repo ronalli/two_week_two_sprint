@@ -7,6 +7,19 @@ export const securityQueryRepositories = {
         try {
             const result = await sessionsCollection.find({userId: id, exp: {$gt: new Date().toISOString()}}).toArray();
 
+            if(result.length === 0){
+                return {
+                    status: ResultCode.Unauthorized,
+                    data: null,
+                    errorsMessage: [
+                        {
+                            message: 'Error token',
+                            field: 'session'
+                        }
+                    ]
+                }
+            }
+
             return {
                 status: ResultCode.Success,
                 data: result
