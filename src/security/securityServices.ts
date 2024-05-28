@@ -46,7 +46,7 @@ export const securityServices = {
                 }]
             }
         }
-        return await securityRepositories.deleteDevice(res.data.iat)
+        return await securityRepositories.deleteDevice(res.data.iat, deviceIdParam)
     },
 
     getAllSessions: async (data: IDecodeRefreshToken) => {
@@ -66,7 +66,7 @@ export const securityServices = {
     deleteCurrentSession: async (data: IDecodeRefreshToken) => {
         const {iat, userId, deviceId} = data;
 
-        const response = await securityRepositories.deleteDevice(iat)
+        const response = await securityRepositories.deleteDevice(iat, deviceId)
 
         if (response.errorsMessage) {
             return {

@@ -3,10 +3,10 @@ import {ResultCode} from "../types/resultCode";
 import {IDecodeRefreshToken} from "../types/refresh-token-type";
 
 export const securityRepositories = {
-    deleteDevice: async (iat: string) => {
+    deleteDevice: async (iat: string, deviceId: string) => {
 
         try {
-            const success = await sessionsCollection.findOneAndDelete({iat: iat})
+            const success = await sessionsCollection.findOneAndDelete({iat: iat, deviceId: deviceId})
 
             return {
                 status: ResultCode.NotContent, data: null

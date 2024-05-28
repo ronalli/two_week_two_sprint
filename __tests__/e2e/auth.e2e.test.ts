@@ -132,7 +132,6 @@ describe("Auth Tests", () => {
 
         expect(cookies).toBeDefined();
 
-        // cookies.refreshToken
 
         const res = await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', `refreshToken=${cookies.refreshToken}`).expect(HTTP_STATUSES.Success);
 
