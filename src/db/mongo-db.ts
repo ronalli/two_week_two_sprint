@@ -19,7 +19,7 @@ export const postsCollection: Collection<IPostDBType> = db.collection<IPostDBTyp
 export const usersCollection: Collection<IUserDBType> = db.collection<IUserDBType>(SETTINGS.USERS_COLLECTION_NAME);
 export const commentsCollection: Collection<ICommentDBType> = db.collection<ICommentDBType>(SETTINGS.COMMENTS_COLLECTION_NAME);
 export const refreshTokenCollection: Collection<IRefreshTokenDBType> = db.collection<IRefreshTokenDBType>(SETTINGS.REFRESH_TOKENS_COLLECTION_NAME)
-export const sessionsCollection: Collection<ISessionType> = db.collection<ISessionType>(SETTINGS.SESSIONS_COLLECTION_NAME);
+// export const sessionsCollection: Collection<ISessionType> = db.collection<ISessionType>(SETTINGS.SESSIONS_COLLECTION_NAME);
 export const rateLimitCollection: Collection<IRateLimitTypeDB> = db.collection<IRateLimitTypeDB>(SETTINGS.RATE_LIMIT_COLLECTION_NAME)
 
 

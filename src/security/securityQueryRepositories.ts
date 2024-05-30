@@ -1,4 +1,3 @@
-import {sessionsCollection} from "../db/mongo-db";
 import {ResultCode} from "../types/resultCode";
 import {DeviceModel} from "./domain/device.entity";
 

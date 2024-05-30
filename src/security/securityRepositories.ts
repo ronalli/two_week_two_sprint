@@ -1,12 +1,14 @@
-import {sessionsCollection} from "../db/mongo-db";
+
 import {ResultCode} from "../types/resultCode";
 import {IDecodeRefreshToken} from "../types/refresh-token-type";
+import {DeviceModel} from "./domain/device.entity";
 
 export const securityRepositories = {
     deleteDevice: async (iat: string, deviceId: string) => {
 
         try {
-            const success = await sessionsCollection.findOneAndDelete({iat: iat, deviceId: deviceId})
+
+            const success = await DeviceModel.deleteOne({iat: iat, deviceId: deviceId})
 
             return {
                 status: ResultCode.NotContent, data: null
@@ -29,9 +31,9 @@ export const securityRepositories = {
         const {iat, userId, deviceId} = data;
 
         try {
-            const currentSession = await sessionsCollection.findOne({iat: iat})
+            const currentDevice = await DeviceModel.findOne({iat: iat})
 
-            await sessionsCollection.deleteMany({userId: userId, _id: {$ne: currentSession?._id}})
+            await DeviceModel.deleteMany({userId: userId, _id: {$ne: currentDevice?._id}})
 
             return {
                 status: ResultCode.NotContent,
@@ -52,7 +54,9 @@ export const securityRepositories = {
 
     getDevice: async (deviceId: string) => {
         try {
-            const res = await sessionsCollection.findOne({deviceId: deviceId})
+
+            const res = await DeviceModel.findOne({deviceId: deviceId})
+
 
             return {
                 status: ResultCode.Success,
@@ -76,11 +80,25 @@ export const securityRepositories = {
 
         const {iat, deviceId, userId, exp} = data;
 
-        return await sessionsCollection.findOneAndUpdate({$and: [{deviceId: deviceId}, {userId: userId}]}, {
-            $set: {
-                iat: iat,
-                exp: exp
+        const currentDevice = await DeviceModel.findOne({$and: [{deviceId: deviceId}, {userId: userId}]})
+
+        if(!currentDevice) {
+            return {
+                status: ResultCode.NotFound,
+                data: null,
+                errorsMessage: [{
+                    message: 'Error device',
+                    field: 'deviceId'
+                }]
             }
-        }, { returnDocument: 'after' })
+        }
+
+        currentDevice.iat = iat;
+        currentDevice.exp = exp;
+
+        await currentDevice.save();
+
+        return currentDevice;
+
     }
 }

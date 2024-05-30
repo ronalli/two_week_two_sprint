@@ -1,5 +1,4 @@
 import {IHeadersSession, ISessionType} from "../auth/types/sessions-types";
-import {sessionsCollection} from "../db/mongo-db";
 import {decodeToken} from "../common/utils/decodeToken";
 import {IDecodeRefreshToken} from "../types/refresh-token-type";
 import {securityQueryRepositories} from "./securityQueryRepositories";
@@ -111,6 +110,7 @@ export const securityServices = {
         }
 
         const response = await securityRepositories.updateDevice(data);
+
 
         if (!response) {
             return {
