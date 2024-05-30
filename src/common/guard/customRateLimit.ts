@@ -15,7 +15,7 @@ export const rateLimitGuard = async (req: Request, res: Response, next: NextFunc
     }).toArray()
 
     if (a.length >= 5) {
-        await rateLimitCollection.deleteMany({ip: req.ip, url: req.originalUrl},)
+        // await rateLimitCollection.deleteMany({ip: req.ip, url: req.originalUrl},)
         res.status(HTTP_STATUSES.TooManyRequests).send({})
         return;
     }

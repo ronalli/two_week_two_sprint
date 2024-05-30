@@ -264,8 +264,7 @@ export const authService = {
             await refreshTokenCollection.insertOne({refreshToken: token})
             const user = await usersCollection.findOne({_id: new ObjectId(validId)});
             if(user) {
-
-                ///????!!!!
+                
                 const decode = await decodeToken(token);
 
                 if(decode) {

@@ -1,11 +1,13 @@
 import {sessionsCollection} from "../db/mongo-db";
 import {ResultCode} from "../types/resultCode";
+import {DeviceModel} from "./domain/device.entity";
 
 export const securityQueryRepositories = {
 
     allSessionsUser: async (id: string) => {
         try {
-            const result = await sessionsCollection.find({userId: id, exp: {$gt: new Date().toISOString()}}).toArray();
+
+            const result = await DeviceModel.find({userId: id, exp: {$gt: new Date().toISOString()}}).lean();
 
             if(result.length === 0){
                 return {

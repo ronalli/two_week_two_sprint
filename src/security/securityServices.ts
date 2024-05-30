@@ -5,6 +5,7 @@ import {IDecodeRefreshToken} from "../types/refresh-token-type";
 import {securityQueryRepositories} from "./securityQueryRepositories";
 import {ResultCode} from "../types/resultCode";
 import {securityRepositories} from "./securityRepositories";
+import {DeviceModel} from "./domain/device.entity";
 
 export const securityServices = {
     createAuthSessions: async (token: string, data: IHeadersSession) => {
@@ -16,7 +17,10 @@ export const securityServices = {
                 ...data,
                 ...payload
             };
-            await sessionsCollection.insertOne({...session})
+
+            const device = new DeviceModel(session)
+
+            await device.save()
         }
     },
 

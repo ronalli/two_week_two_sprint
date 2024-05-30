@@ -1,4 +1,7 @@
 import {Collection, Db, MongoClient} from 'mongodb'
+
+import * as mongoose from 'mongoose'
+
 import {SETTINGS} from "../settings";
 import {IUserDBType} from "../users/types/user-types";
 import {IBlogDBType} from "../blogs/types/blogs-types";
@@ -23,6 +26,7 @@ export const rateLimitCollection: Collection<IRateLimitTypeDB> = db.collection<I
 export const connectToDB = async () => {
     try {
         await client.connect();
+        await mongoose.connect(SETTINGS.MONGO_URL, {dbName: SETTINGS.DB_NAME})
         console.log('connected to DB');
         return true;
     } catch (e) {
