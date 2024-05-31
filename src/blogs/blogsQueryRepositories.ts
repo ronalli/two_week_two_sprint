@@ -1,14 +1,15 @@
 import {createDefaultValues} from "../utils/helper";
-import {blogsCollection, postsCollection} from "../db/mongo-db";
+import {postsCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {IBlogQueryType} from "./types/request-response-type";
 import {IBlogDBType, IBlogViewModel} from "./types/blogs-types";
 import {IPostDBType, IPostViewModel} from "../posts/types/posts-types";
 import {ResultCode} from "../types/resultCode";
+import {BlogModel} from "./domain/blog.entity";
 
 
 export const blogsQueryRepositories = {
-
+    ///!!!!! update post model
     getAndSortPostsSpecialBlog: async (blogId: string, queryParams: IBlogQueryType) => {
 
         const query = createDefaultValues(queryParams);
@@ -59,15 +60,15 @@ export const blogsQueryRepositories = {
         }
 
         try {
-            const allBlogs = await blogsCollection
+            // const allBlogs = await blogsCollection
+            const allBlogs = await BlogModel
                 .find(filter)
-                .sort(query.sortBy, query.sortDirection)
+                .sort({[query.sortBy]: query.sortDirection})
                 .skip((query.pageNumber - 1) * query.pageSize)
                 .limit(query.pageSize)
-                .toArray();
 
 
-            const totalCount = await blogsCollection.countDocuments(filter);
+            const totalCount = await BlogModel.countDocuments(filter);
 
             return {
                 status: ResultCode.Success,
@@ -85,7 +86,8 @@ export const blogsQueryRepositories = {
     },
     findBlogById: async (blogId: string) => {
         try {
-            const foundBlog = await blogsCollection.findOne({_id: new ObjectId(blogId)});
+            // const foundBlog = await blogsCollection.findOne({_id: new ObjectId(blogId)});
+            const foundBlog = await BlogModel.findOne({_id: new ObjectId(blogId)});
             if (foundBlog) {
 
                 return {

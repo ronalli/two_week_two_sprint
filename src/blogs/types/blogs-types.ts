@@ -1,5 +1,4 @@
 import {ObjectId} from "mongodb";
-import {IPaginator} from "../../types/output-paginator";
 
 export interface IBlogInputModel {
     name: string,
