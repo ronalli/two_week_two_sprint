@@ -7,7 +7,6 @@ import {IPostQueryType} from "./types/request-response-type";
 import {jwtService} from "../utils/jwt-services";
 import {commentsServices} from "../comments/commentsServices";
 import {ICommentsQueryType} from "../comments/types/output-paginator-comments-types";
-import {ResultCode} from "../types/resultCode";
 
 export const postsControllers = {
     createPost: async (req: Request, res: Response) => {

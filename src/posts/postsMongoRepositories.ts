@@ -1,25 +1,27 @@
-import {postsCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {blogsQueryRepositories} from "../blogs/blogsQueryRepositories";
 import {postsQueryRepositories} from "./postsQueryRepositories";
 import {IPostDBType, IPostInputModel} from "./types/posts-types";
 import {ResultCode} from "../types/resultCode";
+import {PostModel} from "./domain/post.entity";
 
 export const postsMongoRepositories = {
-    create: async (post: IPostInputModel) => {
-        const findBlog = await blogsQueryRepositories.findBlogById(post.blogId);
+    create: async (postData: IPostInputModel) => {
+        const findBlog = await blogsQueryRepositories.findBlogById(postData.blogId);
 
-        let newPost: IPostDBType;
         if (findBlog.data) {
 
-            newPost = {
-                ...post,
+            let newPost: IPostDBType = {
+                ...postData,
                 blogName: findBlog.data.name,
                 createdAt: new Date().toISOString(),
             }
+
+            const post = new PostModel(newPost);
+            const response = await post.save();
+
             try {
-                const insertedPost = await postsCollection.insertOne(newPost);
-                const foundPost = await postsCollection.findOne({_id: insertedPost.insertedId});
+                const foundPost = await PostModel.findOne({_id: response._id});
                 if (foundPost) {
                     return {
                         status: ResultCode.Created,
@@ -34,17 +36,30 @@ export const postsMongoRepositories = {
         return {errorMessage: 'Not found blog', status: ResultCode.NotFound}
     },
     update: async (id: string, updatePost: IPostInputModel) => {
+
+        const {content, blogId, shortDescription, title} = updatePost;
+
         try {
-            const findPost = await postsCollection.findOne({_id: new ObjectId(id)});
+            // const findPost = await postsCollection.findOne({_id: new ObjectId(id)});
+
+            const findPost = await PostModel.findOne({_id: new ObjectId(id)});
             if (findPost) {
-                await postsCollection.findOneAndUpdate({_id: new ObjectId(id)}, {
-                    $set: {
-                        title: updatePost.title,
-                        content: updatePost.content,
-                        shortDescription: updatePost.shortDescription,
-                        blogId: updatePost.blogId
-                    }
-                })
+
+                findPost.title = title;
+                findPost.content = content;
+                findPost.shortDescription = shortDescription;
+                findPost.blogId = blogId;
+
+                await findPost.save();
+
+                // await postsCollection.findOneAndUpdate({_id: new ObjectId(id)}, {
+                //     $set: {
+                //         title: updatePost.title,
+                //         content: updatePost.content,
+                //         shortDescription: updatePost.shortDescription,
+                //         blogId: updatePost.blogId
+                //     }
+                // })
                 return {status: ResultCode.NotContent, data: null}
             }
             return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}
@@ -54,9 +69,12 @@ export const postsMongoRepositories = {
 
     },
     delete: async (id: string) => {
-        const findDeletePost = await postsCollection.findOne({_id: new ObjectId(id)});
+        // const findDeletePost = await postsCollection.findOne({_id: new ObjectId(id)});
+
+        const findDeletePost = await PostModel.findOne({_id: new ObjectId(id)});
+
         if (findDeletePost) {
-            await postsCollection.findOneAndDelete({_id: new ObjectId(id)});
+            await PostModel.deleteOne({_id: new ObjectId(id)});
             return {status: ResultCode.NotContent, data: null}
         }
         return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}

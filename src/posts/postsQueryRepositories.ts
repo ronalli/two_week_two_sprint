@@ -1,22 +1,20 @@
 import {createDefaultValues} from "../utils/helper";
-import {postsCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {IPostDBType, IPostViewModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
-import {IPaginator} from "../types/output-paginator";
 import {ResultCode} from "../types/resultCode";
+import {PostModel} from "./domain/post.entity";
 
 export const postsQueryRepositories = {
     getPosts: async (queryParams: IPostQueryType) => {
         const query = createDefaultValues(queryParams);
         try {
-            const allPosts = await postsCollection.find()
-                .sort(query.sortBy, query.sortDirection)
+            const allPosts = await PostModel.find()
+                .sort({[query.sortBy]: query.sortDirection})
                 .skip((query.pageNumber - 1) * query.pageSize)
                 .limit(query.pageSize)
-                .toArray();
 
-            const totalCount = await postsCollection.countDocuments();
+            const totalCount = await PostModel.countDocuments();
 
             return {
                 status: ResultCode.Success,
@@ -37,7 +35,9 @@ export const postsQueryRepositories = {
 
     findPostById: async (id: string) => {
         try {
-            const foundPost = await postsCollection.findOne({_id: new ObjectId(id)});
+            // const foundPost = await postsCollection.findOne({_id: new ObjectId(id)});
+
+            const foundPost = await PostModel.findOne({_id: new ObjectId(id)});
             if (foundPost) {
                 return {
                     status: ResultCode.Success,
