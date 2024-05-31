@@ -5,6 +5,7 @@ import {add} from "date-fns";
 import {db} from "../../src/db/db";
 import {IBlogInputModel} from "../../src/blogs/types/blogs-types";
 import {ICommentInputModel} from "../../src/comments/types/comments-types";
+import {UserModel} from "../../src/users/domain/user.entity";
 
 interface IRegisterUserType {
     login: string;
@@ -50,10 +51,13 @@ export const testSeeder = {
             }
         }
 
-        const res = await db.getCollections().usersCollection.insertOne({...newUser});
+        const user = await UserModel.create(newUser);
+
+        const response = await user.save();
+
         return {
-            id: res.insertedId.toString(),
-            ...newUser
+            id: String(response._id),
+            ...response
         }
     },
 
