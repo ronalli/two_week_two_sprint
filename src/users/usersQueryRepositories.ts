@@ -1,13 +1,15 @@
 import {IUserQueryType} from "./types/request-response-type";
 import {IUserDBType, IUserViewModel} from "./types/user-types";
-import {usersCollection} from "../db/mongo-db";
 import {ObjectId, SortDirection} from "mongodb";
 import {ResultCode} from "../types/resultCode";
+import {UserModel} from "./domain/user.entity";
 
 export const usersQueryRepositories = {
     getUsers: async (queryParams: IUserQueryType) => {
         const query = usersQueryRepositories._createDefaultValues(queryParams);
-        let search = {};
+
+        //!!!! -> utils
+        let search: {};
         if (query.searchLoginTerm && query.searchEmailTerm) {
             search = {
                 $or: [
@@ -28,14 +30,13 @@ export const usersQueryRepositories = {
         }
 
         try {
-            const allUsers = await usersCollection
-                .find(filter ? filter : '')
-                .sort(query.sortBy, query.sortDirection)
+            const allUsers = await UserModel
+                .find(filter)
+                .sort({[query.sortBy]: query.sortDirection})
                 .skip((query.pageNumber - 1) * query.pageSize)
                 .limit(query.pageSize)
-                .toArray();
 
-            const totalCount = await usersCollection.countDocuments(filter);
+            const totalCount = await UserModel.countDocuments(filter);
 
             return {
                 status: ResultCode.Success,
@@ -54,7 +55,8 @@ export const usersQueryRepositories = {
     },
     findUserById: async (id: string) => {
         try {
-            const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
+
+            const foundUser = await UserModel.findOne({_id: new ObjectId(id)})
             if (foundUser) {
                 return {status: ResultCode.Success, data: foundUser};
             }
@@ -64,12 +66,16 @@ export const usersQueryRepositories = {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null};
         }
     },
-    // !!!!!!
+
     doesExistByLoginOrEmail: async (login: string, email: string) => {
         try {
-            const user = await usersCollection.findOne({
+
+            const filter = {
                 $or: [{login: login}, {email: email}]
-            });
+            }
+
+            const user = await UserModel.findOne(filter);
+
 
             if(user) {
                 return {message: 'User founded', status: ResultCode.BadRequest, field: user.login === login ? 'login' : 'email'}
@@ -82,7 +88,10 @@ export const usersQueryRepositories = {
     },
     findUserByCodeConfirmation: async (codeConfirmation: string) => {
         try {
-            const user = await usersCollection.findOne({'emailConfirmation.confirmationCode': codeConfirmation})
+
+            const filter = {'emailConfirmation.confirmationCode': codeConfirmation}
+
+            const user = await UserModel.findOne(filter);
 
             if(user) {
                 return {status: ResultCode.Success, data: user}

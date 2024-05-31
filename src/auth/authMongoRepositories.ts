@@ -1,15 +1,17 @@
-import {usersCollection} from "../db/mongo-db";
 import {ResultCode} from "../types/resultCode";
-import {IUserDBType, IUserInputModel} from "../users/types/user-types";
+import {IUserDBType} from "../users/types/user-types";
 import {usersMongoRepositories} from "../users/usersMongoRepositories";
-import {mappingUser} from "../common/utils/mappingUser";
+import {UserModel} from "../users/domain/user.entity";
 
 export const authMongoRepositories = {
     findByLoginOrEmail: async (loginOrEmail: string) => {
         try {
-            const findUser = await usersCollection.findOne({
+
+            const filter = {
                 $or:[{email: loginOrEmail}, {login: loginOrEmail}],
-            })
+            }
+
+            const findUser = await UserModel.findOne(filter)
 
             if (findUser) return {status: ResultCode.Success, data: findUser};
             return {errorMessage: 'Not found login/email', status: ResultCode.Unauthorized, data: null }
@@ -20,8 +22,11 @@ export const authMongoRepositories = {
     },
     createUser: async (data: IUserDBType) => {
         try {
-            const insertUser = await usersCollection.insertOne(data);
-            const result = await usersMongoRepositories.findUserById(String(insertUser.insertedId))
+
+            const user = new UserModel(data);
+            const response = await user.save();
+
+            const result = await usersMongoRepositories.findUserById(String(response._id))
 
             if(result.data) {
 
@@ -38,7 +43,8 @@ export const authMongoRepositories = {
 
     findByEmail: async (email: string) => {
         try {
-            const user = await usersCollection.findOne({email: email})
+            // const user = await usersCollection.findOne({email: email})
+            const user = await UserModel.findOne({email: email})
             if (user) return {
                 status: ResultCode.Success,
                 data: user

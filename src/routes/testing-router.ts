@@ -4,9 +4,9 @@ import {
     blogsCollection,
     commentsCollection,
     postsCollection, rateLimitCollection, refreshTokenCollection,
-    usersCollection
 } from "../db/mongo-db";
 import {DeviceModel} from "../security/domain/device.entity";
+import {UserModel} from "../users/domain/user.entity";
 
 export const testingRouter = Router({})
 
@@ -14,7 +14,7 @@ testingRouter.delete('/all-data', async (req: Request, res: Response) => {
     try {
         await postsCollection.deleteMany({})
         await blogsCollection.deleteMany({})
-        await usersCollection.deleteMany({})
+        await UserModel.deleteMany({})
         await commentsCollection.deleteMany({})
         await DeviceModel.deleteMany({})
         await rateLimitCollection.deleteMany({})

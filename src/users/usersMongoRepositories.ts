@@ -1,9 +1,9 @@
 import {IUserDBType, IUserInputModel, IUserViewModel} from "./types/user-types";
-import {usersCollection} from "../db/mongo-db";
 import {ObjectId} from "mongodb";
 import {bcryptService} from "../common/adapter/bcrypt.service";
 import {ResultCode} from "../types/resultCode";
 import {usersQueryRepositories} from "./usersQueryRepositories";
+import {UserModel} from "./domain/user.entity";
 
 export const usersMongoRepositories = {
     createUser: async (data: IUserInputModel) => {
@@ -22,7 +22,7 @@ export const usersMongoRepositories = {
 
         const hash = await bcryptService.generateHash(data.password);
 
-        const newUser: IUserDBType = {
+        const dataUser: IUserDBType = {
             email: data.email,
             login: data.login,
             hash,
@@ -35,8 +35,12 @@ export const usersMongoRepositories = {
         }
 
         try {
-            const insertUser = await usersCollection.insertOne(newUser);
-            const result = await usersMongoRepositories.findUserById(String(insertUser.insertedId))
+
+            const user = new UserModel(dataUser);
+            const response = await user.save();
+
+            // const insertUser = await usersCollection.insertOne(newUser);
+            const result = await usersMongoRepositories.findUserById(String(response._id))
 
             if (result.data) {
                 const outViewModelUser = usersMongoRepositories._maping(result.data);
@@ -53,7 +57,8 @@ export const usersMongoRepositories = {
     },
     findUserById: async (id: string) => {
         try {
-            const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
+            // const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
+            const foundUser = await UserModel.findOne({_id: new ObjectId(id)})
             if (foundUser) {
                 return {
                     status: ResultCode.Success,
@@ -68,7 +73,8 @@ export const usersMongoRepositories = {
     },
     deleteUser: async (id: string) => {
         try {
-            const foundUser = await usersCollection.findOne({_id: new ObjectId(id)});
+            // const foundUser = await usersCollection.findOne({_id: new ObjectId(id)});
+            const foundUser = await UserModel.findOne({_id: new ObjectId(id)});
             if (!foundUser) {
                 return {
                     errorMessage: 'Not found user',
@@ -76,7 +82,8 @@ export const usersMongoRepositories = {
                     data: null
                 }
             }
-            await usersCollection.findOneAndDelete({_id: new ObjectId(id)});
+            // await usersCollection.findOneAndDelete({_id: new ObjectId(id)});
+            await UserModel.deleteOne({_id: new ObjectId(id)});
             return {
                 status: ResultCode.NotContent,
                 data: null
@@ -89,7 +96,8 @@ export const usersMongoRepositories = {
     },
 
     doesExistById: async (id: string) => {
-        const findedUser = await usersCollection.findOne({_id: new ObjectId(id)});
+        // const findedUser = await usersCollection.findOne({_id: new ObjectId(id)});
+        const findedUser = await UserModel.findOne({_id: new ObjectId(id)});
 
         if(findedUser) {
             return usersMongoRepositories._maping(findedUser);

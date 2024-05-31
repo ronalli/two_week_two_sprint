@@ -1,6 +1,5 @@
 import {ICommentAdd, ICommentDBType, ICommentViewModel} from "./types/comments-types";
-import {commentsCollection, usersCollection} from "../db/mongo-db";
-import {usersController} from "../users/usersControllers";
+import {commentsCollection} from "../db/mongo-db";
 import {usersQueryRepositories} from "../users/usersQueryRepositories";
 import {ObjectId} from "mongodb";
 import {ResultCode} from "../types/resultCode";

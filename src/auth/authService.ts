@@ -9,30 +9,14 @@ import {IUserInputModelRegistration} from "./types/registration-type";
 import {usersQueryRepositories} from "../users/usersQueryRepositories";
 import {nodemailerService} from "../common/adapter/nodemailer.service";
 import {emailExamples} from "../common/adapter/emailExamples";
-import {refreshTokenCollection, usersCollection} from "../db/mongo-db";
+import {refreshTokenCollection} from "../db/mongo-db";
 import {IUserDBType} from "../users/types/user-types";
 import {ObjectId} from "mongodb";
 import {usersMongoRepositories} from "../users/usersMongoRepositories";
 import {IHeadersSession} from "./types/sessions-types";
 import {securityServices} from "../security/securityServices";
 import {decodeToken} from "../common/utils/decodeToken";
-
-
-
-// _id
-// 6651f5115fd92bdf90a0b554
-// deviceName
-// "linux 24"
-// ip
-// "::1"
-// deviceId
-// "2cae6fcb-ec08-4b07-8028-4e149a764ce4"
-// iat
-// "2024-05-25T14:26:25.000Z"
-// userId
-// "664e42a2fe3d7f3132f1d911"
-// exp
-// "2024-05-25T14:27:25.000Z"
+import {UserModel} from "../users/domain/user.entity";
 
 
 export const authService = {
@@ -81,7 +65,7 @@ export const authService = {
 
         const hash = await bcryptService.generateHash(password)
 
-        const newUser: IUserDBType = {
+        const dataUser: IUserDBType = {
             login,
             email,
             hash,
@@ -93,10 +77,13 @@ export const authService = {
             }
         }
 
-        const successCreateUser = await authMongoRepositories.createUser(newUser);
+        const user = new UserModel(dataUser);
 
-        if (successCreateUser.data) {
-            nodemailerService.sendEmail(email, newUser.emailConfirmation?.confirmationCode!, emailExamples.registrationEmail)
+        await user.save();
+
+
+        if (user) {
+            nodemailerService.sendEmail(email, user.emailConfirmation?.confirmationCode!, emailExamples.registrationEmail)
             .catch(e => {
                 console.log(e)
             })
@@ -135,13 +122,15 @@ export const authService = {
         }
         if (result.data) {
             try {
-                const success = await usersCollection.findOneAndUpdate({_id: result.data._id}, {
-                    $set: {
-                        'emailConfirmation.isConfirmed': true,
-                        'emailConfirmation.expirationDate': null,
-                        'emailConfirmation.confirmationCode': null
-                    }
-                });
+
+                const foundUser = await UserModel.findOne({_id: result.data._id});
+
+                if(foundUser && foundUser.emailConfirmation) {
+                    foundUser.emailConfirmation.isConfirmed = true;
+                    foundUser.emailConfirmation.expirationDate = null;
+                    foundUser.emailConfirmation.confirmationCode = null;
+                }
+
                 return {
                     status: ResultCode.NotContent,
                 }
@@ -183,12 +172,13 @@ export const authService = {
             const code = randomUUID();
             const expirationDate = add(new Date().toISOString(), {hours: 0, minutes: 1});
 
-            const user = await usersCollection.findOneAndUpdate({_id: result.data._id}, {
-                $set: {
-                    'emailConfirmation.expirationDate': expirationDate,
-                    'emailConfirmation.confirmationCode': code
-                }
-            });
+            const user = await UserModel.findOneAndUpdate({_id: result.data._id});
+
+            if(user && user.emailConfirmation) {
+                user.emailConfirmation.expirationDate = expirationDate;
+                user.emailConfirmation.confirmationCode = code;
+            }
+
             nodemailerService.sendEmail(email, code, emailExamples.registrationEmail).catch(e => console.log(e))
 
             return {
@@ -262,7 +252,11 @@ export const authService = {
 
         if(validId && !findedToken) {
             await refreshTokenCollection.insertOne({refreshToken: token})
-            const user = await usersCollection.findOne({_id: new ObjectId(validId)});
+
+
+            // const user = await usersCollection.findOne({_id: new ObjectId(validId)});
+
+            const user = await UserModel.findOne({_id: new ObjectId(validId)});
             if(user) {
                 
                 const decode = await decodeToken(token);
