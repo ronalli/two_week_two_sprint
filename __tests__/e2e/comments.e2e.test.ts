@@ -14,6 +14,8 @@ describe("Comments Tests", () => {
 
 
     afterEach(async () => {
+
+        // await db.drop();
         await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
     })
 
@@ -48,7 +50,6 @@ describe("Comments Tests", () => {
 
         const comment = await serviceComments.createComment()
 
-        // console.log(comment)
 
         await req.get(SETTINGS.PATH.COMMENTS + `/${comment.id}`).expect(HTTP_STATUSES.Success)
 
@@ -63,6 +64,7 @@ describe("Comments Tests", () => {
         }).expect(HTTP_STATUSES.Success)
 
         await req.put(SETTINGS.PATH.COMMENTS + `/${comment.id}`).set('Authorization', `Bearer ${response.body.accessToken}`).send({"content": "hello my friend and all people"}).expect(HTTP_STATUSES.NotContent)
+
 
     });
 

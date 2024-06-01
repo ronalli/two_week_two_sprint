@@ -14,8 +14,6 @@ export const serviceComments = {
         const response = await req.post(SETTINGS.PATH.POSTS + `/${post.id}/comments`).set('Authorization', `Bearer ${jwtToken.accessToken}`).send(comment)
             .expect(HTTP_STATUSES.Created)
 
-        // console.log(response.body)
-
 
         return response.body;
     },

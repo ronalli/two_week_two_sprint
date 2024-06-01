@@ -1,19 +1,19 @@
 import {ICommentAdd, ICommentDBType, ICommentViewModel} from "./types/comments-types";
-import {commentsCollection} from "../db/mongo-db";
 import {usersQueryRepositories} from "../users/usersQueryRepositories";
 import {ObjectId} from "mongodb";
 import {ResultCode} from "../types/resultCode";
+import {CommentModel} from "./domain/comment.entity";
 
 export const commentsMongoRepositories = {
     updateComment: async (id: string, contentUpdate: string) => {
         try {
-            const findComment = await commentsCollection.findOne({_id: new ObjectId(id)});
+            const findComment = await CommentModel.findOne({_id: new ObjectId(id)});
             if(findComment) {
-                await commentsCollection.findOneAndUpdate({_id: new ObjectId(id)}, {
-                    $set: {
-                        content: contentUpdate
-                    }
-                })
+
+                findComment.content = contentUpdate;
+
+                await findComment.save();
+
                 return {status: ResultCode.NotContent, data: null}
             }
             return {errorMessage: 'Not found comment', status: ResultCode.NotFound, data: null};
@@ -23,7 +23,7 @@ export const commentsMongoRepositories = {
     },
     deleteComment: async (id: string) => {
         try {
-            await commentsCollection.findOneAndDelete({_id: new ObjectId(id)});
+            await CommentModel.deleteOne({_id: new ObjectId(id)});
             return {status: ResultCode.NotContent, data: null};
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null};
@@ -34,7 +34,7 @@ export const commentsMongoRepositories = {
 
         const result = await usersQueryRepositories.findUserById(data.userId)
 
-        const newComment: ICommentDBType = {
+        const dataComment: ICommentDBType = {
             postId: data.postId,
             content: data.content,
             createdAt: new Date().toISOString(),
@@ -44,11 +44,20 @@ export const commentsMongoRepositories = {
             }
         }
 
+
         try {
-            const insertedComment = await commentsCollection.insertOne(newComment);
-            const foundComment = await commentsCollection.findOne({_id: insertedComment.insertedId})
-            if (foundComment) {
-                return {status: ResultCode.Created, data: commentsMongoRepositories._mapping(foundComment)}
+
+            const newComment = new CommentModel(dataComment);
+
+            const response = await newComment.save();
+
+            const comment = await CommentModel.findOne({_id: new ObjectId(response._id)});
+
+            if (comment) {
+
+                const res = commentsMongoRepositories._mapping(comment);
+
+                return {status: ResultCode.Created, data: res}
             }
             return {errorMessage: 'Not found comment', status: ResultCode.NotFound, data: null};
 
@@ -61,7 +70,10 @@ export const commentsMongoRepositories = {
     _mapping: (comment: ICommentDBType): ICommentViewModel => {
         return {
             id: String(comment._id),
-            commentatorInfo: {...comment.commentatorInfo},
+            commentatorInfo: {
+                userId: comment.commentatorInfo.userId,
+                userLogin: comment.commentatorInfo.userLogin,
+            },
             createdAt: comment.createdAt,
             content: comment.content,
         }

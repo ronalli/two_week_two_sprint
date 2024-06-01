@@ -1,4 +1,4 @@
-import {ICommentAdd, ICommentViewModel} from "./types/comments-types";
+import {ICommentAdd} from "./types/comments-types";
 import {commentsMongoRepositories} from "./commentsMongoRepositories";
 import {commentsQueryRepositories} from "./commentsQueryRepositories";
 import {ICommentsQueryType} from "./types/output-paginator-comments-types";
@@ -48,13 +48,13 @@ export const commentsServices = {
     create: async (data: ICommentAdd) => {
         const {postId} = data;
         const findPost = await postsQueryRepositories.findPostById(postId);
-        const result = await commentsMongoRepositories.addComment(data)
 
         if (findPost.errorMessage) {
             return findPost
         }
 
-        return result;
+
+        return await commentsMongoRepositories.addComment(data);
 
     },
     findComments: async (postId: string, queryParams: ICommentsQueryType) => {

@@ -2,7 +2,6 @@ import {Request, Response} from "express";
 import {commentsQueryRepositories} from "./commentsQueryRepositories";
 import {HTTP_STATUSES} from "../settings";
 import {commentsServices} from "./commentsServices";
-import {ResultCode} from "../types/resultCode";
 
 export const commentsController = {
     getComment: async (req: Request, res: Response) => {

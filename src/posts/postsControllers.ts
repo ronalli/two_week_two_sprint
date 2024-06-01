@@ -68,10 +68,12 @@ export const postsControllers = {
         const result = await commentsServices.create({postId, userId, content})
 
         if (result.data) {
+
             res.status(HTTP_STATUSES[result.status]).send(result.data)
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
+
         return
     },
 

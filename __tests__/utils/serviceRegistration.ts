@@ -5,8 +5,7 @@ import {serviceUsers} from "./serviceUsers";
 
 export const serviceLogin = {
     user: async () => {
-        const newUser = await serviceUsers.createUser();
-        //response jwt-token
+        await serviceUsers.createUser();
         const response = await req.post(SETTINGS.PATH.AUTH + '/login').send({
             loginOrEmail: 'testing',
             password: '12345678',
