@@ -1,18 +1,18 @@
 import {Response, Request, NextFunction} from "express";
-import {rateLimitCollection} from "../../db/mongo-db";
 import {IRateLimitTypeDB} from "../../types/rate-limit-type";
 import {HTTP_STATUSES} from "../../settings";
+import {RateLimitModel} from "../../security/domain/rateLimit.entity";
 
 
 export const rateLimitGuard = async (req: Request, res: Response, next: NextFunction) => {
 
-    const a = await rateLimitCollection.find({
+    const a = await RateLimitModel.find({
         $and: [
             {ip: req.ip},
             {url: req.originalUrl},
             {date: {$gte: new Date().getTime() - 10000}},
         ]
-    }).toArray()
+    })
 
     if (a.length >= 5) {
         // await rateLimitCollection.deleteMany({ip: req.ip, url: req.originalUrl},)
@@ -26,7 +26,9 @@ export const rateLimitGuard = async (req: Request, res: Response, next: NextFunc
         ip: req.ip!
     }
 
-    await rateLimitCollection.insertOne(dataRequest)
+    const newRateLimit = new RateLimitModel(dataRequest)
+
+    await newRateLimit.save();
 
     next();
 }

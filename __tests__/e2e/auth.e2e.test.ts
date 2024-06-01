@@ -12,7 +12,7 @@ describe("Auth Tests", () => {
     beforeAll(async () => {
         const mongoServer = await MongoMemoryServer.create();
         await db.run(mongoServer.getUri());
-        // await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
 
     })
 
@@ -28,6 +28,7 @@ describe("Auth Tests", () => {
     afterAll(done => done())
 
     it("shouldn't correct auth - not found user", async () => {
+
         const auth = {
             loginOrEmail: 'testing',
             password: 'password',
@@ -100,11 +101,11 @@ describe("Auth Tests", () => {
 
     })
 
-    // it('should incorrect resend code, since the user was created by admin and isConfirmed = true', async () => {
-    //
-    //    await req.post(SETTINGS.PATH.AUTH + '/registration-email-resending').send({email: 'test@gmail.com'}).expect(HTTP_STATUSES.BadRequest)
-    //
-    // })
+    it('should incorrect resend code, since the user was created by admin and isConfirmed = true', async () => {
+
+       await req.post(SETTINGS.PATH.AUTH + '/registration-email-resending').send({email: 'test@gmail.com'}).expect(HTTP_STATUSES.BadRequest)
+
+    })
 
     it('shouldn\'t registration user with the same login or email  ', async () => {
 
@@ -132,13 +133,9 @@ describe("Auth Tests", () => {
 
         expect(cookies).toBeDefined();
 
-
         const res = await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', `refreshToken=${cookies.refreshToken}`).expect(HTTP_STATUSES.Success);
 
-
         expect(res.body.accessToken).toEqual(expect.any(String))
-
-        // console.log(res.body)
 
 
     })
@@ -156,7 +153,6 @@ describe("Auth Tests", () => {
     it('should response code 401 ', async () => {
         const res = await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', 'refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjQ2MjUxOTE2MmZhZTVhY2IyOGU2ZmYiLCJpYXQiOjE3MTU4NzMwNzgsImV4cCI6MTcxNTg3MzA5OH0.4h63x8D3cR-qLeUx2jkCOPGIkhEIvQcrcYxG2fj3D5o').expect(HTTP_STATUSES.Unauthorized)
 
-        // console.log(res.body)
     });
 
     it('should correct logout', async () => {
@@ -174,22 +170,13 @@ describe("Auth Tests", () => {
 
         expect(cookies).toBeDefined();
 
-        // cookies.refreshToken
-
         const res = await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', `refreshToken=${cookies.refreshToken}`).expect(HTTP_STATUSES.Success);
 
-        // console.log(res.body)
+        const cook = cookie.parse(String(res.headers['set-cookie']));
 
-        const cok = cookie.parse(String(res.headers['set-cookie']));
-        //
         await req.post(SETTINGS.PATH.AUTH + '/logout').expect(HTTP_STATUSES.Unauthorized);
 
-        await req.post(SETTINGS.PATH.AUTH + '/logout').set('Cookie', `refreshToken=${cok.refreshToken}`).expect(HTTP_STATUSES.Unauthorized);
-
-
-        // console.log(res.body)
-
-
+        await req.post(SETTINGS.PATH.AUTH + '/logout').set('Cookie', `refreshToken=${cook.refreshToken}`).expect(HTTP_STATUSES.Unauthorized);
     })
 
 })

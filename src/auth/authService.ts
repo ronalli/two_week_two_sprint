@@ -9,7 +9,6 @@ import {IUserInputModelRegistration} from "./types/registration-type";
 import {usersQueryRepositories} from "../users/usersQueryRepositories";
 import {nodemailerService} from "../common/adapter/nodemailer.service";
 import {emailExamples} from "../common/adapter/emailExamples";
-import {refreshTokenCollection} from "../db/mongo-db";
 import {IUserDBType} from "../users/types/user-types";
 import {ObjectId} from "mongodb";
 import {usersMongoRepositories} from "../users/usersMongoRepositories";
@@ -17,6 +16,7 @@ import {IHeadersSession} from "./types/sessions-types";
 import {securityServices} from "../security/securityServices";
 import {decodeToken} from "../common/utils/decodeToken";
 import {UserModel} from "../users/domain/user.entity";
+import {RefreshTokenModel} from "./domain/refreshToken.entity";
 
 
 export const authService = {
@@ -32,9 +32,15 @@ export const authService = {
                 // const user = mappingUser.inputViewModelUser(result.data);
                 const devicedId = randomUUID();
 
-                const accessToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '30m')
+                const accessToken = await jwtService.createdJWT({
+                    deviceId: devicedId,
+                    userId: String(result.data._id)
+                }, '10s')
 
-                const refreshToken = await jwtService.createdJWT({deviceId: devicedId, userId: String(result.data._id)}, '2h')
+                const refreshToken = await jwtService.createdJWT({
+                    deviceId: devicedId,
+                    userId: String(result.data._id)
+                }, '20s')
 
                 await securityServices.createAuthSessions(refreshToken, dataSession)
 
@@ -84,9 +90,9 @@ export const authService = {
 
         if (user) {
             nodemailerService.sendEmail(email, user.emailConfirmation?.confirmationCode!, emailExamples.registrationEmail)
-            .catch(e => {
-                console.log(e)
-            })
+                .catch(e => {
+                    console.log(e)
+                })
         }
 
 
@@ -125,7 +131,7 @@ export const authService = {
 
                 const foundUser = await UserModel.findOne({_id: result.data._id});
 
-                if(foundUser && foundUser.emailConfirmation) {
+                if (foundUser && foundUser.emailConfirmation) {
                     foundUser.emailConfirmation.isConfirmed = true;
                     foundUser.emailConfirmation.expirationDate = null;
                     foundUser.emailConfirmation.confirmationCode = null;
@@ -174,7 +180,7 @@ export const authService = {
 
             const user = await UserModel.findOneAndUpdate({_id: result.data._id});
 
-            if(user && user.emailConfirmation) {
+            if (user && user.emailConfirmation) {
                 user.emailConfirmation.expirationDate = expirationDate;
                 user.emailConfirmation.confirmationCode = code;
             }
@@ -197,7 +203,9 @@ export const authService = {
     },
 
     logout: async (token: string) => {
-        const foundedToken = await refreshTokenCollection.findOne({refreshToken: token})
+        const foundedToken = await RefreshTokenModel.findOne({refreshToken: token})
+
+
         if (foundedToken) {
             return {
                 status: ResultCode.Unauthorized,
@@ -210,13 +218,15 @@ export const authService = {
         }
         const success = await jwtService.getUserIdByToken(token);
 
-        await refreshTokenCollection.insertOne({refreshToken: token});
+        const newRefreshToken = new RefreshTokenModel({refreshToken: token});
 
-        if(success) {
+        await newRefreshToken.save();
+
+        if (success) {
 
             const data = await decodeToken(token);
 
-            if(data && await securityServices.deleteCurrentSession(data)) {
+            if (data && await securityServices.deleteCurrentSession(data)) {
                 return {
                     status: ResultCode.NotContent,
                     data: null
@@ -237,9 +247,9 @@ export const authService = {
     refreshToken: async (token: string) => {
         const validId = await jwtService.getUserIdByToken(token);
 
-        const findedToken = await refreshTokenCollection.findOne({refreshToken: token});
+        const findedToken = await RefreshTokenModel.findOne({refreshToken: token});
 
-        if(findedToken) {
+        if (findedToken) {
             return {
                 status: ResultCode.Unauthorized,
                 data: null,
@@ -250,28 +260,32 @@ export const authService = {
             }
         }
 
-        if(validId && !findedToken) {
-            await refreshTokenCollection.insertOne({refreshToken: token})
+        if (validId && !findedToken) {
+
+            const newRefreshToken = new RefreshTokenModel({refreshToken: token});
+
+            await newRefreshToken.save();
+            // await refreshTokenCollection.insertOne({refreshToken: token})
 
 
             // const user = await usersCollection.findOne({_id: new ObjectId(validId)});
 
             const user = await UserModel.findOne({_id: new ObjectId(validId)});
-            if(user) {
-                
+            if (user) {
+
                 const decode = await decodeToken(token);
 
-                if(decode) {
+                if (decode) {
                     const deviceId = decode.deviceId;
 
-                    const accessToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '30m')
-                    const refreshToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '1h')
+                    const accessToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '10s')
+                    const refreshToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '20s')
 
 
                     const response = await securityServices.updateVersionSession(refreshToken);
 
 
-                    if(response.status === ResultCode.Success) {
+                    if (response.status === ResultCode.Success) {
 
 
                         return {status: ResultCode.Success, data: {accessToken, refreshToken}};
@@ -297,7 +311,7 @@ export const authService = {
 
     checkAccessToken: async (authHeader: string) => {
         const token = authHeader.split(" ");
-        if(token[0] !== 'Bearer') {
+        if (token[0] !== 'Bearer') {
             return {
                 status: ResultCode.Unauthorized,
                 data: null,
@@ -309,7 +323,7 @@ export const authService = {
         }
 
         const id = await jwtService.getUserIdByToken(token[1]);
-        if(!id) {
+        if (!id) {
             return {
                 data: null,
                 status: ResultCode.Unauthorized,
@@ -322,7 +336,7 @@ export const authService = {
 
         const payload = await usersMongoRepositories.doesExistById(id);
 
-        if(!payload) {
+        if (!payload) {
             return {
                 status: ResultCode.Unauthorized,
                 data: null,

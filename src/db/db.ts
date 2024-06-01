@@ -1,69 +1,48 @@
-// import {CollectionInfo, Db, MongoClient} from 'mongodb'
-// import {SETTINGS} from "../settings";
-// import {IUserDBType} from "../users/types/user-types";
-// import {IPostDBType} from "../posts/types/posts-types";
-// import {ICommentDBType} from "../comments/types/comments-types";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
 
+let client = {} as MongoMemoryServer;
+
 export const db = {
-    // client: {} as MongoClient,
 
-    client: {} as MongoMemoryServer,
-    // connection: {} as Connection,
-
-    // getDbName(): Db {
-    //     return this.client
-    // },
-
-    async run(url: string) {
+   run: async () => {
         try {
-            this.client = await MongoMemoryServer.create()
-            // const uri = this.client.getUri();
-
-            await mongoose.connect(url);
-
-            // await this.client.connect();
-            // await this.getDbName().command({ping: 1});
+            client = await MongoMemoryServer.create()
+            const uri = client.getUri();
+            await mongoose.connect(uri);
             console.log('Connected successfully to mongo server');
         } catch (e: unknown) {
+            console.log(e)
             console.error("Can't connect to mongo server");
-            await this.stop();
+            await db.stop();
         }
     },
 
-    async stop() {
-        await this.client.stop()
+    stop: async () => {
+        await client.stop()
         console.log('Connection successfully closed');
     },
 
-    async drop() {
+    dropDB: async () => {
         try {
 
-            if(this.client) {
+            if(client) {
                 await mongoose.connection.dropDatabase();
                 await mongoose.connection.close();
-                await this.client.stop();
+                await db.stop();
             }
-
-            // const collections: CollectionInfo[] = await this.getDbName().listCollections({}, {nameOnly: true}).toArray();
-            //
-            // for (const collection of collections) {
-            //     const collectionName = collection.name;
-            //     await this.getDbName().collection(collectionName).deleteMany({});
-            // }
 
         } catch (e: unknown) {
             console.error('Error id drop db: ', e);
-            await this.stop();
+            await db.stop();
         }
     },
-    // getCollections() {
-    //     return {
-    //         usersCollection: this.getDbName().collection<IUserDBType>('users'),
-    //         postsCollection: this.getDbName().collection<IPostDBType>('posts'),
-    //         blogsCollection: this.getDbName().collection<IPostDBType>('blogs'),
-    //         commentsCollection: this.getDbName().collection<ICommentDBType>('comments'),
-    //     }
-    // }
+    dropCollections: async () => {
+        if (client) {
+            const collections = await mongoose.connection.db.collections();
+            for (let collection of collections) {
+                await collection.deleteMany({})
+            }
+        }
+    }
 }

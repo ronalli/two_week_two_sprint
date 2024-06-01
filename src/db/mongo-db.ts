@@ -15,9 +15,9 @@ export const db: Db = client.db(SETTINGS.DB_NAME);
 // export const blogsCollection: Collection<IBlogDBType> = db.collection<IBlogDBType>(SETTINGS.BLOG_COLLECTION_NAME);
 // export const postsCollection: Collection<IPostDBType> = db.collection<IPostDBType>(SETTINGS.POSTS_COLLECTION_NAME);
 // export const commentsCollection: Collection<ICommentDBType> = db.collection<ICommentDBType>(SETTINGS.COMMENTS_COLLECTION_NAME);
-export const refreshTokenCollection: Collection<IRefreshTokenDBType> = db.collection<IRefreshTokenDBType>(SETTINGS.REFRESH_TOKENS_COLLECTION_NAME)
+// export const refreshTokenCollection: Collection<IRefreshTokenDBType> = db.collection<IRefreshTokenDBType>(SETTINGS.REFRESH_TOKENS_COLLECTION_NAME)
 
-export const rateLimitCollection: Collection<IRateLimitTypeDB> = db.collection<IRateLimitTypeDB>(SETTINGS.RATE_LIMIT_COLLECTION_NAME)
+// export const rateLimitCollection: Collection<IRateLimitTypeDB> = db.collection<IRateLimitTypeDB>(SETTINGS.RATE_LIMIT_COLLECTION_NAME)
 
 
 export const connectToDB = async () => {

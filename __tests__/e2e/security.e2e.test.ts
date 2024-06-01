@@ -8,21 +8,27 @@ import {randomUUID} from "node:crypto";
 import {jwtService} from "../../src/utils/jwt-services";
 import {decodeToken} from "../../src/common/utils/decodeToken";
 
-describe('Security Test', () => {
-    beforeEach(async () => {
-        const mongoServer = await MongoMemoryServer.create();
-        await db.run(mongoServer.getUri());
 
-        const user = await serviceUsers.createUser();
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+
+describe('Security Test', () => {
+    beforeAll(async () => {
+        // const mongoServer = await MongoMemoryServer.create();
+        await db.run();
+
+    })
+
+    beforeEach(async () => {
+        await serviceUsers.createUser();
     })
 
     afterEach(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.dropCollections();
     })
 
     afterAll(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.stop();
+        await db.dropDB()
     })
 
     afterAll(done => done())
@@ -43,7 +49,6 @@ describe('Security Test', () => {
 
         expect(cookies).toBeDefined();
 
-
         await req.get(SETTINGS.PATH.SECURITY).expect(HTTP_STATUSES.Unauthorized)
 
         const res = await req.get(SETTINGS.PATH.SECURITY).set('Cookie', `refreshToken=${cookies.refreshToken}`).expect(HTTP_STATUSES.Success);
@@ -54,6 +59,7 @@ describe('Security Test', () => {
     })
 
     it('should response status 404, because device not found', async () => {
+
         const login = {
             loginOrEmail: 'testing',
             password: '12345678',
@@ -68,7 +74,6 @@ describe('Security Test', () => {
         const uuid = randomUUID();
 
         await req.delete(SETTINGS.PATH.SECURITY + `/${uuid}`).set('Cookie', `refreshToken=${cookies.refreshToken}`).expect(HTTP_STATUSES.NotFound)
-
 
     })
 
@@ -115,11 +120,16 @@ describe('Security Test', () => {
         }
 
         const response = await req.post(SETTINGS.PATH.AUTH + '/login').send(login).set('user-agent', 'chrome-13').expect(HTTP_STATUSES.Success)
+
         await req.post(SETTINGS.PATH.AUTH + '/login').send(login).set('user-agent', 'android').expect(HTTP_STATUSES.Success)
         await req.post(SETTINGS.PATH.AUTH + '/login').send(login).set('user-agent', 'windows').expect(HTTP_STATUSES.Success)
+
         await req.post(SETTINGS.PATH.AUTH + '/login').send(login).set('user-agent', 'linux').expect(HTTP_STATUSES.Success)
 
         const cookies = cookie.parse(String(response.headers['set-cookie']));
+
+        await wait(1500)
+
         const updateRefreshToken = await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', `refreshToken=${cookies.refreshToken}`).expect(HTTP_STATUSES.Success)
 
         const cookies1 = cookie.parse(String(updateRefreshToken.headers['set-cookie']));
@@ -133,6 +143,7 @@ describe('Security Test', () => {
     })
 
     it('correct delete selected device, and response length devices on one less', async () => {
+
         const login = {
             loginOrEmail: 'testing',
             password: '12345678',
@@ -148,8 +159,6 @@ describe('Security Test', () => {
         const cookies2 = cookie.parse(String(device2.headers['set-cookie']));
 
         const allDevices = await req.get(SETTINGS.PATH.SECURITY).set('Cookie', `refreshToken=${cookies1.refreshToken}`).expect(HTTP_STATUSES.Success)
-
-        // console.log(allDevices.body)
 
         const decode = await decodeToken(cookies2.refreshToken);
 

@@ -79,6 +79,11 @@ export const authController = {
     logout: async (req: Request, res: Response) => {
         const cookie = req.cookies.refreshToken;
 
+        if(!cookie) {
+            res.status(HTTP_STATUSES.Unauthorized).send({})
+            return
+        }
+
         const response = await authService.logout(cookie);
 
         res.status(HTTP_STATUSES[response.status]).send({})

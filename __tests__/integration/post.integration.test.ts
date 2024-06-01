@@ -3,8 +3,8 @@ import {db} from "../../src/db/db";
 import {req} from "../test-helpers";
 import {SETTINGS} from "../../src/settings";
 import {servicePosts} from "../utils/servicePosts";
-import {postsCollection} from "../../src/db/mongo-db";
 import {ObjectId} from "mongodb";
+import {PostModel} from "../../src/posts/domain/post.entity";
 
 describe('post-integration', () => {
 
@@ -55,7 +55,7 @@ describe('post-integration', () => {
         it('should correct delete post', async () => {
             const post = await servicePosts.createPost();
 
-            const deletePost = await postsCollection.findOneAndDelete({_id: new ObjectId(post.id)});
+            const deletePost = await PostModel.deleteOne({_id: new ObjectId(post.id)});
 
             const res = await req.get(SETTINGS.PATH.POSTS)
 

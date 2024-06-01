@@ -14,12 +14,30 @@ type DeviceModel = Model<IDeviceType>;
 export type DeviceDocument = HydratedDocument<IDeviceType>;
 
 const deviceSchema = new Schema<IDeviceType>({
-    userId: String,
-    deviceId: String,
-    iat: String,
-    deviceName: String,
-    ip: String,
-    exp: String,
+    deviceId: {
+        type: String,
+        required: true,
+    },
+    deviceName: {
+        type: String,
+        required: true,
+    },
+    exp: {
+        type: String,
+        required: true,
+    },
+    iat: {
+        type: String,
+        required: true,
+    },
+    ip: {
+        type: String,
+        required: true,
+    },
+    userId: {
+        type: String,
+        required: true,
+    }
 })
 
 export const DeviceModel = model<IDeviceType, DeviceModel>('devices', deviceSchema);
