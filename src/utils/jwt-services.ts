@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 
-
 interface IJWTToken {
     userId: string,
     deviceId: string
@@ -35,5 +34,4 @@ export const jwtService = {
             return null
         }
     }
-
 }
