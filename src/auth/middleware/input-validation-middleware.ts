@@ -9,4 +9,6 @@ const validatorPassword = body('password').trim()
     .isString().withMessage('Field is not correct')
 
 
+
+
 export const validationInputAuth = [validatorLoginOrEmail, validatorPassword]

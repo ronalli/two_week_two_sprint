@@ -107,6 +107,32 @@ export const authController = {
 
     },
 
+    passwordRecovery: async (req: Request, res: Response) => {
+        const {email} = req.body;
+
+        const response = await authService.recoveryCode(email);
+
+        res.status(HTTP_STATUSES.NotContent).send({})
+        return;
+
+    },
+
+    setNewPassword: async (req: Request, res: Response) => {
+        const {newPassword, recoveryCode} = req.body;
+
+        const response = await authService.checkValidRecoveryCode(recoveryCode)
+
+        if(!response.data) {
+            res.status(HTTP_STATUSES[response.status]).send({})
+            return
+        }
+        await authService.updatePassword(newPassword, response.data)
+
+        res.status(HTTP_STATUSES.NotContent).send({})
+        return
+
+    },
+
     _maping
     (user: IUserDBType): IMeViewModel {
         return {

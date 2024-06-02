@@ -16,7 +16,7 @@ export const nodemailerService = {
             let info = await transporter.sendMail({
                 from: `${process.env.EMAIL}`,
                 to: email,
-                subject: 'Hello World',
+                subject: 'Registration by site',
                 html: template(code),
             })
 

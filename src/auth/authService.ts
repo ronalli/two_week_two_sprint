@@ -17,6 +17,9 @@ import {securityServices} from "../security/securityServices";
 import {decodeToken} from "../common/utils/decodeToken";
 import {UserModel} from "../users/domain/user.entity";
 import {RefreshTokenModel} from "./domain/refreshToken.entity";
+import {authQueryRepositories} from "./authQueryRepositories";
+import {RecoveryCodeModel} from "./domain/recoveryCode.entity";
+import {createRecoveryCode} from "../common/utils/createRecoveryCode";
 
 
 export const authService = {
@@ -305,8 +308,58 @@ export const authService = {
 
     },
 
+    recoveryCode: async (email: string) => {
+        const response = await authQueryRepositories.findByEmail(email);
+
+        if(!response.data) {
+            return {
+                status: ResultCode.NotContent,
+                data: null
+            }
+        }
+
+        const dataCode = await createRecoveryCode(email, '5m');
+
+        const newCode = new RecoveryCodeModel({code: dataCode});
+
+        await newCode.save();
+
+        nodemailerService.sendEmail(email, dataCode, emailExamples.recoveryPasswordByAccount).catch(e => console.log(e))
+
+        return {
+            status: ResultCode.NotContent,
+            data: null
+        }
+
+    },
+
+    updatePassword: async (password: string, email: string) => {
+
+        const user = await UserModel.findOne({email: email});
+
+        if(user) {
+            user.hash = await bcryptService.generateHash(password);
+            await user.save()
+        }
+
+        return {
+            status: ResultCode.NotContent,
+            data: null
+        }
+
+    },
+
+
+    checkValidRecoveryCode: async (code: string) => {
+        const response = await jwtService.getEmailByToken(code);
+
+        if(response) return {status: ResultCode.Success, data: response}
+
+        return {status: ResultCode.NotContent, data: null}
+    },
+
     checkUserCredential: async (login: string) => {
-        return await authMongoRepositories.findByEmail(login);
+        return await authQueryRepositories.findByEmail(login);
     },
 
     checkAccessToken: async (authHeader: string) => {

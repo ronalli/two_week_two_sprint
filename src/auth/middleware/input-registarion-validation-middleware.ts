@@ -21,4 +21,10 @@ export const validatorEmail = body('email').trim()
     .matches(/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/)
     .withMessage('Field is not correct')
 
+export const validatorNewPassword = body('newPassword').trim()
+    .notEmpty().withMessage('Field is empty')
+    .isLength({
+        min: 6, max: 20
+    }).withMessage('Filed should be min 6 and max 20 symbols')
+
 export const validationInputRegistrationUser = [validatorLogin, validatorPassword, validatorEmail]

@@ -1,4 +1,5 @@
 import {HydratedDocument, model, Model, Schema} from "mongoose";
+import {ObjectId} from "mongodb";
 
 type emailConfirmationType = {
     confirmationCode: string | null
