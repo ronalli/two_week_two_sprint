@@ -2,21 +2,17 @@ import {req} from "../test-helpers";
 import {HTTP_STATUSES} from "../../src/settings";
 import {SETTINGS} from "../../src/settings";
 import {db} from "../../src/db/db";
-import {MongoMemoryServer} from 'mongodb-memory-server'
 import {testSeeder} from "../utils/test.seeder";
 import {serviceUsers} from "../utils/serviceUsers";
 
 describe("Users Tests", () => {
 
     beforeAll(async () => {
-        const mongoServer = await MongoMemoryServer.create();
-        await db.run(mongoServer.getUri());
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+       await db.run();
     })
 
     afterAll(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.stop();
+        await db.dropDB();
     })
 
     afterAll(done => done())

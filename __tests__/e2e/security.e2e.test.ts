@@ -1,4 +1,3 @@
-import {MongoMemoryServer} from "mongodb-memory-server";
 import {db} from "../../src/db/db";
 import {req} from "../test-helpers";
 import {HTTP_STATUSES, SETTINGS} from "../../src/settings";
@@ -14,7 +13,6 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 describe('Security Test', () => {
     beforeAll(async () => {
-        // const mongoServer = await MongoMemoryServer.create();
         await db.run();
 
     })

@@ -355,7 +355,9 @@ export const authService = {
 
         if(response) return {status: ResultCode.Success, data: response}
 
-        return {status: ResultCode.NotContent, data: null}
+        return {status: ResultCode.BadRequest, data: null, errorsMessages: [{
+            message: 'Incorrect', field: 'recoveryCode'
+            }]}
     },
 
     checkUserCredential: async (login: string) => {

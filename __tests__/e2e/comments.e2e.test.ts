@@ -1,45 +1,30 @@
-import {MongoMemoryServer} from "mongodb-memory-server";
 import {db} from "../../src/db/db";
 import {req} from "../test-helpers";
 import {HTTP_STATUSES, SETTINGS} from "../../src/settings";
 import {serviceComments} from "../utils/serviceComments";
 
-
 describe("Comments Tests", () => {
     beforeAll(async () => {
-        const mongoServer = await MongoMemoryServer.create();
-        await db.run(mongoServer.getUri());
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.run();
     })
 
-
     afterEach(async () => {
-
-        // await db.drop();
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.dropCollections();
     })
 
     afterAll(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        // await db.drop();
-        await db.stop();
+        await db.dropDB()
+
     })
-
-    // afterAll(async () => {
-    //     await db.stop();
-    // })
-
 
     afterAll(done => done())
 
     it("shouldn't find comment with incorrect id", async () => {
         await req.get(SETTINGS.PATH.COMMENTS + '/66393f1de5e43cb44c8c1341').expect(HTTP_STATUSES.NotFound)
-
     })
 
     it("shouldn't delete comment with incorrect auth headers", async () => {
         await req.delete(SETTINGS.PATH.COMMENTS + '/66393f1de5e43cb44c8c1341').set('Authorization', 'Bearer fs5f3f.ds4ds4d.234tda22').expect(HTTP_STATUSES.Unauthorized)
-
     })
 
     it("shouldn't update comment with incorrect auth headers", async () => {
@@ -50,9 +35,7 @@ describe("Comments Tests", () => {
 
         const comment = await serviceComments.createComment()
 
-
         await req.get(SETTINGS.PATH.COMMENTS + `/${comment.id}`).expect(HTTP_STATUSES.Success)
-
     })
 
     it('should correct update comment ', async () => {
@@ -64,7 +47,6 @@ describe("Comments Tests", () => {
         }).expect(HTTP_STATUSES.Success)
 
         await req.put(SETTINGS.PATH.COMMENTS + `/${comment.id}`).set('Authorization', `Bearer ${response.body.accessToken}`).send({"content": "hello my friend and all people"}).expect(HTTP_STATUSES.NotContent)
-
 
     });
 

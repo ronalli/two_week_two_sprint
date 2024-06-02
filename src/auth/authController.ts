@@ -123,7 +123,7 @@ export const authController = {
         const response = await authService.checkValidRecoveryCode(recoveryCode)
 
         if(!response.data) {
-            res.status(HTTP_STATUSES[response.status]).send({})
+            res.status(HTTP_STATUSES[response.status]).send({"errorsMessages": response.errorsMessages})
             return
         }
         await authService.updatePassword(newPassword, response.data)

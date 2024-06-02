@@ -9,30 +9,20 @@ import {PostModel} from "../../src/posts/domain/post.entity";
 describe('post-integration', () => {
 
     beforeAll(async () => {
-        const mongoServer = await MongoMemoryServer.create();
-        await db.run(mongoServer.getUri());
+       await db.run();
     })
 
     beforeEach(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.drop();
-    })
-
-    afterEach(async () => {
-
+        await db.dropCollections();
     })
 
     afterAll(async () => {
-        // await db.drop();
-
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.stop();
+       await db.dropDB();
     })
 
     afterAll(done => done())
 
     describe('Post', () => {
-
 
         it('should correct create post', async () => {
 

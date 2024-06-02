@@ -1,22 +1,17 @@
 import {req} from "../test-helpers";
 import {HTTP_STATUSES} from "../../src/settings";
-import {db} from '../../src/db/db'
-import {MongoMemoryServer} from "mongodb-memory-server";
+import {db} from '../../src/db/db';
 import {SETTINGS} from "../../src/settings";
 import {IBlogInputModel} from "../../src/blogs/types/blogs-types";
 import {IPostInputModel} from "../../src/posts/types/posts-types";
 
 describe('Posts Tests', () => {
     beforeAll(async () => {
-        const mongoServer = await MongoMemoryServer.create();
-        await db.run(mongoServer.getUri());
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
+        await db.run()
     })
 
     afterAll(async () => {
-        // await db.drop();
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.stop()
+        await db.dropDB()
     })
 
     it('shouldn\'t create post, as not found blogId', async () => {
@@ -65,7 +60,6 @@ describe('Posts Tests', () => {
     it('should correct update post', async () => {
 
         const findPosts = await req.get(SETTINGS.PATH.POSTS);
-
 
         const updatePost: IPostInputModel = {
             title: 'test 2',

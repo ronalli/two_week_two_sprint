@@ -1,33 +1,22 @@
-import {MongoMemoryServer} from "mongodb-memory-server";
 import {db} from "../../src/db/db";
 import {serviceBlogs} from "../utils/serviceBlogs";
-import {blogsCollection} from "../../src/db/mongo-db";
 import {ObjectId} from "mongodb";
 import {req} from "../test-helpers";
 import {SETTINGS} from "../../src/settings";
-import {response} from "express";
+import {BlogModel} from "../../src/blogs/domain/blog.entity";
 
 describe('blog-integration', () => {
 
     beforeAll(async () => {
-        const mongoServer = await MongoMemoryServer.create();
-        await db.run(mongoServer.getUri());
+        await db.run();
     })
 
     beforeEach(async () => {
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.drop();
-    })
-
-    afterEach(async () => {
-
+        await db.dropCollections()
     })
 
     afterAll(async () => {
-        // await db.drop();
-
-        await req.delete(SETTINGS.PATH.ALL_DELETE + '/all-data')
-        await db.stop();
+        await db.dropDB();
     })
 
     afterAll(done => done())
@@ -50,14 +39,14 @@ describe('blog-integration', () => {
 
         it('response null', async () => {
 
-            const res = await blogsCollection.findOne({_id: new ObjectId('66487a05cbf8a1d138e6fd3c')})
+            const res = await BlogModel.findOne({_id: new ObjectId('66487a05cbf8a1d138e6fd3c')})
 
             expect(res).toBe(null)
         })
 
         it('should correct blog', async () => {
             const blog = await serviceBlogs.createBlog();
-            const res = await blogsCollection.findOne({_id: new ObjectId(blog.id)})
+            const res = await BlogModel.findOne({_id: new ObjectId(blog.id)})
 
             expect(res).toBeDefined()
 
@@ -73,7 +62,7 @@ describe('blog-integration', () => {
         it('should correct length blogs', async () => {
             const blogs = await serviceBlogs.createBlogs(5);
 
-            const response =  await blogsCollection.find({}).toArray();
+            const response =  await BlogModel.find({});
 
             expect(blogs.length).toEqual(response.length)
         })
@@ -123,7 +112,7 @@ describe('blog-integration', () => {
 
             const blog = await serviceBlogs.createBlog();
 
-            await blogsCollection.findOneAndDelete({_id: new ObjectId(blog.id)})
+            await BlogModel.deleteOne({_id: new ObjectId(blog.id)})
 
             const res = await req.get(SETTINGS.PATH.BLOGS + `/${blog.id}`)
 

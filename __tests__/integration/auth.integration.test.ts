@@ -1,4 +1,3 @@
-import {MongoMemoryServer} from "mongodb-memory-server";
 import {db} from "../../src/db/db";
 import {authService} from "../../src/auth/authService";
 import {nodemailerService} from "../../src/common/adapter/nodemailer.service";
@@ -8,21 +7,15 @@ import {ResultCode} from "../../src/types/resultCode";
 describe('auth-integration', () => {
 
     beforeAll(async () => {
-        const mongoServer = await MongoMemoryServer.create();
-        await db.run(mongoServer.getUri());
+        await db.run();
     })
 
     beforeEach(async () => {
-        await db.drop();
-    })
-
-    afterEach(async () => {
-
+        await db.dropCollections();
     })
 
     afterAll(async () => {
-        await db.drop();
-        await db.stop();
+        await db.dropDB();
     })
 
     afterAll(done => done())
@@ -31,8 +24,9 @@ describe('auth-integration', () => {
 
         const registerUser = authService.registration;
 
+
         nodemailerService.sendEmail = jest.fn().mockImplementation((email: string, code: string, template: (code: string) => string) => {
-            return true;
+            return Promise.resolve(true);
         })
 
         it('should register user with correct data', async () => {

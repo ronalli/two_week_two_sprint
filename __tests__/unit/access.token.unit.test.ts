@@ -1,4 +1,3 @@
-import {MongoMemoryServer} from "mongodb-memory-server";
 import {db} from "../../src/db/db";
 import {jwtService} from "../../src/utils/jwt-services";
 import {usersMongoRepositories} from "../../src/users/usersMongoRepositories";
@@ -8,21 +7,15 @@ import {ResultCode} from "../../src/types/resultCode";
 describe('auth-integration', () => {
 
     beforeAll(async () => {
-        const mongoServer = await MongoMemoryServer.create();
-        await db.run(mongoServer.getUri());
+        await db.run();
     })
 
     beforeEach(async () => {
-        await db.drop();
-    })
-
-    afterEach(async () => {
-
+        await db.dropCollections()
     })
 
     afterAll(async () => {
-        await db.drop();
-        await db.stop();
+        await db.dropDB();
     })
 
     afterAll(done => done())
