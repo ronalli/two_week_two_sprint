@@ -65,5 +65,17 @@ describe("Users Tests", () => {
 
     })
 
+    it('should correct create user by admin', async () => {
+
+        const user = testSeeder.createUserDto();
+
+        const response = await req.post(SETTINGS.PATH.USERS).send(user).set('Authorization', process.env.AUTH_HEADER || '').expect(HTTP_STATUSES.Created)
+
+        console.log(response.body)
+
+        // expect(user).toEqual(response.body)
+
+    })
+
 
 })

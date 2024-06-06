@@ -106,7 +106,7 @@ export const authService = {
     },
 
     confirmEmail: async (code: string) => {
-        const result = await usersQueryRepositories.findUserByCodeConfirmation(code);
+        const result= await usersQueryRepositories.findUserByCodeConfirmation(code);
 
         if (result.data?.emailConfirmation?.isConfirmed) {
             return {
@@ -221,9 +221,9 @@ export const authService = {
         }
         const success = await jwtService.getUserIdByToken(token);
 
-        const newRefreshToken = new RefreshTokenModel({refreshToken: token});
+        const invalidRefreshToken = new RefreshTokenModel({refreshToken: token});
 
-        await newRefreshToken.save();
+        await invalidRefreshToken.save();
 
         if (success) {
 

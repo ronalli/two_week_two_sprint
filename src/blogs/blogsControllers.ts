@@ -6,8 +6,9 @@ import {IBlogInputModel} from "./types/blogs-types";
 import {IBlogQueryType} from "./types/request-response-type";
 import {postsServices} from "../posts/postsServices";
 
-export const blogsControllers = {
-    createBlog: async (req: Request, res: Response) => {
+
+class BlogsControllers {
+    async createBlog(req: Request, res: Response) {
         const inputDataBlog: IBlogInputModel = req.body;
         const result = await blogsServices.createBlog(inputDataBlog);
         if (result.data) {
@@ -15,8 +16,9 @@ export const blogsControllers = {
             return;
         }
         res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
-    },
-    getBlog: async (req: Request, res: Response) => {
+    }
+
+    async getBlog(req: Request, res: Response) {
         const {blogId} = req.params;
         const result = await blogsQueryRepositories.findBlogById(blogId);
         if (result.data) {
@@ -25,8 +27,9 @@ export const blogsControllers = {
         }
         res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
         return
-    },
-    getBlogs: async (req: Request, res: Response) => {
+    }
+
+    async getBlogs(req: Request, res: Response) {
         const queryParams: IBlogQueryType = req.query;
         const result = await blogsQueryRepositories.getAllBlogs(queryParams);
 
@@ -37,29 +40,32 @@ export const blogsControllers = {
 
         res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
         return
-    },
-    updateBlog: async (req: Request, res: Response) => {
+    }
+
+    async updateBlog(req: Request, res: Response) {
         const {blogId} = req.params;
         const inputUpdateDataBlog: IBlogInputModel = req.body;
         const result = await blogsServices.updateBlog(blogId, inputUpdateDataBlog)
-        if(result.errorMessage) {
+        if (result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
             return
         }
         res.status(HTTP_STATUSES[result.status]).send(result.data)
         return
-    },
-    deleteBlog: async (req: Request, res: Response) => {
+    }
+
+    async deleteBlog(req: Request, res: Response) {
         const {blogId} = req.params;
         const result = await blogsServices.deleteBlog(blogId);
-        if(result.errorMessage) {
+        if (result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
             return
         }
         res.status(HTTP_STATUSES[result.status]).send(result.data)
         return
-    },
-    getAllPostsForBlog: async (req: Request, res: Response) => {
+    }
+
+    async getAllPostsForBlog(req: Request, res: Response) {
         const {blogId} = req.params;
         const queryParams: IBlogQueryType = req.query;
 
@@ -72,10 +78,9 @@ export const blogsControllers = {
 
         res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
         return
+    }
 
-    },
-
-    createPostForSpecialBlog: async (req: Request, res: Response) => {
+    async createPostForSpecialBlog(req: Request, res: Response) {
         const inputDataPost = req.body;
         const {blogId} = req.params;
 
@@ -101,3 +106,5 @@ export const blogsControllers = {
         return
     }
 }
+
+export const blogsControllers = new BlogsControllers()

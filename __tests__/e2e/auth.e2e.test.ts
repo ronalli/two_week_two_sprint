@@ -6,6 +6,11 @@ import {db} from "../../src/db/db";
 import {testSeeder} from "../utils/test.seeder";
 import cookie from "cookie";
 import {serviceUsers} from "../utils/serviceUsers";
+import {serviceLogin} from "../utils/serviceRegistration";
+import exp = require("node:constants");
+import {RecoveryCodeModel} from "../../src/auth/domain/recoveryCode.entity";
+import {randomUUID} from "node:crypto";
+import {jwtService} from "../../src/utils/jwt-services";
 
 
 describe("Auth Tests", () => {
@@ -55,7 +60,9 @@ describe("Auth Tests", () => {
         }
         const jwtToken = await req.post(SETTINGS.PATH.AUTH + '/login').send(auth);
 
-        await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer ${jwtToken.body.accessToken}`).expect(HTTP_STATUSES.Success)
+        const response = await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer ${jwtToken.body.accessToken}`).expect(HTTP_STATUSES.Success)
+
+        expect(auth.loginOrEmail).toBe(response.body.login)
     })
 
     it("shouldn't correct auth", async () => {
@@ -99,7 +106,7 @@ describe("Auth Tests", () => {
 
     it('should incorrect resend code, since the user was created by admin and isConfirmed = true', async () => {
 
-       await req.post(SETTINGS.PATH.AUTH + '/registration-email-resending').send({email: 'test@gmail.com'}).expect(HTTP_STATUSES.BadRequest)
+        await req.post(SETTINGS.PATH.AUTH + '/registration-email-resending').send({email: 'test@gmail.com'}).expect(HTTP_STATUSES.BadRequest)
 
     })
 
@@ -174,5 +181,42 @@ describe("Auth Tests", () => {
 
         await req.post(SETTINGS.PATH.AUTH + '/logout').set('Cookie', `refreshToken=${cook.refreshToken}`).expect(HTTP_STATUSES.Unauthorized);
     })
+
+
+    it('should correct recovery and update password', async () => {
+
+        const user = await serviceUsers.createUser()
+
+        const code = await jwtService.createdRecoveryCode(user.email, '1h')
+
+        const recoveryCode = new RecoveryCodeModel({code: code})
+
+        await recoveryCode.save();
+
+        await req.post(SETTINGS.PATH.AUTH + '/login').send({
+            'loginOrEmail': user.login,
+            'password': '12345678'
+        }).expect(HTTP_STATUSES.Success)
+
+        const recoveryData = {
+            'newPassword': '87654321',
+            'recoveryCode': code
+        }
+
+        await req.post(SETTINGS.PATH.AUTH + '/new-password').send(recoveryData).expect(HTTP_STATUSES.NotContent)
+
+
+        await req.post(SETTINGS.PATH.AUTH + '/login').send({
+            'loginOrEmail': user.login,
+            'password': '12345678'
+        }).expect(HTTP_STATUSES.Unauthorized)
+
+        await req.post(SETTINGS.PATH.AUTH + '/login').send({
+            'loginOrEmail': user.login,
+            'password': '87654321'
+        }).expect(HTTP_STATUSES.Success)
+
+    })
+
 
 })

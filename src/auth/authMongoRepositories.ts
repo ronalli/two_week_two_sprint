@@ -22,7 +22,6 @@ export const authMongoRepositories = {
     },
     createUser: async (data: IUserDBType) => {
         try {
-
             const user = new UserModel(data);
             const response = await user.save();
 
