@@ -1,13 +1,19 @@
 import {ObjectId} from "mongodb";
-import {blogsQueryRepositories} from "../blogs/blogsQueryRepositories";
 import {postsQueryRepositories} from "./postsQueryRepositories";
 import {IPostDBType, IPostInputModel} from "./types/posts-types";
 import {ResultCode} from "../types/resultCode";
 import {PostModel} from "./domain/post.entity";
+import {BlogsQueryRepositories} from "../blogs/blogsQueryRepositories";
 
-export const postsMongoRepositories = {
-    create: async (postData: IPostInputModel) => {
-        const findBlog = await blogsQueryRepositories.findBlogById(postData.blogId);
+export class PostsRepositories {
+    private blogsQueryRepositories: BlogsQueryRepositories
+
+    constructor() {
+        this.blogsQueryRepositories = new BlogsQueryRepositories();
+    }
+
+    async create(postData: IPostInputModel) {
+        const findBlog = await this.blogsQueryRepositories.findBlogById(postData.blogId);
 
         if (findBlog.data) {
 
@@ -34,14 +40,13 @@ export const postsMongoRepositories = {
             }
         }
         return {errorMessage: 'Not found blog', status: ResultCode.NotFound}
-    },
-    update: async (id: string, updatePost: IPostInputModel) => {
+    }
+
+    async update(id: string, updatePost: IPostInputModel) {
 
         const {content, blogId, shortDescription, title} = updatePost;
 
         try {
-            // const findPost = await postsCollection.findOne({_id: new ObjectId(id)});
-
             const findPost = await PostModel.findOne({_id: new ObjectId(id)});
             if (findPost) {
 
@@ -52,14 +57,6 @@ export const postsMongoRepositories = {
 
                 await findPost.save();
 
-                // await postsCollection.findOneAndUpdate({_id: new ObjectId(id)}, {
-                //     $set: {
-                //         title: updatePost.title,
-                //         content: updatePost.content,
-                //         shortDescription: updatePost.shortDescription,
-                //         blogId: updatePost.blogId
-                //     }
-                // })
                 return {status: ResultCode.NotContent, data: null}
             }
             return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}
@@ -67,9 +64,9 @@ export const postsMongoRepositories = {
             return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
         }
 
-    },
-    delete: async (id: string) => {
-        // const findDeletePost = await postsCollection.findOne({_id: new ObjectId(id)});
+    }
+
+    async delete(id: string) {
 
         const findDeletePost = await PostModel.findOne({_id: new ObjectId(id)});
 
@@ -78,5 +75,5 @@ export const postsMongoRepositories = {
             return {status: ResultCode.NotContent, data: null}
         }
         return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}
-    },
+    }
 }

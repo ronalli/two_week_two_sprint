@@ -1,15 +1,22 @@
 import {IPostInputModel} from "./types/posts-types";
-import {postsMongoRepositories} from "./postsMongoRepositories";
-import {blogsQueryRepositories} from "../blogs/blogsQueryRepositories";
+import {PostsRepositories} from "./postsRepositories";
 
-export const postsServices = {
-    createPost: async (post: IPostInputModel) => {
-        return await postsMongoRepositories.create(post);
-    },
-    updatePost: async (id: string, post: IPostInputModel) => {
-        return await postsMongoRepositories.update(id, post);
-    },
-    deletePost: async (id: string) => {
-        return await postsMongoRepositories.delete(id);
-    },
+export class PostsServices {
+    private postsRepositories: PostsRepositories
+    constructor() {
+        this.postsRepositories = new PostsRepositories();
+    }
+
+    async createPost(post: IPostInputModel) {
+        return await this.postsRepositories.create(post);
+    }
+
+    async updatePost(id: string, post: IPostInputModel) {
+        return await this.postsRepositories.update(id, post);
+    }
+
+    async deletePost(id: string) {
+        return await this.postsRepositories.delete(id);
+    }
+
 }

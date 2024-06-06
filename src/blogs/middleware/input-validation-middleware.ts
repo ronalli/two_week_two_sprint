@@ -1,5 +1,4 @@
-import {body, param} from 'express-validator'
-import {blogsQueryRepositories} from "../blogsQueryRepositories";
+import {body} from 'express-validator'
 
 const validationTitle = body('name').trim().notEmpty().withMessage('Field name is empty').isLength({
     max: 15

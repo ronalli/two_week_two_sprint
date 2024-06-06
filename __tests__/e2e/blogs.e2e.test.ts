@@ -3,6 +3,7 @@ import {db} from '../../src/db/db'
 import {HTTP_STATUSES} from "../../src/settings";
 import {SETTINGS} from "../../src/settings";
 import {testSeeder} from "../utils/test.seeder";
+import {serviceBlogs} from "../utils/serviceBlogs";
 
 
 describe('Blogs Tests', () => {
@@ -78,15 +79,15 @@ describe('Blogs Tests', () => {
         const res = await req.get(`${SETTINGS.PATH.BLOGS}/${String(35534534534534)}`).expect(HTTP_STATUSES.NotFound);
     });
 
-    it('should correct delete blog', async () => {
-        const foundBlogs = await req.get(SETTINGS.PATH.BLOGS).expect(HTTP_STATUSES.Success);
-
-        await req.delete(`${SETTINGS.PATH.BLOGS}/${String(foundBlogs.body.items[0].id)}`)
-            .set('Authorization', process.env.AUTH_HEADER || '')
-            .expect(HTTP_STATUSES.NotContent);
-
-        const res = await req.get(`${SETTINGS.PATH.BLOGS}/${String(foundBlogs.body.items[0].id)}`).expect(HTTP_STATUSES.NotFound)
-    });
+    // it('should correct delete blog', async () => {
+    //     const foundBlogs = await req.get(SETTINGS.PATH.BLOGS).expect(HTTP_STATUSES.Success);
+    //
+    //     await req.delete(`${SETTINGS.PATH.BLOGS}/${String(foundBlogs.body.items[0].id)}`)
+    //         .set('Authorization', process.env.AUTH_HEADER || '')
+    //         .expect(HTTP_STATUSES.NotContent);
+    //
+    //     const res = await req.get(`${SETTINGS.PATH.BLOGS}/${String(foundBlogs.body.items[0].id)}`).expect(HTTP_STATUSES.NotFound)
+    // });
 
     it('should correct update blog', async () => {
         const findBlogs = await req.get(SETTINGS.PATH.BLOGS);
@@ -100,8 +101,12 @@ describe('Blogs Tests', () => {
 
     })
 
-    it('should correct delete vlog', async () => {
-        const findBlogs = await req.get(SETTINGS.PATH.BLOGS);
+    it('should correct delete blog', async () => {
+
+        await serviceBlogs.createBlogs(4);
+
+        const findBlogs = await req.get(SETTINGS.PATH.BLOGS).expect(HTTP_STATUSES.Success);
+
 
         await req.delete(`${SETTINGS.PATH.BLOGS}/${String(findBlogs.body.items[0].id)}`)
             .set('Authorization', process.env.AUTH_HEADER || '')

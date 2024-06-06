@@ -1,5 +1,8 @@
 import {body, param} from 'express-validator'
-import {blogsQueryRepositories} from "../../blogs/blogsQueryRepositories";
+import {BlogsQueryRepositories} from "../../blogs/blogsQueryRepositories";
+// import {blogsQueryRepositories} from "../../blogs/blogsQueryRepositories";
+
+const blogsQueryRepositories = new BlogsQueryRepositories();
 
 const validationTitle = body('title')
     .trim().notEmpty().withMessage('Field is empty')

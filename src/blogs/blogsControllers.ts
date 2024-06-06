@@ -1,16 +1,26 @@
 import {Request, Response} from "express";
 import {HTTP_STATUSES} from "../settings";
-import {blogsQueryRepositories} from "./blogsQueryRepositories";
-import {blogsServices} from "./blogsServices";
+import {BlogsQueryRepositories} from "./blogsQueryRepositories";
+import {BlogsServices} from "./blogsServices";
 import {IBlogInputModel} from "./types/blogs-types";
 import {IBlogQueryType} from "./types/request-response-type";
-import {postsServices} from "../posts/postsServices";
+import {PostsServices} from "../posts/postsServices";
 
 
 class BlogsControllers {
+    private blogsServices: BlogsServices
+    private blogsQueryRepositories: BlogsQueryRepositories
+    private postsServices: PostsServices
+
+    constructor() {
+        this.blogsServices = new BlogsServices();
+        this.blogsQueryRepositories = new BlogsQueryRepositories();
+        this.postsServices = new PostsServices();
+    }
+
     async createBlog(req: Request, res: Response) {
         const inputDataBlog: IBlogInputModel = req.body;
-        const result = await blogsServices.createBlog(inputDataBlog);
+        const result = await this.blogsServices.createBlog(inputDataBlog);
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data)
             return;
@@ -20,7 +30,7 @@ class BlogsControllers {
 
     async getBlog(req: Request, res: Response) {
         const {blogId} = req.params;
-        const result = await blogsQueryRepositories.findBlogById(blogId);
+        const result = await this.blogsQueryRepositories.findBlogById(blogId);
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data)
             return
@@ -31,7 +41,7 @@ class BlogsControllers {
 
     async getBlogs(req: Request, res: Response) {
         const queryParams: IBlogQueryType = req.query;
-        const result = await blogsQueryRepositories.getAllBlogs(queryParams);
+        const result = await this.blogsQueryRepositories.getAllBlogs(queryParams);
 
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data)
@@ -45,7 +55,7 @@ class BlogsControllers {
     async updateBlog(req: Request, res: Response) {
         const {blogId} = req.params;
         const inputUpdateDataBlog: IBlogInputModel = req.body;
-        const result = await blogsServices.updateBlog(blogId, inputUpdateDataBlog)
+        const result = await this.blogsServices.updateBlog(blogId, inputUpdateDataBlog)
         if (result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
             return
@@ -56,7 +66,7 @@ class BlogsControllers {
 
     async deleteBlog(req: Request, res: Response) {
         const {blogId} = req.params;
-        const result = await blogsServices.deleteBlog(blogId);
+        const result = await this.blogsServices.deleteBlog(blogId);
         if (result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
             return
@@ -69,9 +79,9 @@ class BlogsControllers {
         const {blogId} = req.params;
         const queryParams: IBlogQueryType = req.query;
 
-        const result = await blogsQueryRepositories.findBlogById(blogId);
+        const result = await this.blogsQueryRepositories.findBlogById(blogId);
         if (result.data) {
-            const foundPosts = await blogsQueryRepositories.getAndSortPostsSpecialBlog(blogId, queryParams)
+            const foundPosts = await this.blogsQueryRepositories.getAndSortPostsSpecialBlog(blogId, queryParams)
             res.status(HTTP_STATUSES[foundPosts.status]).send(foundPosts.data)
             return
         }
@@ -84,7 +94,7 @@ class BlogsControllers {
         const inputDataPost = req.body;
         const {blogId} = req.params;
 
-        const result = await blogsQueryRepositories.findBlogById(blogId);
+        const result = await this.blogsQueryRepositories.findBlogById(blogId);
 
         if (!result.data) {
             res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
@@ -96,7 +106,7 @@ class BlogsControllers {
             ...inputDataPost
         }
 
-        const createdPost = await postsServices.createPost(post);
+        const createdPost = await this.postsServices.createPost(post);
 
         if (createdPost.data) {
             res.status(HTTP_STATUSES[createdPost.status]).send(createdPost.data)

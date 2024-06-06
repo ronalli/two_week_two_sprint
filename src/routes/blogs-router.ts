@@ -10,15 +10,15 @@ import {validatorParamBlogId} from "../middleware/blogId-validator-middleware";
 
 export const blogsRouter = Router({});
 
-blogsRouter.get('/', ...validationQueryParamsBlogs, inputCheckErrorsMiddleware, blogsControllers.getBlogs)
+blogsRouter.get('/', ...validationQueryParamsBlogs, inputCheckErrorsMiddleware, blogsControllers.getBlogs.bind(blogsControllers))
 
-blogsRouter.get('/:blogId', validatorParamBlogId, inputCheckCorrectIdMiddleware, blogsControllers.getBlog)
+blogsRouter.get('/:blogId', validatorParamBlogId, inputCheckCorrectIdMiddleware, blogsControllers.getBlog.bind(blogsControllers))
 
 blogsRouter.post('/',
     authMiddleware,
     ...validationCreateBlog,
     inputCheckErrorsMiddleware,
-    blogsControllers.createBlog)
+    blogsControllers.createBlog.bind(blogsControllers))
 
 blogsRouter.put('/:blogId',
     authMiddleware,
@@ -26,16 +26,16 @@ blogsRouter.put('/:blogId',
     inputCheckCorrectIdMiddleware,
     ...validationCreateBlog,
     inputCheckErrorsMiddleware,
-    blogsControllers.updateBlog)
+    blogsControllers.updateBlog.bind(blogsControllers))
 
-blogsRouter.delete('/:blogId', authMiddleware, blogsControllers.deleteBlog)
+blogsRouter.delete('/:blogId', authMiddleware, blogsControllers.deleteBlog.bind(blogsControllers))
 
 blogsRouter.get('/:blogId/posts',
     ...validationQueryParamsPosts,
     inputCheckErrorsMiddleware,
     validatorParamBlogId,
     inputCheckCorrectIdMiddleware,
-    blogsControllers.getAllPostsForBlog)
+    blogsControllers.getAllPostsForBlog.bind(blogsControllers))
 
 blogsRouter.post('/:blogId/posts',
     authMiddleware,
@@ -43,4 +43,4 @@ blogsRouter.post('/:blogId/posts',
     inputCheckErrorsMiddleware,
     validatorParamBlogId,
     inputCheckCorrectIdMiddleware,
-    blogsControllers.createPostForSpecialBlog)
+    blogsControllers.createPostForSpecialBlog.bind(blogsControllers))

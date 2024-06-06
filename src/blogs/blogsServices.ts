@@ -1,16 +1,20 @@
-import {blogsRepositories} from "./blogsRepositories";
+import {BlogsRepositories} from "./blogsRepositories";
 import {IBlogInputModel} from "./types/blogs-types";
 
-class BlogsServices {
+export class BlogsServices {
+    private blogsRepositories: BlogsRepositories
+
+    constructor() {
+        this.blogsRepositories = new BlogsRepositories();
+    }
+
     async createBlog(blog: IBlogInputModel) {
-        return await blogsRepositories.create(blog)
+        return await this.blogsRepositories.create(blog)
     }
     async updateBlog(blogId: string, inputUpdateBlog: IBlogInputModel){
-        return await blogsRepositories.update(blogId, inputUpdateBlog);
+        return await this.blogsRepositories.update(blogId, inputUpdateBlog);
     }
     async deleteBlog(blogId: string){
-        return await blogsRepositories.delete(blogId);
+        return await this.blogsRepositories.delete(blogId);
     }
 }
-
-export const blogsServices = new BlogsServices();

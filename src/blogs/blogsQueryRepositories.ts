@@ -1,14 +1,14 @@
 import {createDefaultValues} from "../utils/helper";
 import {ObjectId} from "mongodb";
 import {IBlogQueryType} from "./types/request-response-type";
-import {IBlogDBType, IBlogViewModel} from "./types/blogs-types";
-import {IPostDBType, IPostViewModel} from "../posts/types/posts-types";
 import {ResultCode} from "../types/resultCode";
 import {BlogModel} from "./domain/blog.entity";
 import {PostModel} from "../posts/domain/post.entity";
+import {mappingBlogs} from "../common/utils/mappingBlogs";
+import {mappingPosts} from "../common/utils/mappingPosts";
 
 
-class BlogsQueryRepositories {
+export class BlogsQueryRepositories {
     async getAndSortPostsSpecialBlog(blogId: string, queryParams: IBlogQueryType) {
         const query = createDefaultValues(queryParams);
 
@@ -37,7 +37,7 @@ class BlogsQueryRepositories {
                     page: query.pageNumber,
                     pageSize: query.pageSize,
                     totalCount,
-                    items: allPosts.map(x => this._formatingDataForOutputPost(x))
+                    items: allPosts.map(x => mappingPosts.formatingDataForOutputPost(x))
                 }
             }
 
@@ -73,7 +73,7 @@ class BlogsQueryRepositories {
                     page: query.pageNumber,
                     pageSize: query.pageSize,
                     totalCount,
-                    items: allBlogs.map(x => this._formatingDataForOutputBlog(x))
+                    items: allBlogs.map(x => mappingBlogs.formatingDataForOutputBlog(x))
                 }
             }
         } catch (e) {
@@ -87,7 +87,7 @@ class BlogsQueryRepositories {
 
                 return {
                     status: ResultCode.Success,
-                    data: this._formatingDataForOutputBlog(foundBlog)
+                    data: mappingBlogs.formatingDataForOutputBlog(foundBlog)
                 }
             }
             return {errorMessage: 'Not found blog', status: ResultCode.NotFound, data: null}
@@ -96,28 +96,4 @@ class BlogsQueryRepositories {
         }
 
     }
-    _formatingDataForOutputBlog(input: IBlogDBType): IBlogViewModel {
-        return {
-            id: String(input._id),
-            name: input.name,
-            description: input.description,
-            websiteUrl: input.websiteUrl,
-            createdAt: input.createdAt,
-            isMembership: input.isMembership,
-        };
-    }
-    _formatingDataForOutputPost(input: IPostDBType): IPostViewModel {
-        return {
-            id: String(input._id),
-            blogId: input.blogId,
-            content: input.content,
-            createdAt: input.createdAt,
-            shortDescription: input.shortDescription,
-            blogName: input.blogName,
-            title: input.title,
-        };
-    }
 }
-
-export const blogsQueryRepositories = new BlogsQueryRepositories();
-
