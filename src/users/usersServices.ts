@@ -1,16 +1,24 @@
-import {usersMongoRepositories} from "./usersMongoRepositories";
 import {IUserInputModel} from "./types/user-types";
+import {UsersRepositories} from "./usersRepositories";
 
-export const usersServices = {
-    createUser: async (data: IUserInputModel) => {
-        return await usersMongoRepositories.createUser(data);
+export class UsersServices {
+    private usersRepositories: UsersRepositories
 
-    },
-    deleteUser: async (id:string) => {
-        return await usersMongoRepositories.deleteUser(id);
+    constructor() {
+        this.usersRepositories = new UsersRepositories();
+    }
 
-    },
-    findUser: async (id: string)=> {
-        return await usersMongoRepositories.findUserById(id)
+    async createUser(data: IUserInputModel) {
+        return await this.usersRepositories.createUser(data);
+
+    }
+
+    async deleteUser(id: string) {
+        return await this.usersRepositories.deleteUser(id);
+
+    }
+
+    async findUser(id: string) {
+        return await this.usersRepositories.findUserById(id)
     }
 }

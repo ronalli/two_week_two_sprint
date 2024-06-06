@@ -6,7 +6,7 @@ import {inputCheckErrorsMiddleware} from "../middleware/inputCheckErrorsMiddlewa
 
 export const commentsRouter = Router({})
 
-commentsRouter.get('/:commentId', commentsController.getComment)
-commentsRouter.put('/:commentId', authJwtMiddleware, validationContent, inputCheckErrorsMiddleware, commentsController.updateComment)
-commentsRouter.delete('/:commentId', authJwtMiddleware, commentsController.deleteComment);
+commentsRouter.get('/:commentId', commentsController.getComment.bind(commentsController))
+commentsRouter.put('/:commentId', authJwtMiddleware, validationContent, inputCheckErrorsMiddleware, commentsController.updateComment.bind(commentsController))
+commentsRouter.delete('/:commentId', authJwtMiddleware, commentsController.deleteComment.bind(commentsController));
 

@@ -5,14 +5,17 @@ import {PostsServices} from "./postsServices";
 import {IPostInputModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
 import {jwtService} from "../utils/jwt-services";
-import {commentsServices} from "../comments/commentsServices";
+import {CommentsServices} from "../comments/commentsServices";
 import {ICommentsQueryType} from "../comments/types/output-paginator-comments-types";
 
 
 export class PostsControllers {
     private postsServices: PostsServices
+    private commentsServices: CommentsServices
     constructor() {
         this.postsServices = new PostsServices();
+        this.commentsServices = new CommentsServices()
+
     }
 
     async createPost(req: Request, res: Response) {
@@ -75,7 +78,7 @@ export class PostsControllers {
         const token = req.headers.authorization?.split(" ")[1];
         let userId = await jwtService.getUserIdByToken(token!);
 
-        const result = await commentsServices.create({postId, userId, content})
+        const result = await this.commentsServices.create({postId, userId, content})
 
         if (result.data) {
 
@@ -90,7 +93,7 @@ export class PostsControllers {
     async getAllCommentsForPost(req: Request, res: Response) {
         const queryParams: ICommentsQueryType = req.query;
         const {postId} = req.params;
-        const result = await commentsServices.findComments(postId, queryParams)
+        const result = await this.commentsServices.findComments(postId, queryParams)
 
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data)

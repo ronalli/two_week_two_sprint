@@ -2,14 +2,18 @@ import {IUserDBType, IUserInputModel, IUserViewModel} from "./types/user-types";
 import {ObjectId} from "mongodb";
 import {bcryptService} from "../common/adapter/bcrypt.service";
 import {ResultCode} from "../types/resultCode";
-import {usersQueryRepositories} from "./usersQueryRepositories";
 import {UserModel} from "./domain/user.entity";
+import {UsersQueryRepositories} from "./usersQueryRepositories";
 
-export const usersMongoRepositories = {
-    createUser: async (data: IUserInputModel) => {
+export class UsersRepositories {
+    private usersQueryRepositories: UsersQueryRepositories
+    constructor() {
+        this.usersQueryRepositories = new UsersQueryRepositories();
+    }
 
-        const response = await usersQueryRepositories.doesExistByLoginOrEmail(data.login, data.email)
+    async createUser(data: IUserInputModel) {
 
+        const response = await this.usersQueryRepositories.doesExistByLoginOrEmail(data.login, data.email)
 
         if (response.status === ResultCode.BadRequest) {
 
@@ -33,17 +37,13 @@ export const usersMongoRepositories = {
                 isConfirmed: true
             }
         }
-
         try {
-
             const user = new UserModel(dataUser);
             const response = await user.save();
-
-            // const insertUser = await usersCollection.insertOne(newUser);
-            const result = await usersMongoRepositories.findUserById(String(response._id))
+            const result = await this.findUserById(String(response._id))
 
             if (result.data) {
-                const outViewModelUser = usersMongoRepositories._maping(result.data);
+                const outViewModelUser = this._maping(result.data);
                 return {
                     status: ResultCode.Created,
                     data: outViewModelUser,
@@ -53,11 +53,10 @@ export const usersMongoRepositories = {
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
+    }
 
-    },
-    findUserById: async (id: string) => {
+    async findUserById(id: string) {
         try {
-            // const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
             const foundUser = await UserModel.findOne({_id: new ObjectId(id)})
             if (foundUser) {
                 return {
@@ -70,10 +69,10 @@ export const usersMongoRepositories = {
         } catch (e) {
             return {errorMessage: 'Errors BD', status: ResultCode.InternalServerError, data: null}
         }
-    },
-    deleteUser: async (id: string) => {
+    }
+
+    async deleteUser(id: string) {
         try {
-            // const foundUser = await usersCollection.findOne({_id: new ObjectId(id)});
             const foundUser = await UserModel.findOne({_id: new ObjectId(id)});
             if (!foundUser) {
                 return {
@@ -82,30 +81,25 @@ export const usersMongoRepositories = {
                     data: null
                 }
             }
-            // await usersCollection.findOneAndDelete({_id: new ObjectId(id)});
             await UserModel.deleteOne({_id: new ObjectId(id)});
             return {
                 status: ResultCode.NotContent,
                 data: null
             }
-
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
+    }
 
-    },
-
-    doesExistById: async (id: string) => {
-        // const findedUser = await usersCollection.findOne({_id: new ObjectId(id)});
+    async doesExistById(id: string) {
         const findedUser = await UserModel.findOne({_id: new ObjectId(id)});
-
-        if(findedUser) {
-            return usersMongoRepositories._maping(findedUser);
+        if (findedUser) {
+            return this._maping(findedUser);
         }
         return null;
-    },
+    }
 
-    _maping: (user: IUserDBType): IUserViewModel => {
+    _maping(user: IUserDBType): IUserViewModel {
         return {
             id: String(user._id),
             createdAt: user.createdAt,

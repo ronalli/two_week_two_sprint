@@ -2,7 +2,6 @@ import {Request, Response} from 'express';
 import {ILoginBody} from "./types/login-types";
 import {authService} from "./authService";
 import {HTTP_STATUSES} from "../settings";
-import {usersServices} from "../users/usersServices";
 import {IUserDBType} from "../users/types/user-types";
 import {IMeViewModel} from "./types/me-types";
 import {IUserInputModelRegistration} from "./types/registration-type";

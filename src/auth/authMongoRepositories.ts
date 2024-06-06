@@ -1,6 +1,6 @@
 import {ResultCode} from "../types/resultCode";
 import {IUserDBType} from "../users/types/user-types";
-import {usersMongoRepositories} from "../users/usersMongoRepositories";
+import {usersMongoRepositories} from "../users/usersRepositories";
 import {UserModel} from "../users/domain/user.entity";
 
 export const authMongoRepositories = {

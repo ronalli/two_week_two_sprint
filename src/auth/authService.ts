@@ -11,7 +11,7 @@ import {nodemailerService} from "../common/adapter/nodemailer.service";
 import {emailExamples} from "../common/adapter/emailExamples";
 import {IUserDBType} from "../users/types/user-types";
 import {ObjectId} from "mongodb";
-import {usersMongoRepositories} from "../users/usersMongoRepositories";
+import {usersMongoRepositories} from "../users/usersRepositories";
 import {IHeadersSession} from "./types/sessions-types";
 import {securityServices} from "../security/securityServices";
 import {decodeToken} from "../common/utils/decodeToken";

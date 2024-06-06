@@ -1,12 +1,13 @@
-import {ICommentDBType, ICommentViewModel} from "./types/comments-types";
 import {ICommentsQueryType} from "./types/output-paginator-comments-types";
 import {createDefaultValuesQueryParams} from "../utils/helper";
 import {ObjectId} from "mongodb";
 import {ResultCode} from "../types/resultCode";
 import {CommentModel} from "./domain/comment.entity";
+import {mappingComments} from "../common/utils/mappingComments";
 
-export const commentsQueryRepositories = {
-    getCommentsForSpecialPost: async (postId: string, queryParams: ICommentsQueryType) => {
+
+export class CommentsQueryRepositories {
+    async getCommentsForSpecialPost(postId: string, queryParams: ICommentsQueryType) {
         const query = createDefaultValuesQueryParams(queryParams);
         try {
             const filter = {postId: postId}
@@ -24,16 +25,15 @@ export const commentsQueryRepositories = {
                     pageSize: query.pageSize,
                     page: query.pageNumber,
                     totalCount,
-                    items: commentsQueryRepositories._mappingAll(comments)
+                    items: mappingComments.formatDataAllCommentsForView(comments)
                 }
 
             }
         } catch (e) {
             return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
         }
-    },
-
-    getCommentById: async (id: string) => {
+    }
+    async getCommentById(id: string) {
         try {
             const findComment = await CommentModel.findOne({_id: new ObjectId(id)});
 
@@ -41,33 +41,12 @@ export const commentsQueryRepositories = {
 
                 return {
                     status: ResultCode.Success,
-                    data: commentsQueryRepositories._mapping(findComment)
+                    data: mappingComments.formatDataCommentForView(findComment)
                 }
             }
             return {errorMessage: 'Not found comment', status: ResultCode.NotFound, data: null}
         } catch (e) {
             return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
-        }
-    },
-
-    _mappingAll: (comments: ICommentDBType[]): ICommentViewModel[] => {
-        return comments.map(c => ({
-            id: String(c._id),
-            commentatorInfo: {...c.commentatorInfo},
-            createdAt: c.createdAt,
-            content: c.content
-        }))
-    },
-
-    _mapping: (c: ICommentDBType): ICommentViewModel => {
-        return {
-            id: String(c._id),
-            commentatorInfo: {
-              userId: c.commentatorInfo.userId,
-              userLogin: c.commentatorInfo.userLogin
-            },
-            createdAt: c.createdAt,
-            content: c.content
         }
     }
 }

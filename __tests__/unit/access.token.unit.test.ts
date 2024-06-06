@@ -1,6 +1,6 @@
 import {db} from "../../src/db/db";
 import {jwtService} from "../../src/utils/jwt-services";
-import {usersMongoRepositories} from "../../src/users/usersMongoRepositories";
+import {usersMongoRepositories} from "../../src/users/usersRepositories";
 import {authService} from "../../src/auth/authService";
 import {ResultCode} from "../../src/types/resultCode";
 
