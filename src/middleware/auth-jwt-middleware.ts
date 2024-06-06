@@ -1,7 +1,9 @@
 import {Response, Request, NextFunction} from 'express';
 import {HTTP_STATUSES} from "../settings";
-import {authService} from "../auth/authService";
 import {ResultCode} from "../types/resultCode";
+import {AuthService} from "../auth/authService";
+
+const authService = new AuthService();
 
 export const authJwtMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if(!req.headers.authorization) {

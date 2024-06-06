@@ -1,13 +1,10 @@
 import {UserModel} from "../users/domain/user.entity";
 import {ResultCode} from "../types/resultCode";
-import {mappingUser} from "../common/utils/mappingUser";
 
-export const authQueryRepositories = {
-
-    findByEmail: async (email: string) => {
+export class AuthQueryRepositories {
+    async findByEmail(email: string){
         try {
             const user = await UserModel.findOne({email: email})
-
             if (user) return {
                 status: ResultCode.Success,
                 data: user

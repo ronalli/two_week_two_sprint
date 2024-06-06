@@ -1,8 +1,10 @@
 import {db} from "../../src/db/db";
-import {authService} from "../../src/auth/authService";
+import {AuthService} from "../../src/auth/authService";
 import {nodemailerService} from "../../src/common/adapter/nodemailer.service";
 import {testSeeder} from "../utils/test.seeder";
 import {ResultCode} from "../../src/types/resultCode";
+
+const authService = new AuthService();
 
 describe('auth-integration', () => {
 
@@ -22,8 +24,7 @@ describe('auth-integration', () => {
 
     describe('User registration', () => {
 
-        const registerUser = authService.registration;
-
+        const registerUser = authService.registration.bind(authService);
 
         nodemailerService.sendEmail = jest.fn().mockImplementation((email: string, code: string, template: (code: string) => string) => {
             return Promise.resolve(true);
@@ -38,7 +39,6 @@ describe('auth-integration', () => {
 
             expect(nodemailerService.sendEmail).toHaveBeenCalled();
             expect(nodemailerService.sendEmail).toHaveBeenCalledTimes(1);
-
 
         })
 

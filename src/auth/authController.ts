@@ -1,36 +1,44 @@
 import {Request, Response} from 'express';
 import {ILoginBody} from "./types/login-types";
-import {authService} from "./authService";
 import {HTTP_STATUSES} from "../settings";
 import {IUserDBType} from "../users/types/user-types";
 import {IMeViewModel} from "./types/me-types";
 import {IUserInputModelRegistration} from "./types/registration-type";
 import {mapingErrors} from "../common/adapter/mapingErrors";
 import {mappingRequestHeaders} from "../common/utils/mappingRequestHeaders";
+import {AuthService} from "./authService";
+import {UsersServices} from "../users/usersServices";
 
-export const authController = {
-    login: async (req: Request, res: Response) => {
+export class AuthController {
+    private authService: AuthService
+    private usersServices: UsersServices
+    constructor() {
+        this.authService = new AuthService()
+        this.usersServices = new UsersServices()
+    }
+
+    async login(req: Request, res: Response) {
 
         const dataSession = mappingRequestHeaders.getHeadersForCreateSession(req)
 
         const authData: ILoginBody = req.body;
-        const result = await authService.login(authData, dataSession);
+        const result = await this.authService.login(authData, dataSession);
         if (result.data) {
 
-            res.cookie('refreshToken', result.data.refreshToken,  {httpOnly: true, secure: true});
+            res.cookie('refreshToken', result.data.refreshToken, {httpOnly: true, secure: true});
             res.status(HTTP_STATUSES[result.status]).send({"accessToken": result.data.accessToken})
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
         return
-    },
+    }
 
-    me: async (req: Request, res: Response) => {
+    async me(req: Request, res: Response) {
         const userId = req.userId!;
         if (userId !== null) {
-            const result = await usersServices.findUser(userId);
+            const result = await this.usersServices.findUser(userId);
             if (result.data) {
-                const outputResult = authController._maping(result.data);
+                const outputResult = this._maping(result.data);
                 res.status(HTTP_STATUSES[result.status]).send(outputResult)
                 return
             }
@@ -39,32 +47,33 @@ export const authController = {
         }
         res.status(HTTP_STATUSES.BadRequest).send({errorMessage: "Something went wrong", data: null})
         return
-    },
+    }
 
-    registration: async (req: Request, res: Response) => {
+    async registration(req: Request, res: Response) {
         const data: IUserInputModelRegistration = req.body
-        const result = await authService.registration(data);
+        const result = await this.authService.registration(data);
         if (result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send(mapingErrors.outputResponse(result.errorMessage))
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({})
         return
-    },
+    }
 
-    confirmationEmail: async (req: Request, res: Response) => {
+    async confirmationEmail(req: Request, res: Response) {
         const {code} = req.body
-        const result = await authService.confirmEmail(code)
+        const result = await this.authService.confirmEmail(code)
         if (result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send(mapingErrors.outputResponse(result.errorMessage))
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({})
         return
-    },
-    resendConfirmationCode: async (req: Request, res: Response) => {
+    }
+
+    async resendConfirmationCode(req: Request, res: Response) {
         const {email} = req.body;
-        const result = await authService.resendCode(email);
+        const result = await this.authService.resendCode(email);
 
         if (result.errorMessage) {
             res.status(HTTP_STATUSES[result.status]).send(mapingErrors.outputResponse(result.errorMessage))
@@ -72,30 +81,28 @@ export const authController = {
         }
         res.status(HTTP_STATUSES[result.status]).send({})
         return
+    }
 
-    },
-
-    logout: async (req: Request, res: Response) => {
+    async logout(req: Request, res: Response) {
         const cookie = req.cookies.refreshToken;
 
-        if(!cookie) {
+        if (!cookie) {
             res.status(HTTP_STATUSES.Unauthorized).send({})
             return
         }
 
-        const response = await authService.logout(cookie);
+        const response = await this.authService.logout(cookie);
 
         res.status(HTTP_STATUSES[response.status]).send({})
         return
+    }
 
-    },
-
-    refreshToken: async (req: Request, res: Response) => {
+    async refreshToken(req: Request, res: Response){
         const cookie = req.cookies.refreshToken;
 
-        const response = await authService.refreshToken(cookie)
+        const response = await this.authService.refreshToken(cookie)
 
-        if(response.data) {
+        if (response.data) {
             res.cookie('refreshToken', response.data.refreshToken, {httpOnly: true, secure: true})
             res.status(HTTP_STATUSES[response.status]).send({'accessToken': response.data.accessToken})
             return
@@ -103,37 +110,33 @@ export const authController = {
 
         res.status(HTTP_STATUSES[response.status]).send(response.errorMessage)
         return
+    }
 
-    },
-
-    passwordRecovery: async (req: Request, res: Response) => {
+    async passwordRecovery(req: Request, res: Response){
         const {email} = req.body;
 
-        const response = await authService.recoveryCode(email);
+        const response = await this.authService.recoveryCode(email);
 
         res.status(HTTP_STATUSES.NotContent).send({})
         return;
+    }
 
-    },
-
-    setNewPassword: async (req: Request, res: Response) => {
+    async setNewPassword(req: Request, res: Response){
         const {newPassword, recoveryCode} = req.body;
 
-        const response = await authService.checkValidRecoveryCode(recoveryCode)
+        const response = await this.authService.checkValidRecoveryCode(recoveryCode)
 
-        if(!response.data) {
+        if (!response.data) {
             res.status(HTTP_STATUSES[response.status]).send({"errorsMessages": response.errorsMessages})
             return
         }
-        await authService.updatePassword(newPassword, response.data)
+        await this.authService.updatePassword(newPassword, response.data)
 
         res.status(HTTP_STATUSES.NotContent).send({})
         return
+    }
 
-    },
-
-    _maping
-    (user: IUserDBType): IMeViewModel {
+    _maping(user: IUserDBType): IMeViewModel {
         return {
             userId: String(user._id),
             email: user.email,
@@ -141,3 +144,5 @@ export const authController = {
         }
     }
 }
+
+export const authController = new AuthController();

@@ -71,9 +71,8 @@ describe("Users Tests", () => {
 
         const response = await req.post(SETTINGS.PATH.USERS).send(user).set('Authorization', process.env.AUTH_HEADER || '').expect(HTTP_STATUSES.Created)
 
-        console.log(response.body)
-
-        // expect(user).toEqual(response.body)
+        expect(user.login).toEqual(response.body.login)
+        expect(user.email).toEqual(response.body.email)
 
     })
 

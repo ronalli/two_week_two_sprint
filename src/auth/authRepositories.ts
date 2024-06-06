@@ -1,12 +1,16 @@
 import {ResultCode} from "../types/resultCode";
 import {IUserDBType} from "../users/types/user-types";
-import {usersMongoRepositories} from "../users/usersRepositories";
 import {UserModel} from "../users/domain/user.entity";
+import {UsersRepositories} from "../users/usersRepositories";
 
-export const authMongoRepositories = {
-    findByLoginOrEmail: async (loginOrEmail: string) => {
+export class AuthRepositories {
+    private usersRepositories: UsersRepositories
+    constructor() {
+        this.usersRepositories = new UsersRepositories();
+    }
+
+    async findByLoginOrEmail(loginOrEmail: string){
         try {
-
             const filter = {
                 $or:[{email: loginOrEmail}, {login: loginOrEmail}],
             }
@@ -19,13 +23,14 @@ export const authMongoRepositories = {
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.BadRequest, data: null};
         }
-    },
-    createUser: async (data: IUserDBType) => {
+    }
+
+    async createUser(data: IUserDBType){
         try {
             const user = new UserModel(data);
             const response = await user.save();
 
-            const result = await usersMongoRepositories.findUserById(String(response._id))
+            const result = await this.usersRepositories.findUserById(String(response._id))
 
             if(result.data) {
 
@@ -38,6 +43,5 @@ export const authMongoRepositories = {
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError}
         }
-    },
-
+    }
 }

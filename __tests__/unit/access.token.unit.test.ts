@@ -1,8 +1,12 @@
 import {db} from "../../src/db/db";
 import {jwtService} from "../../src/utils/jwt-services";
-import {usersMongoRepositories} from "../../src/users/usersRepositories";
-import {authService} from "../../src/auth/authService";
+import {UsersRepositories} from "../../src/users/usersRepositories";
+import {AuthService} from "../../src/auth/authService";
 import {ResultCode} from "../../src/types/resultCode";
+import {ObjectId} from "mongodb";
+
+const usersRepositories = new UsersRepositories()
+const authService = new AuthService();
 
 describe('auth-integration', () => {
 
@@ -20,7 +24,7 @@ describe('auth-integration', () => {
 
     afterAll(done => done())
 
-    const checkAccessTokenUseCase = authService.checkAccessToken;
+    const checkAccessTokenUseCase = authService.checkAccessToken.bind(authService);
 
 
     it('should not verify noBearer auth', async () => {
@@ -38,24 +42,23 @@ describe('auth-integration', () => {
 
     it('should not verify in usersMongoRepositories', async() => {
         jwtService.getUserIdByToken = jest.fn().mockImplementation((token: string) => {
-            return 'fsr4gd354'
+            return new ObjectId().toHexString()
         })
 
-        usersMongoRepositories.doesExistById = jest.fn().mockImplementation((userId: string) => {
+        usersRepositories.doesExistById = jest.fn().mockImplementation((userId: string) => {
             return null;
         })
 
         const result = await checkAccessTokenUseCase('Bearer grt43fs466')
 
         expect(result.status).toBe(ResultCode.Unauthorized)
-
     })
 
     it('should correct verify user', async() => {
         jwtService.getUserIdByToken = jest.fn().mockImplementation((token: string) => {
-            return 'df45sdg543'
+            return new ObjectId().toHexString()
         })
-        usersMongoRepositories.doesExistById = jest.fn().mockImplementation((userId: string) => {
+        usersRepositories.doesExistById = jest.fn().mockImplementation((userId: string) => {
             return {
                 data: 'fd6sfs8d'
             }
@@ -63,10 +66,7 @@ describe('auth-integration', () => {
 
         const result = await checkAccessTokenUseCase('Bearer grt43fs466')
 
-
         expect(result.status).toBe(ResultCode.Success)
-
     })
-
 
 })

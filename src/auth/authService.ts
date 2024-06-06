@@ -1,38 +1,50 @@
 import {add} from 'date-fns'
 import {randomUUID} from "node:crypto";
 import {ILoginBody} from "./types/login-types";
-import {authMongoRepositories} from "./authMongoRepositories";
 import {bcryptService} from "../common/adapter/bcrypt.service";
 import {ResultCode} from "../types/resultCode";
 import {jwtService} from "../utils/jwt-services";
 import {IUserInputModelRegistration} from "./types/registration-type";
-import {usersQueryRepositories} from "../users/usersQueryRepositories";
 import {nodemailerService} from "../common/adapter/nodemailer.service";
 import {emailExamples} from "../common/adapter/emailExamples";
 import {IUserDBType} from "../users/types/user-types";
 import {ObjectId} from "mongodb";
-import {usersMongoRepositories} from "../users/usersRepositories";
+import { UsersRepositories} from "../users/usersRepositories";
 import {IHeadersSession} from "./types/sessions-types";
 import {securityServices} from "../security/securityServices";
 import {decodeToken} from "../common/utils/decodeToken";
 import {UserModel} from "../users/domain/user.entity";
 import {RefreshTokenModel} from "./domain/refreshToken.entity";
-import {authQueryRepositories} from "./authQueryRepositories";
+import {AuthQueryRepositories} from "./authQueryRepositories";
 import {RecoveryCodeModel} from "./domain/recoveryCode.entity";
 import {createRecoveryCode} from "../common/utils/createRecoveryCode";
+import {AuthRepositories} from "./authRepositories";
+import {UsersQueryRepositories} from "../users/usersQueryRepositories";
 
 
-export const authService = {
-    login: async (data: ILoginBody, dataSession: IHeadersSession) => {
+export class AuthService {
+    private authRepositories: AuthRepositories
+    private authQueryRepositories: AuthQueryRepositories
+    private usersRepositories: UsersRepositories
+    private usersQueryRepositories: UsersQueryRepositories
+
+
+    constructor() {
+        this.authRepositories = new AuthRepositories();
+        this.authQueryRepositories = new AuthQueryRepositories();
+        this.usersRepositories = new UsersRepositories()
+        this.usersQueryRepositories = new UsersQueryRepositories();
+    }
+
+    async login(data: ILoginBody, dataSession: IHeadersSession) {
         const {loginOrEmail}: ILoginBody = data;
-        const result = await authMongoRepositories.findByLoginOrEmail(loginOrEmail)
+        const result = await this.authRepositories.findByLoginOrEmail(loginOrEmail)
 
         if (result.data) {
 
             const success = await bcryptService.checkPassword(data.password, result.data.hash);
             if (success) {
 
-                // const user = mappingUser.inputViewModelUser(result.data);
                 const devicedId = randomUUID();
 
                 const accessToken = await jwtService.createdJWT({
@@ -57,10 +69,11 @@ export const authService = {
             }
         }
         return {status: result.status, errorMessage: result.errorMessage, data: null};
-    },
-    registration: async (data: IUserInputModelRegistration) => {
+    }
+
+    async registration(data: IUserInputModelRegistration) {
         const {login, email, password} = data;
-        const result = await usersQueryRepositories.doesExistByLoginOrEmail(login, email);
+        const result = await this.usersQueryRepositories.doesExistByLoginOrEmail(login, email);
 
         if (result.message) {
             return {
@@ -90,7 +103,6 @@ export const authService = {
 
         await user.save();
 
-
         if (user) {
             nodemailerService.sendEmail(email, user.emailConfirmation?.confirmationCode!, emailExamples.registrationEmail)
                 .catch(e => {
@@ -98,15 +110,14 @@ export const authService = {
                 })
         }
 
-
         return {
             status: ResultCode.NotContent,
         }
 
-    },
+    }
 
-    confirmEmail: async (code: string) => {
-        const result= await usersQueryRepositories.findUserByCodeConfirmation(code);
+    async confirmEmail(code: string) {
+        const result = await this.usersQueryRepositories.findUserByCodeConfirmation(code);
 
         if (result.data?.emailConfirmation?.isConfirmed) {
             return {
@@ -118,9 +129,7 @@ export const authService = {
             }
         }
 
-
         if (result.data?.emailConfirmation?.expirationDate && result.data.emailConfirmation.expirationDate < new Date()) {
-
             return {
                 status: ResultCode.BadRequest,
                 errorMessage: {
@@ -152,7 +161,6 @@ export const authService = {
                     }
                 }
             }
-
         }
 
         return {
@@ -162,10 +170,10 @@ export const authService = {
                 field: result.field
             }
         }
+    }
 
-    },
-    resendCode: async (email: string) => {
-        const result = await authService.checkUserCredential(email);
+    async resendCode(email: string) {
+        const result = await this.checkUserCredential(email);
 
         if (result.data?.emailConfirmation?.isConfirmed) {
             return {
@@ -202,12 +210,10 @@ export const authService = {
                 field: 'email'
             }
         }
+    }
 
-    },
-
-    logout: async (token: string) => {
+    async logout(token: string) {
         const foundedToken = await RefreshTokenModel.findOne({refreshToken: token})
-
 
         if (foundedToken) {
             return {
@@ -245,9 +251,9 @@ export const authService = {
                 filed: 'token'
             }
         }
-    },
+    }
 
-    refreshToken: async (token: string) => {
+    async refreshToken(token: string) {
         const validId = await jwtService.getUserIdByToken(token);
 
         const findedToken = await RefreshTokenModel.findOne({refreshToken: token});
@@ -268,12 +274,9 @@ export const authService = {
             const newRefreshToken = new RefreshTokenModel({refreshToken: token});
 
             await newRefreshToken.save();
-            // await refreshTokenCollection.insertOne({refreshToken: token})
-
-
-            // const user = await usersCollection.findOne({_id: new ObjectId(validId)});
 
             const user = await UserModel.findOne({_id: new ObjectId(validId)});
+
             if (user) {
 
                 const decode = await decodeToken(token);
@@ -284,17 +287,12 @@ export const authService = {
                     const accessToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '10s')
                     const refreshToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '20s')
 
-
                     const response = await securityServices.updateVersionSession(refreshToken);
 
-
                     if (response.status === ResultCode.Success) {
-
-
                         return {status: ResultCode.Success, data: {accessToken, refreshToken}};
                     }
                 }
-
             }
         }
         return {
@@ -305,13 +303,12 @@ export const authService = {
                 field: 'refreshToken'
             }
         }
+    }
 
-    },
+    async recoveryCode(email: string) {
+        const response = await this.authQueryRepositories.findByEmail(email);
 
-    recoveryCode: async (email: string) => {
-        const response = await authQueryRepositories.findByEmail(email);
-
-        if(!response.data) {
+        if (!response.data) {
             return {
                 status: ResultCode.NotContent,
                 data: null
@@ -330,14 +327,13 @@ export const authService = {
             status: ResultCode.NotContent,
             data: null
         }
+    }
 
-    },
-
-    updatePassword: async (password: string, email: string) => {
+    async updatePassword(password: string, email: string) {
 
         const user = await UserModel.findOne({email: email});
 
-        if(user) {
+        if (user) {
             user.hash = await bcryptService.generateHash(password);
             await user.save()
         }
@@ -346,25 +342,25 @@ export const authService = {
             status: ResultCode.NotContent,
             data: null
         }
+    }
 
-    },
-
-
-    checkValidRecoveryCode: async (code: string) => {
+    async checkValidRecoveryCode(code: string) {
         const response = await jwtService.getEmailByToken(code);
 
-        if(response) return {status: ResultCode.Success, data: response}
+        if (response) return {status: ResultCode.Success, data: response}
 
-        return {status: ResultCode.BadRequest, data: null, errorsMessages: [{
-            message: 'Incorrect', field: 'recoveryCode'
-            }]}
-    },
+        return {
+            status: ResultCode.BadRequest, data: null, errorsMessages: [{
+                message: 'Incorrect', field: 'recoveryCode'
+            }]
+        }
+    }
 
-    checkUserCredential: async (login: string) => {
-        return await authQueryRepositories.findByEmail(login);
-    },
+    async checkUserCredential(login: string) {
+        return await this.authQueryRepositories.findByEmail(login);
+    }
 
-    checkAccessToken: async (authHeader: string) => {
+    async checkAccessToken(authHeader: string){
         const token = authHeader.split(" ");
         if (token[0] !== 'Bearer') {
             return {
@@ -389,7 +385,7 @@ export const authService = {
             }
         }
 
-        const payload = await usersMongoRepositories.doesExistById(id);
+        const payload = await this.usersRepositories.doesExistById(id);
 
         if (!payload) {
             return {
@@ -406,9 +402,5 @@ export const authService = {
             status: ResultCode.Success,
             data: payload.id
         }
-
-
     }
-
-
 }
