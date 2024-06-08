@@ -5,8 +5,9 @@ import {IPostQueryType} from "./types/request-response-type";
 import {ResultCode} from "../types/resultCode";
 import {PostModel} from "./domain/post.entity";
 
-export const postsQueryRepositories = {
-    getPosts: async (queryParams: IPostQueryType) => {
+
+export class PostsQueryRepositories {
+    async getPosts(queryParams: IPostQueryType) {
         const query = createDefaultValues(queryParams);
         try {
             const allPosts = await PostModel.find()
@@ -23,7 +24,7 @@ export const postsQueryRepositories = {
                     page: query.pageNumber,
                     pageSize: query.pageSize,
                     totalCount,
-                    items: allPosts.map(x => postsQueryRepositories._formatingDataForOutputPost(x))
+                    items: allPosts.map(x => this._formatingDataForOutputPost(x))
                 }
 
             }
@@ -31,25 +32,25 @@ export const postsQueryRepositories = {
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
-    },
+    }
 
-    findPostById: async (id: string) => {
+    async findPostById(id: string) {
         try {
-            // const foundPost = await postsCollection.findOne({_id: new ObjectId(id)});
 
             const foundPost = await PostModel.findOne({_id: new ObjectId(id)});
             if (foundPost) {
                 return {
                     status: ResultCode.Success,
-                    data: postsQueryRepositories._formatingDataForOutputPost(foundPost)
+                    data: this._formatingDataForOutputPost(foundPost)
                 }
             }
             return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
-    },
-    _formatingDataForOutputPost: (input: IPostDBType): IPostViewModel => {
+    }
+
+    _formatingDataForOutputPost(input: IPostDBType): IPostViewModel {
         return {
             id: String(input._id),
             blogId: input.blogId,
@@ -60,4 +61,5 @@ export const postsQueryRepositories = {
             title: input.title,
         };
     }
+
 }

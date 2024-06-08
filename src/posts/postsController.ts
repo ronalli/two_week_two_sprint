@@ -9,7 +9,7 @@ import {CommentsServices} from "../comments/commentsServices";
 import {ICommentsQueryType} from "../comments/types/output-paginator-comments-types";
 
 
-export class PostsControllers {
+export class PostsController {
     private postsServices: PostsServices
     private commentsServices: CommentsServices
     constructor() {
@@ -106,5 +106,5 @@ export class PostsControllers {
     }
 }
 
-export const postsControllers = new PostsControllers();
+export const postsController = new PostsController();
 

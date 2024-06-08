@@ -4,35 +4,33 @@ import {UserModel} from "../users/domain/user.entity";
 import {UsersRepositories} from "../users/usersRepositories";
 
 export class AuthRepositories {
-    private usersRepositories: UsersRepositories
-    constructor() {
-        this.usersRepositories = new UsersRepositories();
+    constructor(protected usersRepositories: UsersRepositories) {
     }
 
-    async findByLoginOrEmail(loginOrEmail: string){
+    async findByLoginOrEmail(loginOrEmail: string) {
         try {
             const filter = {
-                $or:[{email: loginOrEmail}, {login: loginOrEmail}],
+                $or: [{email: loginOrEmail}, {login: loginOrEmail}],
             }
 
             const findUser = await UserModel.findOne(filter)
 
             if (findUser) return {status: ResultCode.Success, data: findUser};
-            return {errorMessage: 'Not found login/email', status: ResultCode.Unauthorized, data: null }
+            return {errorMessage: 'Not found login/email', status: ResultCode.Unauthorized, data: null}
 
         } catch (e) {
             return {errorMessage: 'Error DB', status: ResultCode.BadRequest, data: null};
         }
     }
 
-    async createUser(data: IUserDBType){
+    async createUser(data: IUserDBType) {
         try {
             const user = new UserModel(data);
             const response = await user.save();
 
             const result = await this.usersRepositories.findUserById(String(response._id))
 
-            if(result.data) {
+            if (result.data) {
 
                 return {
                     status: ResultCode.Created,

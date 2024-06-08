@@ -1,5 +1,5 @@
 import {Router} from 'express';
-import {postsControllers} from "../posts/postsControllers";
+import {postsControllers} from "../posts/postsController";
 import {authMiddleware} from "../middleware/auth-middleware";
 import {inputCheckCorrectIdMiddleware, inputCheckErrorsMiddleware} from "../middleware/inputCheckErrorsMiddleware";
 import {validationCreatePost} from "../posts/middleware/input-validation-middleware";

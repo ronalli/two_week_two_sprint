@@ -35,7 +35,6 @@ export class CommentsRepositories {
     }
     async addComment(data: ICommentAdd) {
 
-        // !!!
         const result = await this.usersQueryRepositories.findUserById(data.userId)
         const dataComment: ICommentDBType = {
             postId: data.postId,

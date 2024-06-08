@@ -6,8 +6,7 @@ import {IBlogInputModel} from "./types/blogs-types";
 import {IBlogQueryType} from "./types/request-response-type";
 import {PostsServices} from "../posts/postsServices";
 
-
-class BlogsControllers {
+export class BlogsController {
     private blogsServices: BlogsServices
     private blogsQueryRepositories: BlogsQueryRepositories
     private postsServices: PostsServices
@@ -117,4 +116,3 @@ class BlogsControllers {
     }
 }
 
-export const blogsControllers = new BlogsControllers()

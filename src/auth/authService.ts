@@ -21,19 +21,8 @@ import {AuthRepositories} from "./authRepositories";
 import {UsersQueryRepositories} from "../users/usersQueryRepositories";
 import {SecurityServices} from "../security/securityServices";
 
-
 export class AuthService {
-    private authRepositories: AuthRepositories
-    private authQueryRepositories: AuthQueryRepositories
-    private usersRepositories: UsersRepositories
-    private usersQueryRepositories: UsersQueryRepositories
-
-
-    constructor() {
-        this.authRepositories = new AuthRepositories();
-        this.authQueryRepositories = new AuthQueryRepositories();
-        this.usersRepositories = new UsersRepositories()
-        this.usersQueryRepositories = new UsersQueryRepositories();
+    constructor(protected  authRepositories: AuthRepositories, protected authQueryRepositories: AuthQueryRepositories, protected usersRepositories: UsersRepositories, protected usersQueryRepositories: UsersQueryRepositories, protected securityServices: SecurityServices) {
     }
 
     async login(data: ILoginBody, dataSession: IHeadersSession) {
@@ -57,7 +46,7 @@ export class AuthService {
                     userId: String(result.data._id)
                 }, '20s')
 
-                await securityServices.createAuthSessions(refreshToken, dataSession)
+                await this.securityServices.createAuthSessions(refreshToken, dataSession)
 
                 return {status: ResultCode.Success, data: {accessToken, refreshToken}};
             } else {
@@ -235,7 +224,7 @@ export class AuthService {
 
             const data = await decodeToken(token);
 
-            if (data && await securityServices.deleteCurrentSession(data)) {
+            if (data && await this.securityServices.deleteCurrentSession(data)) {
                 return {
                     status: ResultCode.NotContent,
                     data: null
@@ -287,7 +276,7 @@ export class AuthService {
                     const accessToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '10s')
                     const refreshToken = await jwtService.createdJWT({deviceId, userId: String(user._id)}, '20s')
 
-                    const response = await securityServices.updateVersionSession(refreshToken);
+                    const response = await this.securityServices.updateVersionSession(refreshToken);
 
                     if (response.status === ResultCode.Success) {
                         return {status: ResultCode.Success, data: {accessToken, refreshToken}};

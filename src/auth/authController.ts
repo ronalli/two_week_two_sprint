@@ -10,11 +10,7 @@ import {AuthService} from "./authService";
 import {UsersServices} from "../users/usersServices";
 
 export class AuthController {
-    private authService: AuthService
-    private usersServices: UsersServices
-    constructor() {
-        this.authService = new AuthService()
-        this.usersServices = new UsersServices()
+    constructor(protected authService: AuthService, protected usersServices: UsersServices) {
     }
 
     async login(req: Request, res: Response) {
@@ -144,5 +140,3 @@ export class AuthController {
         }
     }
 }
-
-export const authController = new AuthController();

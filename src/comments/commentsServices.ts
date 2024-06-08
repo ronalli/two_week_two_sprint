@@ -3,7 +3,7 @@ import {ICommentsQueryType} from "./types/output-paginator-comments-types";
 import {ResultCode} from "../types/resultCode";
 import {jwtService} from "../utils/jwt-services";
 import {postsQueryRepositories} from "../posts/postsQueryRepositories";
-import {CommentsRepositories} from "./commentsMongoRepositories";
+import {CommentsRepositories} from "./commentsRepositories";
 import {CommentsQueryRepositories} from "./commentsQueryRepositories";
 
 

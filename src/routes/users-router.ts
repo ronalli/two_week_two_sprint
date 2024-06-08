@@ -3,7 +3,7 @@ import {validationQueryUsers} from "../users/middleware/query-validation-middlew
 import {validationInputBodyUser} from "../users/middleware/input-validation-middleware";
 import {authMiddleware} from "../middleware/auth-middleware";
 import {inputCheckErrorsMiddleware} from "../middleware/inputCheckErrorsMiddleware";
-import {usersController} from "../users/usersControllers";
+import {usersController} from "../users/usersController";
 
 export const usersRouter = Router({});
 
