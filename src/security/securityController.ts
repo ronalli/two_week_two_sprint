@@ -1,12 +1,15 @@
-import {Request, response, Response} from 'express';
+import {Request, Response} from 'express';
 import {decodeToken} from "../common/utils/decodeToken";
-import {securityServices} from "./securityServices";
 import {HTTP_STATUSES} from "../settings";
 import {mappingSessions} from "../common/utils/mappingSessions";
+import {SecurityServices} from "./securityServices";
 
-export const securityController = {
-    getSessions: async (req: Request, res: Response) => {
 
+export class SecurityController {
+    constructor(protected securityServices: SecurityServices) {
+    }
+
+    async getSessions(req: Request, res: Response) {
         const token = req.cookies.refreshToken;
         const data = await decodeToken(token)
 
@@ -15,7 +18,7 @@ export const securityController = {
             return
         }
 
-        const response = await securityServices.getAllSessions(data)
+        const response = await this.securityServices.getAllSessions(data)
 
         if (HTTP_STATUSES[response.status] === HTTP_STATUSES.Success && response.data) {
             res.status(HTTP_STATUSES.Success).send(mappingSessions(response.data))
@@ -24,23 +27,22 @@ export const securityController = {
 
         res.status(HTTP_STATUSES[response.status]).send(response.errorsMessage)
         return
+    }
 
-    },
-
-    deleteDeviceById: async (req: Request, res: Response) => {
+    async deleteDeviceById(req: Request, res: Response) {
         const {deviceId} = req.params
         const refreshToken = req.cookies.refreshToken;
 
-        if(!refreshToken || !deviceId) {
+        if (!refreshToken || !deviceId) {
             res.status(HTTP_STATUSES.NotFound).send({})
             return
         }
         const decode = await decodeToken(refreshToken);
 
         if (decode) {
-            const response = await securityServices.deleteAuthSessionWithParam(decode, deviceId)
+            const response = await this.securityServices.deleteAuthSessionWithParam(decode, deviceId)
 
-            if(HTTP_STATUSES[response.status] === HTTP_STATUSES.NotContent) {
+            if (HTTP_STATUSES[response.status] === HTTP_STATUSES.NotContent) {
                 res.status(HTTP_STATUSES.NotContent).send({})
                 return;
             }
@@ -48,20 +50,19 @@ export const securityController = {
             res.status(HTTP_STATUSES[response.status]).send({})
             return
         }
-    },
+    }
 
-    deleteAllDevices: async (req: Request, res: Response) => {
+    async deleteAllDevices(req: Request, res: Response) {
 
         const refreshToken = req.cookies.refreshToken;
 
-        const response = await securityServices.deleteDevices(refreshToken)
+        const response = await this.securityServices.deleteDevices(refreshToken)
 
-        if(HTTP_STATUSES[response.status] === HTTP_STATUSES.NotContent) {
+        if (HTTP_STATUSES[response.status] === HTTP_STATUSES.NotContent) {
             res.status(HTTP_STATUSES.NotContent).send({})
             return
         }
         res.status(HTTP_STATUSES[response.status]).send({})
         return
     }
-
 }

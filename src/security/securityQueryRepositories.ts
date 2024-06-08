@@ -1,9 +1,8 @@
 import {ResultCode} from "../types/resultCode";
 import {DeviceModel} from "./domain/device.entity";
 
-export const securityQueryRepositories = {
-
-    allSessionsUser: async (id: string) => {
+export class SecurityQueryRepositories {
+    async allSessionsUser(id: string){
         try {
 
             const result = await DeviceModel.find({userId: id, exp: {$gt: new Date().toISOString()}}).lean();
@@ -38,7 +37,5 @@ export const securityQueryRepositories = {
                 ]
             }
         }
-
     }
-
 }

@@ -1,13 +1,17 @@
 import {IHeadersSession, ISessionType} from "../auth/types/sessions-types";
 import {decodeToken} from "../common/utils/decodeToken";
 import {IDecodeRefreshToken} from "../types/refresh-token-type";
-import {securityQueryRepositories} from "./securityQueryRepositories";
+import {SecurityQueryRepositories} from "./securityQueryRepositories";
 import {ResultCode} from "../types/resultCode";
-import {securityRepositories} from "./securityRepositories";
 import {DeviceModel} from "./domain/device.entity";
+import {SecurityRepositories} from "./securityRepositories";
 
-export const securityServices = {
-    createAuthSessions: async (token: string, data: IHeadersSession) => {
+export class SecurityServices {
+
+    constructor(protected securityRepositories: SecurityRepositories, protected securityQueryRepositories: SecurityQueryRepositories) {
+    }
+
+    async createAuthSessions(token: string, data: IHeadersSession) {
 
         const payload = await decodeToken(token)
 
@@ -21,18 +25,18 @@ export const securityServices = {
 
             await device.save()
         }
-    },
+    }
 
-    deleteAuthSessionWithParam: async (data: IDecodeRefreshToken, deviceIdParam: string) => {
+    async deleteAuthSessionWithParam(data: IDecodeRefreshToken, deviceIdParam: string) {
         const {iat, userId, deviceId} = data;
 
-        const res = await securityRepositories.getDevice(deviceIdParam);
+        const res = await this.securityRepositories.getDevice(deviceIdParam);
 
         if (res.errorsMessage) {
             return res;
         }
 
-        if(!res.data) {
+        if (!res.data) {
             return {
                 status: ResultCode.NotFound,
                 data: null
@@ -49,38 +53,36 @@ export const securityServices = {
                 }]
             }
         }
-        return await securityRepositories.deleteDevice(res.data.iat, deviceIdParam)
-    },
+        return await this.securityRepositories.deleteDevice(res.data.iat, deviceIdParam)
+    }
 
-    getAllSessions: async (data: IDecodeRefreshToken) => {
+    async getAllSessions(data: IDecodeRefreshToken) {
 
         const {userId} = data;
 
-        const response = await securityQueryRepositories.allSessionsUser(userId)
+        const response = await this.securityQueryRepositories.allSessionsUser(userId)
 
         if (response.status === ResultCode.Success) {
             return response
         }
 
         return response;
+    }
 
-    },
-
-    deleteCurrentSession: async (data: IDecodeRefreshToken) => {
+    async deleteCurrentSession(data: IDecodeRefreshToken) {
         const {iat, userId, deviceId} = data;
 
-        const response = await securityRepositories.deleteDevice(iat, deviceId)
+        const response = await this.securityRepositories.deleteDevice(iat, deviceId)
 
         if (response.errorsMessage) {
             return {
                 ...response
             }
         }
-
         return true;
-    },
+    }
 
-    deleteDevices: async (token: string) => {
+    async deleteDevices(token: string) {
 
         const decode = await decodeToken(token);
 
@@ -91,11 +93,10 @@ export const securityServices = {
             }
         }
 
-        return await securityRepositories.deleteDevicesButCurrent(decode)
+        return await this.securityRepositories.deleteDevicesButCurrent(decode)
+    }
 
-    },
-
-    updateVersionSession: async (token: string) => {
+    async updateVersionSession(token: string) {
         const data = await decodeToken(token)
 
         if (!data) {
@@ -109,8 +110,7 @@ export const securityServices = {
             }
         }
 
-        const response = await securityRepositories.updateDevice(data);
-
+        const response = await this.securityRepositories.updateDevice(data);
 
         if (!response) {
             return {
@@ -127,7 +127,5 @@ export const securityServices = {
             status: ResultCode.Success,
             data: null,
         }
-
     }
-
 }

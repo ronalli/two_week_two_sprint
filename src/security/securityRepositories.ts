@@ -1,13 +1,10 @@
-
 import {ResultCode} from "../types/resultCode";
 import {IDecodeRefreshToken} from "../types/refresh-token-type";
 import {DeviceModel} from "./domain/device.entity";
 
-export const securityRepositories = {
-    deleteDevice: async (iat: string, deviceId: string) => {
-
+export class SecurityRepositories {
+    async deleteDevice(iat: string, deviceId: string) {
         try {
-
             const success = await DeviceModel.deleteOne({iat: iat, deviceId: deviceId})
 
             return {
@@ -24,10 +21,9 @@ export const securityRepositories = {
                 }]
             }
         }
+    }
 
-    },
-
-    deleteDevicesButCurrent: async (data: IDecodeRefreshToken) => {
+    async deleteDevicesButCurrent(data: IDecodeRefreshToken) {
         const {iat, userId, deviceId} = data;
 
         try {
@@ -49,15 +45,11 @@ export const securityRepositories = {
                 }]
             }
         }
+    }
 
-    },
-
-    getDevice: async (deviceId: string) => {
+    async getDevice(deviceId: string) {
         try {
-
             const res = await DeviceModel.findOne({deviceId: deviceId})
-
-
             return {
                 status: ResultCode.Success,
                 data: res
@@ -73,16 +65,15 @@ export const securityRepositories = {
                 ]
             }
         }
+    }
 
-    },
-
-    updateDevice: async (data: IDecodeRefreshToken) => {
+    async updateDevice(data: IDecodeRefreshToken) {
 
         const {iat, deviceId, userId, exp} = data;
 
         const currentDevice = await DeviceModel.findOne({$and: [{deviceId: deviceId}, {userId: userId}]})
 
-        if(!currentDevice) {
+        if (!currentDevice) {
             return {
                 status: ResultCode.NotFound,
                 data: null,
@@ -95,10 +86,8 @@ export const securityRepositories = {
 
         currentDevice.iat = iat;
         currentDevice.exp = exp;
-
         await currentDevice.save();
-
         return currentDevice;
-
     }
 }
+

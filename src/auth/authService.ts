@@ -11,7 +11,6 @@ import {IUserDBType} from "../users/types/user-types";
 import {ObjectId} from "mongodb";
 import { UsersRepositories} from "../users/usersRepositories";
 import {IHeadersSession} from "./types/sessions-types";
-import {securityServices} from "../security/securityServices";
 import {decodeToken} from "../common/utils/decodeToken";
 import {UserModel} from "../users/domain/user.entity";
 import {RefreshTokenModel} from "./domain/refreshToken.entity";
@@ -20,6 +19,7 @@ import {RecoveryCodeModel} from "./domain/recoveryCode.entity";
 import {createRecoveryCode} from "../common/utils/createRecoveryCode";
 import {AuthRepositories} from "./authRepositories";
 import {UsersQueryRepositories} from "../users/usersQueryRepositories";
+import {SecurityServices} from "../security/securityServices";
 
 
 export class AuthService {
@@ -360,6 +360,7 @@ export class AuthService {
         return await this.authQueryRepositories.findByEmail(login);
     }
 
+    ////unit test
     async checkAccessToken(authHeader: string){
         const token = authHeader.split(" ");
         if (token[0] !== 'Bearer') {
