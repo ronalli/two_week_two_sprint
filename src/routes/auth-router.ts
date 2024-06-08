@@ -1,8 +1,6 @@
 import {Router} from "express";
-import {authController} from "../auth/authController";
 import {validationInputAuth} from "../auth/middleware/input-validation-middleware";
 import {inputCheckErrorsMiddleware} from "../middleware/inputCheckErrorsMiddleware";
-import {authJwtMiddleware} from "../middleware/auth-jwt-middleware";
 import {
     validationInputRegistrationUser,
     validatorEmail, validatorNewPassword
@@ -10,6 +8,8 @@ import {
 import {validationCode} from "../auth/middleware/input-registration-confirmation-middleware";
 import {guardRefreshToken} from "../middleware/guardRefreshToken";
 import {rateLimitGuard} from "../common/guard/customRateLimit";
+import {authController} from "../composition-root";
+import {authJwtMiddleware} from "../middleware/auth-jwt-middleware";
 
 export const authRouter = Router({});
 

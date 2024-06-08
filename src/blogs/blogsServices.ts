@@ -2,10 +2,7 @@ import {BlogsRepositories} from "./blogsRepositories";
 import {IBlogInputModel} from "./types/blogs-types";
 
 export class BlogsServices {
-    private blogsRepositories: BlogsRepositories
-
-    constructor() {
-        this.blogsRepositories = new BlogsRepositories();
+    constructor(protected blogsRepositories: BlogsRepositories) {
     }
 
     async createBlog(blog: IBlogInputModel) {

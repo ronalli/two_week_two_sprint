@@ -1,21 +1,16 @@
 import {Request, Response} from 'express'
 import {HTTP_STATUSES} from "../settings";
-import {postsQueryRepositories} from "./postsQueryRepositories";
 import {PostsServices} from "./postsServices";
 import {IPostInputModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
 import {jwtService} from "../utils/jwt-services";
 import {CommentsServices} from "../comments/commentsServices";
 import {ICommentsQueryType} from "../comments/types/output-paginator-comments-types";
+import {PostsQueryRepositories} from "./postsQueryRepositories";
 
 
 export class PostsController {
-    private postsServices: PostsServices
-    private commentsServices: CommentsServices
-    constructor() {
-        this.postsServices = new PostsServices();
-        this.commentsServices = new CommentsServices()
-
+    constructor(protected postsServices: PostsServices, protected commentsServices: CommentsServices, protected postsQueryRepositories: PostsQueryRepositories) {
     }
 
     async createPost(req: Request, res: Response) {
@@ -31,7 +26,7 @@ export class PostsController {
 
     async getPost(req: Request, res: Response) {
         const {id} = req.params;
-        const result = await postsQueryRepositories.findPostById(id)
+        const result = await this.postsQueryRepositories.findPostById(id)
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data)
             return
@@ -42,7 +37,7 @@ export class PostsController {
 
     async getPosts(req: Request, res: Response) {
         const queryParams: IPostQueryType = req.query;
-        const result = await postsQueryRepositories.getPosts(queryParams)
+        const result = await this.postsQueryRepositories.getPosts(queryParams)
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data);
             return
@@ -105,6 +100,4 @@ export class PostsController {
 
     }
 }
-
-export const postsController = new PostsController();
 

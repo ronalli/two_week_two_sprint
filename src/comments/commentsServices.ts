@@ -2,17 +2,12 @@ import {ICommentAdd} from "./types/comments-types";
 import {ICommentsQueryType} from "./types/output-paginator-comments-types";
 import {ResultCode} from "../types/resultCode";
 import {jwtService} from "../utils/jwt-services";
-import {postsQueryRepositories} from "../posts/postsQueryRepositories";
 import {CommentsRepositories} from "./commentsRepositories";
 import {CommentsQueryRepositories} from "./commentsQueryRepositories";
-
+import {PostsQueryRepositories} from "../posts/postsQueryRepositories";
 
 export class CommentsServices {
-    private commentsRepositories: CommentsRepositories
-    private commentsQueryRepositories: CommentsQueryRepositories
-    constructor() {
-        this.commentsRepositories = new CommentsRepositories()
-        this.commentsQueryRepositories = new CommentsQueryRepositories()
+    constructor(protected commentsRepositories: CommentsRepositories, protected commentsQueryRepositories: CommentsQueryRepositories, protected postsQueryRepositories: PostsQueryRepositories) {
     }
 
     async update(id: string, content: string, token: string) {
@@ -48,14 +43,14 @@ export class CommentsServices {
     }
     async create(data: ICommentAdd) {
         const {postId} = data;
-        const findPost = await postsQueryRepositories.findPostById(postId);
+        const findPost = await this.postsQueryRepositories.findPostById(postId);
         if (findPost.errorMessage) {
             return findPost
         }
         return await this.commentsRepositories.addComment(data);
     }
     async findComments(postId: string, queryParams: ICommentsQueryType) {
-        const result = await postsQueryRepositories.findPostById(postId);
+        const result = await this.postsQueryRepositories.findPostById(postId);
         if (result.data) {
             return await this.commentsQueryRepositories.getCommentsForSpecialPost(postId, queryParams)
         }

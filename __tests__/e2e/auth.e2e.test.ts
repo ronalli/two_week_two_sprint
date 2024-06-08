@@ -2,14 +2,10 @@ import {req} from "../test-helpers";
 import {HTTP_STATUSES} from "../../src/settings";
 import {SETTINGS} from "../../src/settings";
 import {db} from "../../src/db/db";
-// import {MongoMemoryServer} from "mongodb-memory-server";
 import {testSeeder} from "../utils/test.seeder";
 import cookie from "cookie";
 import {serviceUsers} from "../utils/serviceUsers";
-import {serviceLogin} from "../utils/serviceRegistration";
-import exp = require("node:constants");
 import {RecoveryCodeModel} from "../../src/auth/domain/recoveryCode.entity";
-import {randomUUID} from "node:crypto";
 import {jwtService} from "../../src/utils/jwt-services";
 
 
@@ -39,7 +35,7 @@ describe("Auth Tests", () => {
 
     it("should correct authorization", async () => {
 
-        const user = await serviceUsers.createUser()
+        await serviceUsers.createUser()
 
         const auth = {
             loginOrEmail: 'testing',
@@ -52,12 +48,13 @@ describe("Auth Tests", () => {
 
     it("should correct getting info for user login", async () => {
 
-        const user = await serviceUsers.createUser()
+       await serviceUsers.createUser()
 
         const auth = {
             loginOrEmail: 'testing',
             password: '12345678',
         }
+
         const jwtToken = await req.post(SETTINGS.PATH.AUTH + '/login').send(auth);
 
         const response = await req.get(SETTINGS.PATH.AUTH + '/me').set('Authorization', `Bearer ${jwtToken.body.accessToken}`).expect(HTTP_STATUSES.Success)
@@ -82,7 +79,7 @@ describe("Auth Tests", () => {
     })
 
     it('shouldn\'t correct registration (email/login founded by DB)', async () => {
-        const user = await serviceUsers.createUser()
+        await serviceUsers.createUser()
 
         let newUser = testSeeder.createUserDto()
 
@@ -107,12 +104,11 @@ describe("Auth Tests", () => {
     it('should incorrect resend code, since the user was created by admin and isConfirmed = true', async () => {
 
         await req.post(SETTINGS.PATH.AUTH + '/registration-email-resending').send({email: 'test@gmail.com'}).expect(HTTP_STATUSES.BadRequest)
-
     })
 
     it('shouldn\'t registration user with the same login or email  ', async () => {
 
-        const user = await serviceUsers.createUser()
+        await serviceUsers.createUser()
 
         await req.post(SETTINGS.PATH.AUTH + '/registration').send(testSeeder.createUserDto()).expect(HTTP_STATUSES.BadRequest)
     })
@@ -123,7 +119,7 @@ describe("Auth Tests", () => {
 
     it('should correct get refresh token', async () => {
 
-        const user = await serviceUsers.createUser()
+        await serviceUsers.createUser()
 
         const auth = {
             loginOrEmail: 'testing',
@@ -144,7 +140,7 @@ describe("Auth Tests", () => {
     })
 
     it('shouldn\'t return tokens with invalid refresh token', async () => {
-        const res = await req.post(SETTINGS.PATH.AUTH + '/logout').set('Cookie', `refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjQ2MjI5Njc2MzE3NzFjNWY1OWUzN2EiLCJpYXQiOjE3MTU4NzI0MDcsImV4cCI6MTcxNTg3MjQyN30.M2vM7RX1o28QH2e8jICFVsOD67Dk_5Y07XZBI73EPqc`).expect(HTTP_STATUSES.Unauthorized)
+        await req.post(SETTINGS.PATH.AUTH + '/logout').set('Cookie', `refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjQ2MjI5Njc2MzE3NzFjNWY1OWUzN2EiLCJpYXQiOjE3MTU4NzI0MDcsImV4cCI6MTcxNTg3MjQyN30.M2vM7RX1o28QH2e8jICFVsOD67Dk_5Y07XZBI73EPqc`).expect(HTTP_STATUSES.Unauthorized)
 
     })
 
@@ -154,13 +150,13 @@ describe("Auth Tests", () => {
 
 
     it('should response code 401 ', async () => {
-        const res = await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', 'refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjQ2MjUxOTE2MmZhZTVhY2IyOGU2ZmYiLCJpYXQiOjE3MTU4NzMwNzgsImV4cCI6MTcxNTg3MzA5OH0.4h63x8D3cR-qLeUx2jkCOPGIkhEIvQcrcYxG2fj3D5o').expect(HTTP_STATUSES.Unauthorized)
+        await req.post(SETTINGS.PATH.AUTH + '/refresh-token').set('Cookie', 'refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NjQ2MjUxOTE2MmZhZTVhY2IyOGU2ZmYiLCJpYXQiOjE3MTU4NzMwNzgsImV4cCI6MTcxNTg3MzA5OH0.4h63x8D3cR-qLeUx2jkCOPGIkhEIvQcrcYxG2fj3D5o').expect(HTTP_STATUSES.Unauthorized)
 
     });
 
     it('should correct logout', async () => {
 
-        const user = await serviceUsers.createUser()
+        await serviceUsers.createUser()
 
         const auth = {
             loginOrEmail: 'testing',

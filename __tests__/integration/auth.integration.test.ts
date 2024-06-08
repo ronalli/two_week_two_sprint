@@ -1,10 +1,8 @@
 import {db} from "../../src/db/db";
-import {AuthService} from "../../src/auth/authService";
 import {nodemailerService} from "../../src/common/adapter/nodemailer.service";
 import {testSeeder} from "../utils/test.seeder";
 import {ResultCode} from "../../src/types/resultCode";
-
-const authService = new AuthService();
+import {authService} from "../../src/composition-root";
 
 describe('auth-integration', () => {
 

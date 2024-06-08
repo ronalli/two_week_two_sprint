@@ -2,9 +2,7 @@ import {IPostInputModel} from "./types/posts-types";
 import {PostsRepositories} from "./postsRepositories";
 
 export class PostsServices {
-    private postsRepositories: PostsRepositories
-    constructor() {
-        this.postsRepositories = new PostsRepositories();
+    constructor(protected postsRepositories: PostsRepositories) {
     }
 
     async createPost(post: IPostInputModel) {

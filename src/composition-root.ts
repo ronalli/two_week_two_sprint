@@ -21,12 +21,14 @@ import {CommentsController} from "./comments/commentsController";
 import {UsersRepositories} from "./users/usersRepositories";
 import {UsersQueryRepositories} from "./users/usersQueryRepositories";
 import {UsersServices} from "./users/usersServices";
+import {UserController} from "./users/usersController";
+import {authJwtMiddleware} from "./middleware/auth-jwt-middleware";
 
 //users
 const usersRepositories = new UsersRepositories();
 const usersQueryRepositories = new UsersQueryRepositories();
-const userServices = new UsersServices();
-const usersController = new UsersServices();
+const userServices = new UsersServices(usersRepositories);
+export const usersController = new UserController(userServices, usersQueryRepositories);
 
 //security
 const securityRepositories = new SecurityRepositories();
@@ -37,25 +39,27 @@ export const securityController = new SecurityController(securityServices)
 //auth
 const authRepositories = new AuthRepositories(usersRepositories);
 const authQueryRepositories = new AuthQueryRepositories();
-const authService = new AuthService(authRepositories, authQueryRepositories, usersRepositories, usersQueryRepositories, securityServices);
+export const authService = new AuthService(authRepositories, authQueryRepositories, usersRepositories, usersQueryRepositories, securityServices);
 export const authController = new AuthController(authService, userServices);
 
 //blog
-
 const blogsRepositories = new BlogsRepositories();
 const blogsQueryRepositories = new BlogsQueryRepositories();
-const blogsServices = new BlogsServices();
-export const blogsController = new BlogsController()
+const blogsServices = new BlogsServices(blogsRepositories);
 
 //posts
-
-const postsRepositories = new PostsRepositories();
 const postsQueryRepositories = new PostsQueryRepositories()
-const postsServices = new PostsServices();
-const postsController = new PostsController();
+const postsRepositories = new PostsRepositories(blogsQueryRepositories, postsQueryRepositories);
+const postsServices = new PostsServices(postsRepositories);
+
+//blog-up
+export const blogsController = new BlogsController(blogsServices, blogsQueryRepositories, postsServices)
 
 //comments
-const commentsRepositories = new CommentsRepositories();
+const commentsRepositories = new CommentsRepositories(usersQueryRepositories);
 const commentsQueryRepositories = new CommentsQueryRepositories();
-const commentsServices = new CommentsServices();
-const commentsController = new CommentsController();
+const commentsServices = new CommentsServices(commentsRepositories, commentsQueryRepositories, postsQueryRepositories);
+export const commentsController = new CommentsController(commentsServices, commentsQueryRepositories);
+
+//post-up
+export const postsController = new PostsController(postsServices, commentsServices, postsQueryRepositories);

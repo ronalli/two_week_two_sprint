@@ -5,7 +5,6 @@ import {ResultCode} from "../types/resultCode";
 import {CommentModel} from "./domain/comment.entity";
 import {mappingComments} from "../common/utils/mappingComments";
 
-
 export class CommentsQueryRepositories {
     async getCommentsForSpecialPost(postId: string, queryParams: ICommentsQueryType) {
         const query = createDefaultValuesQueryParams(queryParams);

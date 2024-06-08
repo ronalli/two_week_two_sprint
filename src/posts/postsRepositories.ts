@@ -1,15 +1,13 @@
 import {ObjectId} from "mongodb";
-import {postsQueryRepositories} from "./postsQueryRepositories";
+import {PostsQueryRepositories} from "./postsQueryRepositories";
 import {IPostDBType, IPostInputModel} from "./types/posts-types";
 import {ResultCode} from "../types/resultCode";
 import {PostModel} from "./domain/post.entity";
 import {BlogsQueryRepositories} from "../blogs/blogsQueryRepositories";
 
 export class PostsRepositories {
-    private blogsQueryRepositories: BlogsQueryRepositories
 
-    constructor() {
-        this.blogsQueryRepositories = new BlogsQueryRepositories();
+    constructor(protected blogsQueryRepositories: BlogsQueryRepositories, protected postsQueryRepositories: PostsQueryRepositories) {
     }
 
     async create(postData: IPostInputModel) {
@@ -31,7 +29,7 @@ export class PostsRepositories {
                 if (foundPost) {
                     return {
                         status: ResultCode.Created,
-                        data: postsQueryRepositories._formatingDataForOutputPost(foundPost)
+                        data: this.postsQueryRepositories._formatingDataForOutputPost(foundPost)
                     }
                 }
                 return {errorMessage: 'Something went wrong', status: ResultCode.BadRequest, data: null}

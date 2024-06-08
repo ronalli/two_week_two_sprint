@@ -6,11 +6,8 @@ import {mappingComments} from "../common/utils/mappingComments";
 import {UsersQueryRepositories} from "../users/usersQueryRepositories";
 
 export class CommentsRepositories {
-    private usersQueryRepositories: UsersQueryRepositories
-    constructor() {
-        this.usersQueryRepositories = new UsersQueryRepositories();
+    constructor(protected usersQueryRepositories: UsersQueryRepositories) {
     }
-
 
     async updateComment(id: string, contentUpdate: string) {
         try {

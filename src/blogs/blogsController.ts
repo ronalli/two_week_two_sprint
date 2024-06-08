@@ -7,14 +7,8 @@ import {IBlogQueryType} from "./types/request-response-type";
 import {PostsServices} from "../posts/postsServices";
 
 export class BlogsController {
-    private blogsServices: BlogsServices
-    private blogsQueryRepositories: BlogsQueryRepositories
-    private postsServices: PostsServices
 
-    constructor() {
-        this.blogsServices = new BlogsServices();
-        this.blogsQueryRepositories = new BlogsQueryRepositories();
-        this.postsServices = new PostsServices();
+    constructor(protected blogsServices: BlogsServices, protected blogsQueryRepositories: BlogsQueryRepositories, protected postsServices: PostsServices) {
     }
 
     async createBlog(req: Request, res: Response) {

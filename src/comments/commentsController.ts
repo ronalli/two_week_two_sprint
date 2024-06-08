@@ -3,13 +3,8 @@ import {CommentsQueryRepositories} from "./commentsQueryRepositories";
 import {HTTP_STATUSES} from "../settings";
 import {CommentsServices} from "./commentsServices";
 
-
 export class CommentsController {
-    private commentsServices: CommentsServices
-    private commentsQueryRepositories: CommentsQueryRepositories
-    constructor() {
-        this.commentsQueryRepositories = new CommentsQueryRepositories();
-        this.commentsServices = new CommentsServices();
+    constructor(protected commentsServices: CommentsServices, protected commentsQueryRepositories: CommentsQueryRepositories) {
     }
 
     async getComment(req: Request, res: Response) {
@@ -54,5 +49,3 @@ export class CommentsController {
         return;
     }
 }
-
-export const commentsController = new CommentsController();

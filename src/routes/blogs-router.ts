@@ -1,5 +1,4 @@
 import {Router} from 'express';
-import {blogsController} from "../blogs/blogsController";
 import {authMiddleware} from "../middleware/auth-middleware";
 import {inputCheckCorrectIdMiddleware, inputCheckErrorsMiddleware} from "../middleware/inputCheckErrorsMiddleware";
 import {validationCreateBlog} from "../blogs/middleware/input-validation-middleware";
@@ -7,6 +6,7 @@ import {validationQueryParamsBlogs} from "../blogs/middleware/query-validation-m
 import {validationQueryParamsPosts} from "../posts/middleware/query-validation-middleware";
 import {validationCreateSpecialPost} from "../posts/middleware/input-validation-middleware";
 import {validatorParamBlogId} from "../middleware/blogId-validator-middleware";
+import {blogsController} from "../composition-root";
 
 export const blogsRouter = Router({});
 
