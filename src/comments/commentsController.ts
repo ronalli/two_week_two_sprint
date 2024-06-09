@@ -48,4 +48,11 @@ export class CommentsController {
         res.status(HTTP_STATUSES[result.status]).send({})
         return;
     }
+
+    async updateLikeStatus(req: Request, res: Response) {
+        const {commentId} = req.params;
+        
+
+
+    }
 }

@@ -349,7 +349,6 @@ export class AuthService {
         return await this.authQueryRepositories.findByEmail(login);
     }
 
-    ////unit test
     async checkAccessToken(authHeader: string){
         const token = authHeader.split(" ");
         if (token[0] !== 'Bearer') {
