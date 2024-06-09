@@ -5,6 +5,7 @@ import {jwtService} from "../utils/jwt-services";
 import {CommentsRepositories} from "./commentsRepositories";
 import {CommentsQueryRepositories} from "./commentsQueryRepositories";
 import {PostsQueryRepositories} from "../posts/postsQueryRepositories";
+import {ILikeTypeDB} from "./domain/like.entity";
 
 export class CommentsServices {
     constructor(protected commentsRepositories: CommentsRepositories, protected commentsQueryRepositories: CommentsQueryRepositories, protected postsQueryRepositories: PostsQueryRepositories) {
@@ -57,4 +58,18 @@ export class CommentsServices {
         return result;
     }
 
+    async updateLikeStatus(dataLike: Omit<ILikeTypeDB, 'createdAt'>) {
+        const validComment = await this.commentsQueryRepositories.getCommentById(dataLike.parentId)
+
+        if(validComment.errorMessage) {
+            return validComment;
+        }
+
+        const currentStatus = await this.commentsRepositories.getCurrentStatusLike(dataLike)
+
+        console.log(currentStatus)
+
+        return;
+
+    }
 }

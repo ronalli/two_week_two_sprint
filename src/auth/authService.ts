@@ -39,12 +39,12 @@ export class AuthService {
                 const accessToken = await jwtService.createdJWT({
                     deviceId: devicedId,
                     userId: String(result.data._id)
-                }, '10s')
+                }, '1h')
 
                 const refreshToken = await jwtService.createdJWT({
                     deviceId: devicedId,
                     userId: String(result.data._id)
-                }, '20s')
+                }, '2h')
 
                 await this.securityServices.createAuthSessions(refreshToken, dataSession)
 

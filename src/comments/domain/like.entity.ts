@@ -6,7 +6,7 @@ export enum LikeStatus {
     Dislike = 'Dislike'
 }
 
-interface ILikeTypeDB {
+export interface ILikeTypeDB {
     createdAt: string,
     status: LikeStatus;
     userId: string,

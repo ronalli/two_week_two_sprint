@@ -2,6 +2,8 @@ import {Request, Response} from "express";
 import {CommentsQueryRepositories} from "./commentsQueryRepositories";
 import {HTTP_STATUSES} from "../settings";
 import {CommentsServices} from "./commentsServices";
+import {decodeToken} from "../common/utils/decodeToken";
+import {ILikeTypeDB} from "./domain/like.entity";
 
 export class CommentsController {
     constructor(protected commentsServices: CommentsServices, protected commentsQueryRepositories: CommentsQueryRepositories) {
@@ -49,9 +51,28 @@ export class CommentsController {
         return;
     }
 
-    async updateLikeStatus(req: Request, res: Response) {
+
+    async updateLikeStatusForSpecialPost(req: Request, res: Response) {
         const {commentId} = req.params;
-        
+        const header = req.headers.authorization?.split(' ')[1]!;
+        const dataUser = await decodeToken(header);
+        const dataBody = req.body;
+
+        const objLike: Omit<ILikeTypeDB, 'createdAt'> = {
+            parentId: commentId,
+            userId: dataUser?.userId!,
+            status: dataBody.likeStatus,
+        }
+
+        const response = await this.commentsServices.updateLikeStatus(objLike)
+
+
+        // if(response.errorMessage) {
+        //
+        // }
+
+
+        res.status(200).send({})
 
 
     }
