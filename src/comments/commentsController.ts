@@ -4,6 +4,7 @@ import {HTTP_STATUSES} from "../settings";
 import {CommentsServices} from "./commentsServices";
 import {decodeToken} from "../common/utils/decodeToken";
 import {ILikeTypeDB} from "./domain/like.entity";
+import {serviceInfo} from "../common/utils/serviceInfo";
 
 export class CommentsController {
     constructor(protected commentsServices: CommentsServices, protected commentsQueryRepositories: CommentsQueryRepositories) {
@@ -11,7 +12,13 @@ export class CommentsController {
 
     async getComment(req: Request, res: Response) {
         const {commentId} = req.params;
-        const result = await this.commentsQueryRepositories.getCommentById(commentId)
+
+        const token = req.headers.authorization?.split(' ')[1] || "unknown";
+
+        const currentStatus = await serviceInfo.initializeStatusLike(token, commentId)
+
+        const result = await this.commentsQueryRepositories.getComment(commentId, currentStatus)
+
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).json(result.data)
             return
@@ -51,7 +58,6 @@ export class CommentsController {
         return;
     }
 
-
     async updateLikeStatusForSpecialPost(req: Request, res: Response) {
         const {commentId} = req.params;
         const header = req.headers.authorization?.split(' ')[1]!;
@@ -66,14 +72,7 @@ export class CommentsController {
 
         const response = await this.commentsServices.updateLikeStatus(objLike)
 
-
-        // if(response.errorMessage) {
-        //
-        // }
-
-
-        res.status(200).send({})
-
+        res.status(HTTP_STATUSES[response.status]).send({})
 
     }
 }

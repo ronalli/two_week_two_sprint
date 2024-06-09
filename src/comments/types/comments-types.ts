@@ -1,4 +1,5 @@
 import {ObjectId} from "mongodb";
+import {ILikesInfoViewModel} from "./likes-info-types";
 
 interface ICommentatorInfo {
     userId: string
@@ -22,6 +23,7 @@ export interface ICommentViewModel {
     content: string
     commentatorInfo: ICommentatorInfo
     createdAt: string
+    likesInfo: ILikesInfoViewModel
 }
 
 export interface ICommentAdd {

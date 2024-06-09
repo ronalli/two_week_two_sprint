@@ -42,6 +42,7 @@ export class CommentsServices {
         }
         return await this.commentsRepositories.deleteComment(id);
     }
+
     async create(data: ICommentAdd) {
         const {postId} = data;
         const findPost = await this.postsQueryRepositories.findPostById(postId);
@@ -50,26 +51,43 @@ export class CommentsServices {
         }
         return await this.commentsRepositories.addComment(data);
     }
-    async findComments(postId: string, queryParams: ICommentsQueryType) {
+
+    // async findComments(postId: string, queryParams: ICommentsQueryType) {
+    //     const result = await this.postsQueryRepositories.findPostById(postId);
+    //     if (result.data) {
+    //         return await this.commentsQueryRepositories.getCommentsForSpecialPost(postId, queryParams)
+    //     }
+    //     return result;
+    // }
+
+
+    /// update method
+
+    async findAllComments(postId: string, queryParams: ICommentsQueryType, currentUser: string | null) {
         const result = await this.postsQueryRepositories.findPostById(postId);
+
+
         if (result.data) {
-            return await this.commentsQueryRepositories.getCommentsForSpecialPost(postId, queryParams)
+            return await this.commentsQueryRepositories.getCommentsForSpecialPost(postId, queryParams, currentUser)
         }
         return result;
     }
 
+
     async updateLikeStatus(dataLike: Omit<ILikeTypeDB, 'createdAt'>) {
         const validComment = await this.commentsQueryRepositories.getCommentById(dataLike.parentId)
 
-        if(validComment.errorMessage) {
+        if (validComment.errorMessage) {
             return validComment;
         }
 
-        const currentStatus = await this.commentsRepositories.getCurrentStatusLike(dataLike)
+        const searchLike = await this.commentsQueryRepositories.getCurrentLike(dataLike.parentId, dataLike.userId)
 
-        console.log(currentStatus)
+        if (!searchLike) {
+            await this.commentsRepositories.addLike(dataLike)
+            return {status: ResultCode.NotContent, data: null}
+        }
 
-        return;
-
+        return await this.commentsRepositories.updateStatusLike(dataLike);
     }
 }

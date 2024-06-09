@@ -7,6 +7,8 @@ import {jwtService} from "../utils/jwt-services";
 import {CommentsServices} from "../comments/commentsServices";
 import {ICommentsQueryType} from "../comments/types/output-paginator-comments-types";
 import {PostsQueryRepositories} from "./postsQueryRepositories";
+import {decodeToken} from "../common/utils/decodeToken";
+import {serviceInfo} from "../common/utils/serviceInfo";
 
 
 export class PostsController {
@@ -87,8 +89,13 @@ export class PostsController {
 
     async getAllCommentsForPost(req: Request, res: Response) {
         const queryParams: ICommentsQueryType = req.query;
+        const header = req.headers.authorization?.split(' ')[1];
+
+        const currentUser = await serviceInfo.getIdUserByToken(header)
+
         const {postId} = req.params;
-        const result = await this.commentsServices.findComments(postId, queryParams)
+
+        const result = await this.commentsServices.findAllComments(postId, queryParams, currentUser)
 
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data)

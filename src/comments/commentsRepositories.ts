@@ -5,6 +5,7 @@ import {CommentModel} from "./domain/comment.entity";
 import {mappingComments} from "../common/utils/mappingComments";
 import {UsersQueryRepositories} from "../users/usersQueryRepositories";
 import {ILikeTypeDB, LikeModel} from "./domain/like.entity";
+import {ILikesInfoViewModel} from "./types/likes-info-types";
 
 export class CommentsRepositories {
     constructor(protected usersQueryRepositories: UsersQueryRepositories) {
@@ -49,8 +50,15 @@ export class CommentsRepositories {
             const newComment = new CommentModel(dataComment);
             const response = await newComment.save();
             const comment = await CommentModel.findOne({_id: new ObjectId(response._id)});
+
+            const likesInfo: ILikesInfoViewModel = {
+                likesCount: 0,
+                dislikesCount: 0,
+                myStatus: 'None'
+            }
+
             if (comment) {
-                const res = mappingComments.formatDataCommentForView(comment);
+                const res = mappingComments.formatCommentForView(comment, likesInfo);
                 return {status: ResultCode.Created, data: res}
             }
             return {errorMessage: 'Not found comment', status: ResultCode.NotFound, data: null};
@@ -60,21 +68,6 @@ export class CommentsRepositories {
     }
 
     async addLike(data: Omit<ILikeTypeDB, 'createdAt'>) {
-
-        // const
-
-
-    }
-
-    async getCurrentStatusLike(data: Omit<ILikeTypeDB, 'createdAt'>) {
-        const response = await LikeModel.findOne(({
-            $and: [{userId: data.userId}, {parentId: data.parentId}]
-        }))
-
-        if(response) {
-            return response;
-        }
-
         const like = new LikeModel();
 
         like.userId = data.userId;
@@ -85,6 +78,25 @@ export class CommentsRepositories {
         await like.save();
 
         return like;
+    }
 
+    async updateStatusLike(data: Omit<ILikeTypeDB, 'createdAt'>){
+
+        const currentStatus = await LikeModel.findOne(({
+            $and: [{userId: data.userId}, {parentId: data.parentId}]
+        }))
+
+        if(!currentStatus) {
+            return {status: ResultCode.BadRequest, data: null, errorMessage: "Wrong"}
+        }
+
+        if(currentStatus.status === data.status) {
+            return {status: ResultCode.NotContent, data: null}
+        }
+
+        currentStatus.status = data.status;
+        await currentStatus.save();
+
+        return {status: ResultCode.NotContent, data: null}
     }
 }
