@@ -80,17 +80,24 @@ export class CommentsRepositories {
         return like;
     }
 
-    async updateStatusLike(data: Omit<ILikeTypeDB, 'createdAt'>){
+    async updateStatusLike(data: Omit<ILikeTypeDB, 'createdAt'>) {
 
         const currentStatus = await LikeModel.findOne(({
             $and: [{userId: data.userId}, {parentId: data.parentId}]
         }))
 
-        if(!currentStatus) {
-            return {status: ResultCode.BadRequest, data: null, errorMessage: "Wrong"}
+        if (!currentStatus) {
+            return {
+                status: ResultCode.BadRequest, data: null, errorsMessages: [
+                    {
+                        "message": "Wrong",
+                        "field": 'status'
+                    }
+                ]
+            }
         }
 
-        if(currentStatus.status === data.status) {
+        if (currentStatus.status === data.status) {
             return {status: ResultCode.NotContent, data: null}
         }
 

@@ -78,7 +78,16 @@ export class CommentsServices {
         const validComment = await this.commentsQueryRepositories.getCommentById(dataLike.parentId)
 
         if (validComment.errorMessage) {
-            return validComment;
+            return {
+                status: validComment.status,
+                data: null,
+                errorsMessages: [
+                    {
+                        "message": validComment.errorMessage,
+                        "field": 'comment id'
+                    }
+                ]
+            }
         }
 
         const searchLike = await this.commentsQueryRepositories.getCurrentLike(dataLike.parentId, dataLike.userId)

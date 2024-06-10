@@ -72,6 +72,11 @@ export class CommentsController {
 
         const response = await this.commentsServices.updateLikeStatus(objLike)
 
+        if(response.errorsMessages) {
+            res.status(HTTP_STATUSES[response.status]).send({errorsMessages: response.errorsMessages})
+            return;
+        }
+
         res.status(HTTP_STATUSES[response.status]).send({})
 
     }

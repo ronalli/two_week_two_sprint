@@ -25,7 +25,7 @@ export const serviceComments = {
         const comments: ICommentViewModel[] = [];
 
         for (let i = 0; i < count; i++) {
-            const response = await req.post(SETTINGS.PATH.POSTS + `/${post.id}/comments`).set(jwtToken).send({
+            const response = await req.post(SETTINGS.PATH.POSTS + `/${post.id}/comments`).set('Authorization', `Bearer ${jwtToken.accessToken}`).send({
                 'content': `comment valid testing ${i}`,
             }).expect(HTTP_STATUSES.Created)
 
