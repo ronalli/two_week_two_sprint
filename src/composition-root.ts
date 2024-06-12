@@ -34,7 +34,7 @@ export const usersController = new UserController(userServices, usersQueryReposi
 const securityRepositories = new SecurityRepositories();
 const securityQueryRepositories = new SecurityQueryRepositories();
 const securityServices = new SecurityServices(securityRepositories, securityQueryRepositories);
-export const securityController = new SecurityController(securityServices)
+export const securityController = new SecurityController(securityServices, securityQueryRepositories)
 
 //auth
 const authRepositories = new AuthRepositories(usersRepositories);

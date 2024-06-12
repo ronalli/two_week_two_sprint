@@ -32,7 +32,7 @@ const likeSchema = new Schema<ILikeTypeDB>({
     },
     status: {
         type: String,
-        enum: Object.values(LikeStatus),
+        enum: LikeStatus,
         default: LikeStatus.None,
         required: true,
     }

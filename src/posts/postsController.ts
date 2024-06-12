@@ -72,18 +72,15 @@ export class PostsController {
     async createCommentForSpecialPost(req: Request, res: Response) {
         const {postId} = req.params;
         const {content} = req.body;
-        const token = req.headers.authorization?.split(" ")[1];
-        let userId = await jwtService.getUserIdByToken(token!);
+        const userId = req.userId!
 
         const result = await this.commentsServices.create({postId, userId, content})
 
         if (result.data) {
-
             res.status(HTTP_STATUSES[result.status]).send(result.data)
             return
         }
         res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
-
         return
     }
 

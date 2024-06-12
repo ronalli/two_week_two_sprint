@@ -11,9 +11,9 @@ export class CommentsServices {
     constructor(protected commentsRepositories: CommentsRepositories, protected commentsQueryRepositories: CommentsQueryRepositories, protected postsQueryRepositories: PostsQueryRepositories) {
     }
 
-    async update(id: string, content: string, token: string) {
-        const userId = await jwtService.getUserIdByToken(token);
-        const result = await this.commentsQueryRepositories.getCommentById(id);
+    async update(id: string, content: string, userId: string) {
+
+        const result = await this.commentsRepositories.getCommentById(id);
         if (result.errorMessage) {
             return result;
         }
@@ -27,9 +27,9 @@ export class CommentsServices {
         return await this.commentsRepositories.updateComment(id, content);
     }
 
-    async delete(id: string, token: string) {
-        const result = await this.commentsQueryRepositories.getCommentById(id);
-        const userId = await jwtService.getUserIdByToken(token);
+    async delete(id: string, userId: string) {
+        const result = await this.commentsRepositories.getCommentById(id);
+
         if (result.errorMessage) {
             return result
         }
@@ -66,16 +66,14 @@ export class CommentsServices {
     async findAllComments(postId: string, queryParams: ICommentsQueryType, currentUser: string | null) {
         const result = await this.postsQueryRepositories.findPostById(postId);
 
-
         if (result.data) {
-            return await this.commentsQueryRepositories.getCommentsForSpecialPost(postId, queryParams, currentUser)
+            return await this.commentsRepositories.getCommentsForSpecialPost(postId, queryParams, currentUser)
         }
         return result;
     }
 
-
     async updateLikeStatus(dataLike: Omit<ILikeTypeDB, 'createdAt'>) {
-        const validComment = await this.commentsQueryRepositories.getCommentById(dataLike.parentId)
+        const validComment = await this.commentsRepositories.getCommentById(dataLike.parentId)
 
         if (validComment.errorMessage) {
             return {
@@ -90,7 +88,7 @@ export class CommentsServices {
             }
         }
 
-        const searchLike = await this.commentsQueryRepositories.getCurrentLike(dataLike.parentId, dataLike.userId)
+        const searchLike = await this.commentsRepositories.getCurrentLike(dataLike.parentId, dataLike.userId)
 
         if (!searchLike) {
             await this.commentsRepositories.addLike(dataLike)

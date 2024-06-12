@@ -20,9 +20,7 @@ export class SecurityServices {
                 ...data,
                 ...payload
             };
-
             const device = new DeviceModel(session)
-
             await device.save()
         }
     }
@@ -54,19 +52,6 @@ export class SecurityServices {
             }
         }
         return await this.securityRepositories.deleteDevice(res.data.iat, deviceIdParam)
-    }
-
-    async getAllSessions(data: IDecodeRefreshToken) {
-
-        const {userId} = data;
-
-        const response = await this.securityQueryRepositories.allSessionsUser(userId)
-
-        if (response.status === ResultCode.Success) {
-            return response
-        }
-
-        return response;
     }
 
     async deleteCurrentSession(data: IDecodeRefreshToken) {

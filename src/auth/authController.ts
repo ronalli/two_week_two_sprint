@@ -111,7 +111,7 @@ export class AuthController {
     async passwordRecovery(req: Request, res: Response){
         const {email} = req.body;
 
-        const response = await this.authService.recoveryCode(email);
+        await this.authService.recoveryCode(email);
 
         res.status(HTTP_STATUSES.NotContent).send({})
         return;

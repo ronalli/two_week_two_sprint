@@ -9,7 +9,7 @@ import {nodemailerService} from "../common/adapter/nodemailer.service";
 import {emailExamples} from "../common/adapter/emailExamples";
 import {IUserDBType} from "../users/types/user-types";
 import {ObjectId} from "mongodb";
-import { UsersRepositories} from "../users/usersRepositories";
+import {UsersRepositories} from "../users/usersRepositories";
 import {IHeadersSession} from "./types/sessions-types";
 import {decodeToken} from "../common/utils/decodeToken";
 import {UserModel} from "../users/domain/user.entity";
@@ -295,7 +295,7 @@ export class AuthService {
     }
 
     async recoveryCode(email: string) {
-        const response = await this.authQueryRepositories.findByEmail(email);
+        const response = await this.authRepositories.findByEmail(email);
 
         if (!response.data) {
             return {
@@ -346,7 +346,7 @@ export class AuthService {
     }
 
     async checkUserCredential(login: string) {
-        return await this.authQueryRepositories.findByEmail(login);
+        return await this.authRepositories.findByEmail(login);
     }
 
     async checkAccessToken(authHeader: string){

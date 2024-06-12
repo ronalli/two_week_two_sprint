@@ -19,13 +19,14 @@ export const mappingComments = {
         const result: ICommentViewModel[] = []
 
         for (const comment of comments) {
-            const likesCount = await LikeModel.find({
+            const likesCount =  await LikeModel.find({
                 $and: [{parentId: comment._id}, {status: LikeStatus.Like}]
             }).countDocuments()
 
-            const dislikesCount = await LikeModel.find({
+            const dislikesCount =  await LikeModel.find({
                 $and: [{parentId: comment._id}, {status: LikeStatus.Dislike}]
             }).countDocuments()
+
 
             const currentStatus = await LikeModel.findOne({$and: [{parentId: comment._id}, {userId: currentUser}]});
 

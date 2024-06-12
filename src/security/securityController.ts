@@ -3,10 +3,11 @@ import {decodeToken} from "../common/utils/decodeToken";
 import {HTTP_STATUSES} from "../settings";
 import {mappingSessions} from "../common/utils/mappingSessions";
 import {SecurityServices} from "./securityServices";
+import {SecurityQueryRepositories} from "./securityQueryRepositories";
 
 
 export class SecurityController {
-    constructor(protected securityServices: SecurityServices) {
+    constructor(protected securityServices: SecurityServices, protected securityQueryRepositories: SecurityQueryRepositories) {
     }
 
     async getSessions(req: Request, res: Response) {
@@ -18,7 +19,8 @@ export class SecurityController {
             return
         }
 
-        const response = await this.securityServices.getAllSessions(data)
+        const {userId} = data;
+        const response = await this.securityQueryRepositories.allSessionsUser(userId)
 
         if (HTTP_STATUSES[response.status] === HTTP_STATUSES.Success && response.data) {
             res.status(HTTP_STATUSES.Success).send(mappingSessions(response.data))
@@ -53,7 +55,6 @@ export class SecurityController {
     }
 
     async deleteAllDevices(req: Request, res: Response) {
-
         const refreshToken = req.cookies.refreshToken;
 
         const response = await this.securityServices.deleteDevices(refreshToken)
@@ -62,6 +63,7 @@ export class SecurityController {
             res.status(HTTP_STATUSES.NotContent).send({})
             return
         }
+
         res.status(HTTP_STATUSES[response.status]).send({})
         return
     }

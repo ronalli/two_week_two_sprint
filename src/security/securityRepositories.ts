@@ -83,10 +83,10 @@ export class SecurityRepositories {
                 }]
             }
         }
-
         currentDevice.iat = iat;
         currentDevice.exp = exp;
         await currentDevice.save();
+
         return currentDevice;
     }
 }

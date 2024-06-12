@@ -5,8 +5,8 @@ declare global {
         export interface Request {
             userId: string | null
         }
-        export interface Response {
-            userId: string | null
-        }
+        // export interface Response {
+        //     userId: string | null
+        // }
     }
 }

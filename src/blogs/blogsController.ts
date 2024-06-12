@@ -19,6 +19,7 @@ export class BlogsController {
             return;
         }
         res.status(HTTP_STATUSES[result.status]).send({error: result.errorMessage, data: result.data})
+        return
     }
 
     async getBlog(req: Request, res: Response) {

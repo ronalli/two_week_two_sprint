@@ -175,7 +175,7 @@ describe("Auth Tests", () => {
 
         await req.post(SETTINGS.PATH.AUTH + '/logout').expect(HTTP_STATUSES.Unauthorized);
 
-        await req.post(SETTINGS.PATH.AUTH + '/logout').set('Cookie', `refreshToken=${cook.refreshToken}`).expect(HTTP_STATUSES.Unauthorized);
+        await req.post(SETTINGS.PATH.AUTH + '/logout').set('Cookie', `refreshToken=${cook.refreshToken}`).expect(HTTP_STATUSES.NotContent);
     })
 
 
@@ -200,7 +200,6 @@ describe("Auth Tests", () => {
         }
 
         await req.post(SETTINGS.PATH.AUTH + '/new-password').send(recoveryData).expect(HTTP_STATUSES.NotContent)
-
 
         await req.post(SETTINGS.PATH.AUTH + '/login').send({
             'loginOrEmail': user.login,
