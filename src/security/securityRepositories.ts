@@ -1,7 +1,9 @@
 import {ResultCode} from "../types/resultCode";
 import {IDecodeRefreshToken} from "../types/refresh-token-type";
 import {DeviceModel} from "./domain/device.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityRepositories {
     async deleteDevice(iat: string, deviceId: string) {
         try {

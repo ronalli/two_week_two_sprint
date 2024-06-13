@@ -3,7 +3,9 @@ import {IUserDBType, IUserViewModel} from "./types/user-types";
 import {ObjectId, SortDirection} from "mongodb";
 import {ResultCode} from "../types/resultCode";
 import {UserModel} from "./domain/user.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersQueryRepositories {
     async getUsers(queryParams: IUserQueryType) {
         const query = this._createDefaultValues(queryParams);

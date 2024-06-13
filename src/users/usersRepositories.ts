@@ -4,11 +4,11 @@ import {bcryptService} from "../common/adapter/bcrypt.service";
 import {ResultCode} from "../types/resultCode";
 import {UserModel} from "./domain/user.entity";
 import {UsersQueryRepositories} from "./usersQueryRepositories";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UsersRepositories {
-    private usersQueryRepositories: UsersQueryRepositories
-    constructor() {
-        this.usersQueryRepositories = new UsersQueryRepositories();
+    constructor(@inject(UsersQueryRepositories) protected usersQueryRepositories: UsersQueryRepositories) {
     }
 
     async createUser(data: IUserInputModel) {

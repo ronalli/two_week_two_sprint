@@ -5,10 +5,12 @@ import {SecurityQueryRepositories} from "./securityQueryRepositories";
 import {ResultCode} from "../types/resultCode";
 import {DeviceModel} from "./domain/device.entity";
 import {SecurityRepositories} from "./securityRepositories";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class SecurityServices {
 
-    constructor(protected securityRepositories: SecurityRepositories, protected securityQueryRepositories: SecurityQueryRepositories) {
+    constructor(@inject(SecurityRepositories) protected securityRepositories: SecurityRepositories,@inject(SecurityQueryRepositories) protected securityQueryRepositories: SecurityQueryRepositories) {
     }
 
     async createAuthSessions(token: string, data: IHeadersSession) {

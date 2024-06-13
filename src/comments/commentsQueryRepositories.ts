@@ -4,22 +4,15 @@ import {CommentModel} from "./domain/comment.entity";
 import {mappingComments} from "../common/utils/mappingComments";
 import {LikeModel, LikeStatus} from "./domain/like.entity";
 import {ILikesInfoViewModel} from "./types/likes-info-types";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentsQueryRepositories {
-
     async getComment(id: string, status: string) {
         try {
             const currentComment = await CommentModel.findOne({_id: new ObjectId(id)})
 
             if (currentComment) {
-
-                // const likesCount = await LikeModel.find({
-                //     $and: [{parentId: id}, {status: LikeStatus.Like}]
-                // }).countDocuments()
-                //
-                // const dislikesCount = await LikeModel.find({
-                //     $and: [{parentId: id}, {status: LikeStatus.Dislike}]
-                // }).countDocuments()
 
                 const likesInfo: ILikesInfoViewModel = {
                     likesCount: currentComment.likesCount,
@@ -39,7 +32,6 @@ export class CommentsQueryRepositories {
             return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
         }
     }
-
 
     async getCommentById(id: string) {
         try {

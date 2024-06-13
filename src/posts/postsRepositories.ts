@@ -4,10 +4,12 @@ import {IPostDBType, IPostInputModel} from "./types/posts-types";
 import {ResultCode} from "../types/resultCode";
 import {PostModel} from "./domain/post.entity";
 import {BlogsQueryRepositories} from "../blogs/blogsQueryRepositories";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostsRepositories {
 
-    constructor(protected blogsQueryRepositories: BlogsQueryRepositories, protected postsQueryRepositories: PostsQueryRepositories) {
+    constructor(@inject(BlogsQueryRepositories) protected blogsQueryRepositories: BlogsQueryRepositories,@inject(PostsQueryRepositories) protected postsQueryRepositories: PostsQueryRepositories) {
     }
 
     async create(postData: IPostInputModel) {

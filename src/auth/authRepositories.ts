@@ -2,9 +2,11 @@ import {ResultCode} from "../types/resultCode";
 import {IUserDBType} from "../users/types/user-types";
 import {UserModel} from "../users/domain/user.entity";
 import {UsersRepositories} from "../users/usersRepositories";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthRepositories {
-    constructor(protected usersRepositories: UsersRepositories) {
+    constructor(@inject(UsersRepositories) protected usersRepositories: UsersRepositories) {
     }
 
     async findByLoginOrEmail(loginOrEmail: string) {

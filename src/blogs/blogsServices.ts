@@ -1,8 +1,10 @@
 import {BlogsRepositories} from "./blogsRepositories";
 import {IBlogInputModel} from "./types/blogs-types";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogsServices {
-    constructor(protected blogsRepositories: BlogsRepositories) {
+    constructor(@inject(BlogsRepositories) protected blogsRepositories: BlogsRepositories) {
     }
 
     async createBlog(blog: IBlogInputModel) {

@@ -3,6 +3,7 @@ import {HTTP_STATUSES} from "../settings";
 import {ResultCode} from "../types/resultCode";
 import {authService} from "../composition-root";
 
+
 export const authJwtMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     if(!req.headers.authorization) {
         res.status(HTTP_STATUSES.Unauthorized).send({})

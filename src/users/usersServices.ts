@@ -1,9 +1,10 @@
 import {IUserInputModel} from "./types/user-types";
 import {UsersRepositories} from "./usersRepositories";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UsersServices {
-
-    constructor(protected usersRepositories: UsersRepositories) {
+    constructor(@inject(UsersRepositories) protected usersRepositories: UsersRepositories) {
     }
 
     async createUser(data: IUserInputModel) {

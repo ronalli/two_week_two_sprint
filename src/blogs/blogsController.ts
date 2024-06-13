@@ -5,10 +5,12 @@ import {BlogsServices} from "./blogsServices";
 import {IBlogInputModel} from "./types/blogs-types";
 import {IBlogQueryType} from "./types/request-response-type";
 import {PostsServices} from "../posts/postsServices";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogsController {
 
-    constructor(protected blogsServices: BlogsServices, protected blogsQueryRepositories: BlogsQueryRepositories, protected postsServices: PostsServices) {
+    constructor(@inject(BlogsServices) protected blogsServices: BlogsServices, @inject(BlogsQueryRepositories) protected blogsQueryRepositories: BlogsQueryRepositories, @inject(PostsServices) protected postsServices: PostsServices) {
     }
 
     async createBlog(req: Request, res: Response) {

@@ -5,9 +5,11 @@ import {CommentsRepositories} from "./commentsRepositories";
 import {CommentsQueryRepositories} from "./commentsQueryRepositories";
 import {PostsQueryRepositories} from "../posts/postsQueryRepositories";
 import {ILikeTypeDB, LikeStatus} from "./domain/like.entity";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentsServices {
-    constructor(protected commentsRepositories: CommentsRepositories, protected commentsQueryRepositories: CommentsQueryRepositories, protected postsQueryRepositories: PostsQueryRepositories) {
+    constructor(@inject(CommentsRepositories) protected commentsRepositories: CommentsRepositories, @inject(CommentsQueryRepositories) protected commentsQueryRepositories: CommentsQueryRepositories, @inject(PostsQueryRepositories) protected postsQueryRepositories: PostsQueryRepositories) {
     }
 
     async update(id: string, content: string, userId: string) {

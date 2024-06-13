@@ -6,7 +6,10 @@ import {validationQueryParamsBlogs} from "../blogs/middleware/query-validation-m
 import {validationQueryParamsPosts} from "../posts/middleware/query-validation-middleware";
 import {validationCreateSpecialPost} from "../posts/middleware/input-validation-middleware";
 import {validatorParamBlogId} from "../middleware/blogId-validator-middleware";
-import {blogsController} from "../composition-root";
+import {container} from "../composition-root";
+import {BlogsController} from "../blogs/blogsController";
+
+const blogsController = container.resolve(BlogsController);
 
 export const blogsRouter = Router({});
 

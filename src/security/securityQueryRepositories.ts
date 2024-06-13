@@ -1,6 +1,8 @@
 import {ResultCode} from "../types/resultCode";
 import {DeviceModel} from "./domain/device.entity";
+import {injectable} from "inversify";
 
+@injectable()
 export class SecurityQueryRepositories {
     async allSessionsUser(id: string){
         try {

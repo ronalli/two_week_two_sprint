@@ -1,6 +1,8 @@
 import {UserModel} from "../users/domain/user.entity";
 import {ResultCode} from "../types/resultCode";
+import {injectable} from "inversify";
 
+@injectable()
 export class AuthQueryRepositories {
     async findByEmail(email: string){
         try {

@@ -6,8 +6,9 @@ import {BlogModel} from "./domain/blog.entity";
 import {PostModel} from "../posts/domain/post.entity";
 import {mappingBlogs} from "../common/utils/mappingBlogs";
 import {mappingPosts} from "../common/utils/mappingPosts";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class BlogsQueryRepositories {
     async getAndSortPostsSpecialBlog(blogId: string, queryParams: IBlogQueryType) {
         const query = createDefaultValues(queryParams);

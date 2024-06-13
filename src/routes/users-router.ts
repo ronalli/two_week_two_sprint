@@ -3,7 +3,10 @@ import {validationQueryUsers} from "../users/middleware/query-validation-middlew
 import {validationInputBodyUser} from "../users/middleware/input-validation-middleware";
 import {authMiddleware} from "../middleware/auth-middleware";
 import {inputCheckErrorsMiddleware} from "../middleware/inputCheckErrorsMiddleware";
-import {usersController} from "../composition-root";
+import {UserController} from "../users/usersController";
+import {container} from "../composition-root";
+
+const usersController = container.resolve(UserController)
 
 export const usersRouter = Router({});
 

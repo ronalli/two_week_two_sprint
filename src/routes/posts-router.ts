@@ -5,8 +5,11 @@ import {validationCreatePost} from "../posts/middleware/input-validation-middlew
 import {validationQueryParamsPosts} from "../posts/middleware/query-validation-middleware";
 import {validationContent} from "../comments/middleware/input-comment-validation-middleware";
 import {validatorParamPostId} from "../middleware/postId-validator-middleware";
-import {postsController} from "../composition-root";
 import {authJwtMiddleware} from "../middleware/auth-jwt-middleware";
+import {container} from "../composition-root";
+import {PostsController} from "../posts/postsController";
+
+const postsController = container.resolve(PostsController);
 
 export const postsRouter = Router({});
 

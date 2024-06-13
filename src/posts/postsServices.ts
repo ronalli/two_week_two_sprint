@@ -1,8 +1,10 @@
 import {IPostInputModel} from "./types/posts-types";
 import {PostsRepositories} from "./postsRepositories";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostsServices {
-    constructor(protected postsRepositories: PostsRepositories) {
+    constructor(@inject(PostsRepositories) protected postsRepositories: PostsRepositories) {
     }
 
     async createPost(post: IPostInputModel) {

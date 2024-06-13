@@ -8,8 +8,11 @@ import {
 import {validationCode} from "../auth/middleware/input-registration-confirmation-middleware";
 import {guardRefreshToken} from "../middleware/guardRefreshToken";
 import {rateLimitGuard} from "../common/guard/customRateLimit";
-import {authController} from "../composition-root";
 import {authJwtMiddleware} from "../middleware/auth-jwt-middleware";
+import {container} from "../composition-root";
+import {AuthController} from "../auth/authController";
+
+const authController = container.resolve(AuthController)
 
 export const authRouter = Router({});
 

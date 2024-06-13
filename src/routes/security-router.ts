@@ -1,6 +1,9 @@
 import {Router} from 'express';
 import {guardRefreshToken} from "../middleware/guardRefreshToken";
-import {securityController} from "../composition-root";
+import {container} from "../composition-root";
+import {SecurityController} from "../security/securityController";
+
+const securityController = container.resolve(SecurityController);
 
 export const securityRouter = Router({});
 

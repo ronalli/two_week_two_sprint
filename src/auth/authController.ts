@@ -8,9 +8,11 @@ import {mapingErrors} from "../common/adapter/mapingErrors";
 import {mappingRequestHeaders} from "../common/utils/mappingRequestHeaders";
 import {AuthService} from "./authService";
 import {UsersServices} from "../users/usersServices";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthController {
-    constructor(protected authService: AuthService, protected usersServices: UsersServices) {
+    constructor(@inject(AuthService) protected authService: AuthService, @inject(UsersServices) protected usersServices: UsersServices) {
     }
 
     async login(req: Request, res: Response) {

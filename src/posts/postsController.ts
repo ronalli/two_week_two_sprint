@@ -3,16 +3,15 @@ import {HTTP_STATUSES} from "../settings";
 import {PostsServices} from "./postsServices";
 import {IPostInputModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
-import {jwtService} from "../utils/jwt-services";
 import {CommentsServices} from "../comments/commentsServices";
 import {ICommentsQueryType} from "../comments/types/output-paginator-comments-types";
 import {PostsQueryRepositories} from "./postsQueryRepositories";
-import {decodeToken} from "../common/utils/decodeToken";
 import {serviceInfo} from "../common/utils/serviceInfo";
+import {inject, injectable} from "inversify";
 
-
+@injectable()
 export class PostsController {
-    constructor(protected postsServices: PostsServices, protected commentsServices: CommentsServices, protected postsQueryRepositories: PostsQueryRepositories) {
+    constructor(@inject(PostsServices) protected postsServices: PostsServices,@inject(CommentsServices) protected commentsServices: CommentsServices,@inject(PostsQueryRepositories) protected postsQueryRepositories: PostsQueryRepositories) {
     }
 
     async createPost(req: Request, res: Response) {

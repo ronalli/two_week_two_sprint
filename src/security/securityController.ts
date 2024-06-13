@@ -4,10 +4,11 @@ import {HTTP_STATUSES} from "../settings";
 import {mappingSessions} from "../common/utils/mappingSessions";
 import {SecurityServices} from "./securityServices";
 import {SecurityQueryRepositories} from "./securityQueryRepositories";
+import {inject, injectable} from "inversify";
 
-
+@injectable()
 export class SecurityController {
-    constructor(protected securityServices: SecurityServices, protected securityQueryRepositories: SecurityQueryRepositories) {
+    constructor(@inject(SecurityServices) protected securityServices: SecurityServices,@inject(SecurityQueryRepositories) protected securityQueryRepositories: SecurityQueryRepositories) {
     }
 
     async getSessions(req: Request, res: Response) {

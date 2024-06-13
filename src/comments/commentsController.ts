@@ -2,12 +2,13 @@ import {Request, Response} from "express";
 import {CommentsQueryRepositories} from "./commentsQueryRepositories";
 import {HTTP_STATUSES} from "../settings";
 import {CommentsServices} from "./commentsServices";
-import {decodeToken} from "../common/utils/decodeToken";
 import {ILikeTypeDB, LikeStatus} from "./domain/like.entity";
 import {serviceInfo} from "../common/utils/serviceInfo";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentsController {
-    constructor(protected commentsServices: CommentsServices, protected commentsQueryRepositories: CommentsQueryRepositories) {
+    constructor(@inject(CommentsServices) protected commentsServices: CommentsServices, @inject(CommentsQueryRepositories) protected commentsQueryRepositories: CommentsQueryRepositories) {
     }
 
     async getComment(req: Request, res: Response) {

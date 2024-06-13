@@ -4,8 +4,9 @@ import {IPostDBType, IPostViewModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
 import {ResultCode} from "../types/resultCode";
 import {PostModel} from "./domain/post.entity";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class PostsQueryRepositories {
     async getPosts(queryParams: IPostQueryType) {
         const query = createDefaultValues(queryParams);

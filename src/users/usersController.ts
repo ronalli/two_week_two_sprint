@@ -4,9 +4,11 @@ import {IUserQueryType} from "./types/request-response-type";
 import {IUserInputModel} from "./types/user-types";
 import {UsersServices} from "./usersServices";
 import {UsersQueryRepositories} from "./usersQueryRepositories";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UserController {
-    constructor(protected usersServices: UsersServices, protected usersQueryRepositories: UsersQueryRepositories) {
+    constructor(@inject(UsersServices) protected usersServices: UsersServices,@inject(UsersQueryRepositories) protected usersQueryRepositories: UsersQueryRepositories) {
     }
 
     async getAllUsers(req: Request, res: Response) {

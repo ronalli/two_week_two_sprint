@@ -3,7 +3,9 @@ import {IBlogInputModel} from "./types/blogs-types";
 import {ResultCode} from "../types/resultCode";
 import {BlogModel} from "./domain/blog.entity";
 import {mappingBlogs} from "../common/utils/mappingBlogs";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsRepositories {
     async create(blog: IBlogInputModel){
         const blogData = {

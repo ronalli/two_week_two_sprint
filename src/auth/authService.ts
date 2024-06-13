@@ -20,7 +20,10 @@ import {createRecoveryCode} from "../common/utils/createRecoveryCode";
 import {AuthRepositories} from "./authRepositories";
 import {UsersQueryRepositories} from "../users/usersQueryRepositories";
 import {SecurityServices} from "../security/securityServices";
+import {injectable} from "inversify";
 
+
+@injectable()
 export class AuthService {
     constructor(protected  authRepositories: AuthRepositories, protected authQueryRepositories: AuthQueryRepositories, protected usersRepositories: UsersRepositories, protected usersQueryRepositories: UsersQueryRepositories, protected securityServices: SecurityServices) {
     }

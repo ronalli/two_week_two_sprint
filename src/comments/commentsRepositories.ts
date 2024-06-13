@@ -8,9 +8,11 @@ import {ILikeTypeDB, LikeModel, LikeStatus} from "./domain/like.entity";
 import {ILikesInfoViewModel} from "./types/likes-info-types";
 import {ICommentsQueryType} from "./types/output-paginator-comments-types";
 import {createDefaultValuesQueryParams} from "../utils/helper";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentsRepositories {
-    constructor(protected usersQueryRepositories: UsersQueryRepositories) {
+    constructor(@inject(UsersQueryRepositories) protected usersQueryRepositories: UsersQueryRepositories) {
     }
 
     async updateComment(id: string, contentUpdate: string) {
