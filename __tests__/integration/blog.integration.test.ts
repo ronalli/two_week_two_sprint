@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import {db} from "../../src/db/db";
 import {serviceBlogs} from "../utils/serviceBlogs";
 import {ObjectId} from "mongodb";

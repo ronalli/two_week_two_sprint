@@ -1,4 +1,5 @@
-import {MongoMemoryServer} from "mongodb-memory-server";
+import 'reflect-metadata';
+
 import {db} from "../../src/db/db";
 import {req} from "../test-helpers";
 import {SETTINGS} from "../../src/settings";

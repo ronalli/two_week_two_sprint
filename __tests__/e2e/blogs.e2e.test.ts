@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import {req} from "../test-helpers";
 import {db} from '../../src/db/db'
 import {HTTP_STATUSES} from "../../src/settings";

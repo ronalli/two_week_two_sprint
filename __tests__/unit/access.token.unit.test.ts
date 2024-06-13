@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import {jwtService} from "../../src/utils/jwt-services";
 import {ResultCode} from "../../src/types/resultCode";
 import {AuthService} from "../../src/auth/authService";

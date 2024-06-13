@@ -1,8 +1,13 @@
+import 'reflect-metadata';
+
 import {db} from "../../src/db/db";
 import {nodemailerService} from "../../src/common/adapter/nodemailer.service";
 import {testSeeder} from "../utils/test.seeder";
 import {ResultCode} from "../../src/types/resultCode";
-import {authService} from "../../src/composition-root";
+import {container} from "../../src/composition-root";
+import {AuthService} from "../../src/auth/authService";
+
+const authService = container.resolve(AuthService);
 
 describe('auth-integration', () => {
 

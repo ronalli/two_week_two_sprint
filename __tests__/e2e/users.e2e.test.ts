@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import {req} from "../test-helpers";
 import {HTTP_STATUSES} from "../../src/settings";
 import {SETTINGS} from "../../src/settings";

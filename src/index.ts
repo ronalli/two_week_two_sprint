@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import {app} from "./app";
 import {SETTINGS} from "./settings";
 import {connectToDB} from "./db/mongo-db";

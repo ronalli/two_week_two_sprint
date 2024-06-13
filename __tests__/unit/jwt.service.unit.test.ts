@@ -1,6 +1,7 @@
+import 'reflect-metadata';
+
 import jwt from 'jsonwebtoken';
 import {jwtService} from "../../src/utils/jwt-services";
-
 
 jest.mock('jsonwebtoken');
 

@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import {db} from "../../src/db/db";
 import {serviceComments} from "../utils/serviceComments";
 import {req} from "../test-helpers";
