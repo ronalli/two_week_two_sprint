@@ -1,10 +1,10 @@
-import {ICommentAdd, ICommentDBType, ICommentViewModel} from "./types/comments-types";
+import {ICommentAdd, ICommentDBType} from "./types/comments-types";
 import {ObjectId} from "mongodb";
 import {ResultCode} from "../types/resultCode";
-import {CommentModel} from "./domain/comment.entity";
+import {CommentDocument, CommentModel} from "./domain/comment.entity";
 import {mappingComments} from "../common/utils/mappingComments";
 import {UsersQueryRepositories} from "../users/usersQueryRepositories";
-import {ILikeTypeDB, LikeModel} from "./domain/like.entity";
+import {ILikeTypeDB, LikeModel, LikeStatus} from "./domain/like.entity";
 import {ILikesInfoViewModel} from "./types/likes-info-types";
 import {ICommentsQueryType} from "./types/output-paginator-comments-types";
 import {createDefaultValuesQueryParams} from "../utils/helper";
@@ -46,7 +46,9 @@ export class CommentsRepositories {
             commentatorInfo: {
                 userId: data.userId,
                 userLogin: result.data!.login
-            }
+            },
+            likesCount: 0,
+            dislikesCount: 0
         }
         try {
             const newComment = new CommentModel(dataComment);
@@ -69,7 +71,7 @@ export class CommentsRepositories {
         }
     }
 
-    async addLike(data: Omit<ILikeTypeDB, 'createdAt'>) {
+    async addStatusLike(data: Omit<ILikeTypeDB, 'createdAt'>) {
         const like = new LikeModel();
 
         like.userId = data.userId;
@@ -82,7 +84,7 @@ export class CommentsRepositories {
         return like;
     }
 
-    async updateStatusLike(data: Omit<ILikeTypeDB, 'createdAt'>) {
+    async updateStatusLike(data: Omit<ILikeTypeDB, 'createdAt'>, comment: CommentDocument) {
 
         const currentStatus = await LikeModel.findOne(({
             $and: [{userId: data.userId}, {parentId: data.parentId}]
@@ -104,25 +106,23 @@ export class CommentsRepositories {
         }
 
         currentStatus.status = data.status;
+        if(data.status === LikeStatus.Like) {
+            comment.likesCount += 1;
+            comment.dislikesCount -= 1;
+        } else {
+            comment.likesCount -= 1;
+            comment.dislikesCount += 1;
+        }
+
+        await comment.save();
+
         await currentStatus.save();
 
         return {status: ResultCode.NotContent, data: null}
     }
 
     async getCommentById(id: string) {
-        try {
-            const findComment = await CommentModel.findOne({_id: new ObjectId(id)});
-
-            if (findComment) {
-                return {
-                    status: ResultCode.Success,
-                    data: mappingComments.formatDataCommentForView(findComment)
-                }
-            }
-            return {errorMessage: 'Not found comment', status: ResultCode.NotFound, data: null}
-        } catch (e) {
-            return {errorMessage: 'Error BD', status: ResultCode.InternalServerError, data: null}
-        }
+        return CommentModel.findOne({_id: new ObjectId(id)});
     }
 
     async getCommentsForSpecialPost(postId: string, queryParams: ICommentsQueryType, currentUser: string | null) {
@@ -154,14 +154,9 @@ export class CommentsRepositories {
     }
 
     async getCurrentLike(parentId: string, userId: string) {
-        const response = await LikeModel.findOne(({
+        return LikeModel.findOne(({
             $and: [{userId: userId}, {parentId: parentId}]
-        }))
+        }));
 
-        if (response) {
-            return response;
-        }
-
-        return response;
     }
 }

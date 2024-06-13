@@ -13,17 +13,17 @@ export class CommentsQueryRepositories {
 
             if (currentComment) {
 
-                const likesCount = await LikeModel.find({
-                    $and: [{parentId: id}, {status: LikeStatus.Like}]
-                }).countDocuments()
-
-                const dislikesCount = await LikeModel.find({
-                    $and: [{parentId: id}, {status: LikeStatus.Dislike}]
-                }).countDocuments()
+                // const likesCount = await LikeModel.find({
+                //     $and: [{parentId: id}, {status: LikeStatus.Like}]
+                // }).countDocuments()
+                //
+                // const dislikesCount = await LikeModel.find({
+                //     $and: [{parentId: id}, {status: LikeStatus.Dislike}]
+                // }).countDocuments()
 
                 const likesInfo: ILikesInfoViewModel = {
-                    likesCount,
-                    dislikesCount,
+                    likesCount: currentComment.likesCount,
+                    dislikesCount: currentComment.dislikesCount,
                     myStatus: status
                 }
 

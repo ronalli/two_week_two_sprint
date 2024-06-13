@@ -48,7 +48,6 @@ export class SecurityController {
                 res.status(HTTP_STATUSES.NotContent).send({})
                 return;
             }
-
             res.status(HTTP_STATUSES[response.status]).send({})
             return
         }

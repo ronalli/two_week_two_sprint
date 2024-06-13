@@ -12,6 +12,8 @@ export interface ICommentDBType {
     createdAt: string
     commentatorInfo: ICommentatorInfo
     postId: string
+    likesCount: number
+    dislikesCount: number
 }
 
 export interface ICommentInputModel {

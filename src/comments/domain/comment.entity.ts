@@ -12,8 +12,9 @@ export interface ICommentTypeDB {
     createdAt: string
     commentatorInfo: ICommentatorInfo
     postId: string
+    likesCount: number
+    dislikesCount: number
 }
-
 
 type CommentModel = Model<ICommentTypeDB>
 
@@ -43,6 +44,16 @@ const commentSchema = new Schema<ICommentTypeDB>({
     commentatorInfo: {type: commentatorInfoSchema},
     postId: {
         type: String,
+        required: true
+    },
+    likesCount: {
+        type: Number,
+        default: 0,
+        required: true
+    },
+    dislikesCount: {
+        type: Number,
+        default: 0,
         required: true
     }
 })
