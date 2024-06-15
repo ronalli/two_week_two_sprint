@@ -392,7 +392,8 @@ export class AuthService {
 
         return {
             status: ResultCode.Success,
-            data: payload.id
+            data: payload.id,
+            login: payload.login
         }
     }
 }

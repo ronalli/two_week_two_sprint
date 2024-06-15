@@ -4,11 +4,12 @@ import {ResultCode} from "../types/resultCode";
 import {CommentDocument, CommentModel} from "./domain/comment.entity";
 import {mappingComments} from "../common/utils/mappingComments";
 import {UsersQueryRepositories} from "../users/usersQueryRepositories";
-import {ILikeTypeDB, LikeModel, LikeStatus} from "./domain/like.entity";
+import { LikeModel} from "./domain/like.entity";
 import {ILikesInfoViewModel} from "./types/likes-info-types";
 import {ICommentsQueryType} from "./types/output-paginator-comments-types";
 import {createDefaultValuesQueryParams} from "../utils/helper";
 import {inject, injectable} from "inversify";
+import {ILikeTypeDB, LikeStatus} from "../types/like.status-type";
 
 @injectable()
 export class CommentsRepositories {
@@ -73,20 +74,21 @@ export class CommentsRepositories {
         }
     }
 
-    async addStatusLike(data: Omit<ILikeTypeDB, 'createdAt'>) {
+    async addStatusLike(data: Omit<ILikeTypeDB, 'addedAt'>) {
         const like = new LikeModel();
 
         like.userId = data.userId;
         like.parentId = data.parentId;
         like.status = data.status;
-        like.createdAt = new Date().toISOString();
+        like.login = data.login
+        like.addedAt = new Date().toISOString();
 
         await like.save();
 
         return like;
     }
 
-    async updateStatusLike(data: Omit<ILikeTypeDB, 'createdAt'>, comment: CommentDocument) {
+    async updateStatusLike(data: Omit<ILikeTypeDB, 'addedAt'>, comment: CommentDocument) {
 
         const currentStatus = await LikeModel.findOne(({
             $and: [{userId: data.userId}, {parentId: data.parentId}]

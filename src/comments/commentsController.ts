@@ -2,9 +2,9 @@ import {Request, Response} from "express";
 import {CommentsQueryRepositories} from "./commentsQueryRepositories";
 import {HTTP_STATUSES} from "../settings";
 import {CommentsServices} from "./commentsServices";
-import {ILikeTypeDB, LikeStatus} from "./domain/like.entity";
 import {serviceInfo} from "../common/utils/serviceInfo";
 import {inject, injectable} from "inversify";
+import {ILikeTypeDB, LikeStatus} from "../types/like.status-type";
 
 @injectable()
 export class CommentsController {
@@ -60,16 +60,18 @@ export class CommentsController {
         return;
     }
 
-    async updateLikeStatusForSpecialPost(req: Request, res: Response) {
+    async updateLikeStatusForSpecialComment(req: Request, res: Response) {
         const {commentId} = req.params;
         const userId = req.userId!;
+        const login = req.login!;
 
         const dataBody: { likeStatus: LikeStatus } = req.body;
 
-        const objLike: Omit<ILikeTypeDB, 'createdAt'> = {
+        const objLike: Omit<ILikeTypeDB, 'addedAt'> = {
             parentId: commentId,
             userId: userId,
             status: dataBody.likeStatus,
+            login: login
         }
 
         const response = await this.commentsServices.updateLikeStatus(objLike)

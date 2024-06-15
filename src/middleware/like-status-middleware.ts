@@ -1,5 +1,5 @@
 import {body} from 'express-validator'
-import {LikeStatus} from "../comments/domain/like.entity";
+import {LikeStatus} from "../types/like.status-type";
 
 export const validatorLikeStatus = body('likeStatus').trim().notEmpty().withMessage('This field is empty').custom(value => {
     return LikeStatus.hasOwnProperty(value)

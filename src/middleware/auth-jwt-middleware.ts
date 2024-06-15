@@ -16,6 +16,7 @@ export const authJwtMiddleware = async (req: Request, res: Response, next: NextF
 
     if(result.status === ResultCode.Success && result.data) {
         req.userId = result.data
+        req.login = result.login
         return next()
     }
 

@@ -20,3 +20,5 @@ postsRouter.put('/:id', authMiddleware, ...validationCreatePost, inputCheckError
 postsRouter.delete('/:id', authMiddleware, postsController.deletePost.bind(postsController))
 postsRouter.post('/:postId/comments', authJwtMiddleware, validationContent, inputCheckErrorsMiddleware, postsController.createCommentForSpecialPost.bind(postsController))
 postsRouter.get('/:postId/comments', postsController.getAllCommentsForPost.bind(postsController))
+
+postsRouter.put('/:postId/like-status', authJwtMiddleware, postsController.updateLikeStatusForSpecialPost.bind(postsController))

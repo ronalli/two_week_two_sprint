@@ -3,7 +3,7 @@ import {LikeModel} from "../../comments/domain/like.entity";
 import {jwtService} from "../../utils/jwt-services";
 
 export const serviceInfo = {
-    async initializeStatusLike(token: string, commentId: string) {
+    async initializeStatusLike(token: string, parentId: string) {
         const currentAccount = await decodeToken(token)
 
         if(!currentAccount) {
@@ -11,7 +11,7 @@ export const serviceInfo = {
         }
 
         const response = await LikeModel.findOne(({
-            $and: [{userId: currentAccount.userId}, {parentId: commentId}]
+            $and: [{userId: currentAccount.userId}, {parentId:  parentId}]
         }))
 
         if(!response) {
@@ -21,7 +21,7 @@ export const serviceInfo = {
         return response.status
     },
 
-    async getIdUserByToken(token: string | undefined) {
+    async getIdUserByToken(token: string | undefined): Promise<string> {
         if(!token) {
             return 'None'
         }

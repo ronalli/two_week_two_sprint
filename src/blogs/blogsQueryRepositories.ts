@@ -10,7 +10,7 @@ import {injectable} from "inversify";
 
 @injectable()
 export class BlogsQueryRepositories {
-    async getAndSortPostsSpecialBlog(blogId: string, queryParams: IBlogQueryType) {
+    async getAndSortPostsSpecialBlog(blogId: string, queryParams: IBlogQueryType, currentUser: string | null) {
         const query = createDefaultValues(queryParams);
 
         const search = query.searchNameTerm ?
@@ -38,7 +38,7 @@ export class BlogsQueryRepositories {
                     page: query.pageNumber,
                     pageSize: query.pageSize,
                     totalCount,
-                    items: allPosts.map(x => mappingPosts.formatingDataForOutputPost(x))
+                    items: mappingPosts.formatingAllPostForView(allPosts, currentUser)
                 }
             }
 

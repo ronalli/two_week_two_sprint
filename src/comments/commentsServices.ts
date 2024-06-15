@@ -4,8 +4,8 @@ import {ResultCode} from "../types/resultCode";
 import {CommentsRepositories} from "./commentsRepositories";
 import {CommentsQueryRepositories} from "./commentsQueryRepositories";
 import {PostsQueryRepositories} from "../posts/postsQueryRepositories";
-import {ILikeTypeDB, LikeStatus} from "./domain/like.entity";
 import {inject, injectable} from "inversify";
+import {ILikeTypeDB, LikeStatus} from "../types/like.status-type";
 
 @injectable()
 export class CommentsServices {
@@ -46,7 +46,7 @@ export class CommentsServices {
 
     async create(data: ICommentAdd) {
         const {postId} = data;
-        const findPost = await this.postsQueryRepositories.findPostById(postId);
+        const findPost = await this.postsQueryRepositories.getPostById(postId);
         if (findPost.errorMessage) {
             return findPost
         }
@@ -54,7 +54,7 @@ export class CommentsServices {
     }
 
     async findAllComments(postId: string, queryParams: ICommentsQueryType, currentUser: string | null) {
-        const result = await this.postsQueryRepositories.findPostById(postId);
+        const result = await this.postsQueryRepositories.getPostById(postId);
 
         if (result.data) {
             return await this.commentsRepositories.getCommentsForSpecialPost(postId, queryParams, currentUser)
@@ -62,7 +62,7 @@ export class CommentsServices {
         return result;
     }
 
-    async updateLikeStatus(dataLike: Omit<ILikeTypeDB, 'createdAt'>) {
+    async updateLikeStatus(dataLike: Omit<ILikeTypeDB, 'addedAt'>) {
         const comment = await this.commentsRepositories.getCommentById(dataLike.parentId)
 
         if (!comment) {

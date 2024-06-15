@@ -8,6 +8,7 @@ import {ICommentsQueryType} from "../comments/types/output-paginator-comments-ty
 import {PostsQueryRepositories} from "./postsQueryRepositories";
 import {serviceInfo} from "../common/utils/serviceInfo";
 import {inject, injectable} from "inversify";
+import {ILikeTypeDB, LikeStatus} from "../types/like.status-type";
 
 @injectable()
 export class PostsController {
@@ -16,7 +17,11 @@ export class PostsController {
 
     async createPost(req: Request, res: Response) {
         const inputDataPost: IPostInputModel = req.body;
-        const result = await this.postsServices.createPost(inputDataPost);
+
+        const token = req.headers.authorization?.split(' ')[1] || "unknown";
+        const currentUser = await serviceInfo.getIdUserByToken(token)
+
+        const result = await this.postsServices.createPost(inputDataPost, currentUser);
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data)
             return
@@ -27,7 +32,11 @@ export class PostsController {
 
     async getPost(req: Request, res: Response) {
         const {id} = req.params;
-        const result = await this.postsQueryRepositories.findPostById(id)
+        const token = req.headers.authorization?.split(' ')[1] || "unknown";
+
+        const currentUser = await serviceInfo.getIdUserByToken(token)
+
+        const result = await this.postsServices.getPost(id, currentUser)
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data)
             return
@@ -38,7 +47,12 @@ export class PostsController {
 
     async getPosts(req: Request, res: Response) {
         const queryParams: IPostQueryType = req.query;
-        const result = await this.postsQueryRepositories.getPosts(queryParams)
+
+        const header = req.headers.authorization?.split(' ')[1];
+
+        const currentUser = await serviceInfo.getIdUserByToken(header)
+
+        const result = await this.postsQueryRepositories.getPosts(queryParams, currentUser)
         if (result.data) {
             res.status(HTTP_STATUSES[result.status]).send(result.data);
             return
@@ -100,6 +114,23 @@ export class PostsController {
 
         res.status(HTTP_STATUSES[result.status]).send({errorMessage: result.errorMessage, data: result.data})
         return;
+    }
+
+    async updateLikeStatusForSpecialPost(req: Request, res: Response) {
+        const {postId} = req.params;
+        const userId = req.userId!;
+        const login = req.login!;
+
+        const dataLikeStatus: {likeStatus: LikeStatus} = req.body;
+
+        const objLike: Omit<ILikeTypeDB, 'addedAt'> = {
+            parentId: postId,
+            userId: userId,
+            login: login,
+            status: dataLikeStatus.likeStatus
+        }
+
+        const response = await this.postsServices.updateLikeStatus(objLike)
 
     }
 }

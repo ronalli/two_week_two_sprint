@@ -2,7 +2,7 @@ import {ObjectId} from "mongodb";
 import {ResultCode} from "../types/resultCode";
 import {CommentModel} from "./domain/comment.entity";
 import {mappingComments} from "../common/utils/mappingComments";
-import {LikeModel, LikeStatus} from "./domain/like.entity";
+import {LikeModel} from "./domain/like.entity";
 import {ILikesInfoViewModel} from "./types/likes-info-types";
 import {injectable} from "inversify";
 

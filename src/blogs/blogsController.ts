@@ -6,10 +6,10 @@ import {IBlogInputModel} from "./types/blogs-types";
 import {IBlogQueryType} from "./types/request-response-type";
 import {PostsServices} from "../posts/postsServices";
 import {inject, injectable} from "inversify";
+import {serviceInfo} from "../common/utils/serviceInfo";
 
 @injectable()
 export class BlogsController {
-
     constructor(@inject(BlogsServices) protected blogsServices: BlogsServices, @inject(BlogsQueryRepositories) protected blogsQueryRepositories: BlogsQueryRepositories, @inject(PostsServices) protected postsServices: PostsServices) {
     }
 
@@ -75,9 +75,14 @@ export class BlogsController {
         const {blogId} = req.params;
         const queryParams: IBlogQueryType = req.query;
 
+        const header = req.headers.authorization?.split(' ')[1];
+        const currentUser = await serviceInfo.getIdUserByToken(header)
+
         const result = await this.blogsQueryRepositories.findBlogById(blogId);
+
         if (result.data) {
-            const foundPosts = await this.blogsQueryRepositories.getAndSortPostsSpecialBlog(blogId, queryParams)
+            const foundPosts= await this.blogsQueryRepositories.getAndSortPostsSpecialBlog(blogId, queryParams, currentUser)
+
             res.status(HTTP_STATUSES[foundPosts.status]).send(foundPosts.data)
             return
         }
@@ -89,6 +94,9 @@ export class BlogsController {
     async createPostForSpecialBlog(req: Request, res: Response) {
         const inputDataPost = req.body;
         const {blogId} = req.params;
+
+        const token = req.headers.authorization?.split(' ')[1] || "unknown";
+        const currentUser = await serviceInfo.getIdUserByToken(token)
 
         const result = await this.blogsQueryRepositories.findBlogById(blogId);
 
@@ -102,7 +110,7 @@ export class BlogsController {
             ...inputDataPost
         }
 
-        const createdPost = await this.postsServices.createPost(post);
+        const createdPost = await this.postsServices.createPost(post, currentUser);
 
         if (createdPost.data) {
             res.status(HTTP_STATUSES[createdPost.status]).send(createdPost.data)

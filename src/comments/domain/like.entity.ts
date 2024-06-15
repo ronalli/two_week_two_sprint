@@ -1,17 +1,5 @@
 import {HydratedDocument, model, Model, Schema} from "mongoose";
-
-export enum LikeStatus {
-    None = 'None',
-    Like = 'Like',
-    Dislike = 'Dislike'
-}
-
-export interface ILikeTypeDB {
-    createdAt: string,
-    status: LikeStatus;
-    userId: string,
-    parentId: string
-}
+import {ILikeTypeDB, LikeStatus} from "../../types/like.status-type";
 
 type LikeModel = Model<ILikeTypeDB>
 
@@ -26,7 +14,7 @@ const likeSchema = new Schema<ILikeTypeDB>({
         type: String,
         required: true,
     },
-    createdAt: {
+    addedAt: {
         type: String,
         required: true,
     },
@@ -35,7 +23,13 @@ const likeSchema = new Schema<ILikeTypeDB>({
         enum: LikeStatus,
         default: LikeStatus.None,
         required: true,
+    },
+    login: {
+        type: String,
+        required: true,
     }
+
+
 })
 
 export const LikeModel = model<ILikeTypeDB, LikeModel>('likes', likeSchema);

@@ -1,6 +1,6 @@
 import {ICommentDBType, ICommentViewModel} from "../../comments/types/comments-types";
 import {ILikesInfoViewModel} from "../../comments/types/likes-info-types";
-import {LikeModel, LikeStatus} from "../../comments/domain/like.entity";
+import {LikeModel} from "../../comments/domain/like.entity";
 
 export const mappingComments = {
     formatDataCommentForView: (comment: ICommentDBType, ): Omit<ICommentViewModel, "likesInfo"> => {
@@ -19,20 +19,12 @@ export const mappingComments = {
         const result: ICommentViewModel[] = []
 
         for (const comment of comments) {
-            const likesCount =  await LikeModel.find({
-                $and: [{parentId: comment._id}, {status: LikeStatus.Like}]
-            }).countDocuments()
-
-            const dislikesCount =  await LikeModel.find({
-                $and: [{parentId: comment._id}, {status: LikeStatus.Dislike}]
-            }).countDocuments()
-
 
             const currentStatus = await LikeModel.findOne({$and: [{parentId: comment._id}, {userId: currentUser}]});
 
             const likesInfo: ILikesInfoViewModel = {
-                likesCount,
-                dislikesCount,
+                likesCount: comment.likesCount,
+                dislikesCount: comment.dislikesCount,
                 myStatus: currentStatus?.status ? currentStatus.status : 'None'
             }
 

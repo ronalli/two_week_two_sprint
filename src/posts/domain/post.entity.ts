@@ -1,12 +1,16 @@
 import {HydratedDocument, model, Model, Schema} from "mongoose";
+import {ObjectId} from "mongodb";
 
 export interface IPostTypeDB  {
+    _id?: ObjectId,
     title: string,
     shortDescription: string,
     content: string,
     blogId: string,
     blogName: string,
     createdAt: string,
+    likesCount: number,
+    dislikesCount: number
 }
 
 type PostModel = Model<IPostTypeDB>
@@ -34,7 +38,18 @@ const postSchema = new Schema<IPostTypeDB>({
     blogName: {
         type: String,
         required: true
+    },
+    likesCount: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    dislikesCount: {
+        type: Number,
+        required: true,
+        default: 0,
     }
+
 })
 
 export const PostModel = model<IPostTypeDB, PostModel>('posts', postSchema)

@@ -1,14 +1,15 @@
 import {createDefaultValues} from "../utils/helper";
 import {ObjectId} from "mongodb";
-import {IPostDBType, IPostViewModel} from "./types/posts-types";
 import {IPostQueryType} from "./types/request-response-type";
 import {ResultCode} from "../types/resultCode";
-import {PostModel} from "./domain/post.entity";
+import { PostModel} from "./domain/post.entity";
 import {injectable} from "inversify";
+import {mappingPosts} from "../common/utils/mappingPosts";
 
 @injectable()
 export class PostsQueryRepositories {
-    async getPosts(queryParams: IPostQueryType) {
+
+    async getPosts(queryParams: IPostQueryType, currentUser: string | null) {
         const query = createDefaultValues(queryParams);
         try {
             const allPosts = await PostModel.find()
@@ -25,7 +26,7 @@ export class PostsQueryRepositories {
                     page: query.pageNumber,
                     pageSize: query.pageSize,
                     totalCount,
-                    items: allPosts.map(x => this._formatingDataForOutputPost(x))
+                    items: mappingPosts.formatingAllPostForView(allPosts, currentUser)
                 }
 
             }
@@ -35,14 +36,13 @@ export class PostsQueryRepositories {
         }
     }
 
-    async findPostById(id: string) {
+    async getPostById(id: string) {
         try {
-
             const foundPost = await PostModel.findOne({_id: new ObjectId(id)});
             if (foundPost) {
                 return {
                     status: ResultCode.Success,
-                    data: this._formatingDataForOutputPost(foundPost)
+                    data: foundPost
                 }
             }
             return {errorMessage: 'Not found post', status: ResultCode.NotFound, data: null}
@@ -50,17 +50,4 @@ export class PostsQueryRepositories {
             return {errorMessage: 'Error DB', status: ResultCode.InternalServerError, data: null}
         }
     }
-
-    _formatingDataForOutputPost(input: IPostDBType): IPostViewModel {
-        return {
-            id: String(input._id),
-            blogId: input.blogId,
-            content: input.content,
-            createdAt: input.createdAt,
-            shortDescription: input.shortDescription,
-            blogName: input.blogName,
-            title: input.title,
-        };
-    }
-
 }
