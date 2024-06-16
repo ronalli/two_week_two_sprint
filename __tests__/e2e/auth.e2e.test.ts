@@ -77,7 +77,6 @@ describe("Auth Tests", () => {
         }
 
         await req.post(SETTINGS.PATH.AUTH + '/registration').send(newUser).expect(HTTP_STATUSES.NotContent)
-
     })
 
     it('shouldn\'t correct registration (email/login founded by DB)', async () => {
@@ -86,7 +85,6 @@ describe("Auth Tests", () => {
         let newUser = testSeeder.createUserDto()
 
         await req.post(SETTINGS.PATH.AUTH + '/registration').send(newUser).expect(HTTP_STATUSES.BadRequest)
-
     })
 
     it('shouldn\'t correct login', async () => {
@@ -100,7 +98,6 @@ describe("Auth Tests", () => {
             loginOrEmail: 'rest',
             password: 'res',
         }).expect(HTTP_STATUSES.Unauthorized)
-
     })
 
     it('should incorrect resend code, since the user was created by admin and isConfirmed = true', async () => {

@@ -26,9 +26,8 @@ export class PostsQueryRepositories {
                     page: query.pageNumber,
                     pageSize: query.pageSize,
                     totalCount,
-                    items: mappingPosts.formatingAllPostForView(allPosts, currentUser)
+                    items: await mappingPosts.formatingAllPostForView(allPosts, currentUser)
                 }
-
             }
 
         } catch (e) {

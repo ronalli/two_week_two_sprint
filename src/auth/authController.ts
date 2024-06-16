@@ -91,6 +91,7 @@ export class AuthController {
 
         const response = await this.authService.logout(cookie);
 
+        res.clearCookie('refreshToken', {httpOnly: true, secure: true});
         res.status(HTTP_STATUSES[response.status]).send({})
         return
     }

@@ -44,6 +44,7 @@ export class PostsServices {
 
         const searchLike = await this.postsRepositories.getLike(data.parentId, data.userId);
 
+
         if(!searchLike) {
             await this.postsRepositories.addStatusLike(data)
 
@@ -54,8 +55,8 @@ export class PostsServices {
             return {status: ResultCode.NotContent, data: null}
 
         }
-
         return await this.postsRepositories.updateStatusLike(data, post)
+
     }
 
 }

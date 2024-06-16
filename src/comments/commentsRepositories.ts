@@ -109,14 +109,18 @@ export class CommentsRepositories {
             return {status: ResultCode.NotContent, data: null}
         }
 
-        currentStatus.status = data.status;
+
         if(data.status === LikeStatus.Like) {
             comment.likesCount += 1;
             comment.dislikesCount -= 1;
-        } else {
+        } else if(data.status === LikeStatus.Dislike) {
             comment.likesCount -= 1;
             comment.dislikesCount += 1;
+        } else {
+           currentStatus.status === LikeStatus.Like ? comment.likesCount -= 1 : comment.dislikesCount -= 1
         }
+
+        currentStatus.status = data.status;
 
         await comment.save();
 

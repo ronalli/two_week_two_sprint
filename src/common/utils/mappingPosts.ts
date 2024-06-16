@@ -22,14 +22,13 @@ export const mappingPosts = {
             $and: [{parentId: post._id}, {userId: user}]
         })
 
-        const lastLikes = await LikeModel.find({$and: [{parentId: post._id}, {userId: user}]}).sort({createdAt: -1}).limit(3).select('-parentId -status')
+        const lastLikes = await LikeModel.find({parentId: post._id}).sort({addedAt: -1}).limit(3).select('-parentId -status')
 
         const likesInfo = {
             likesCount: post.likesCount,
             dislikesCount: post.dislikesCount,
             myStatus: currentStatus?.status ? currentStatus.status : 'None',
             newestLikes: lastLikes
-
         }
 
         return {

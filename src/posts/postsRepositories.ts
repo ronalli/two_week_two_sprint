@@ -12,7 +12,7 @@ import {mappingPosts} from "../common/utils/mappingPosts";
 
 @injectable()
 export class PostsRepositories {
-    constructor(@inject(BlogsQueryRepositories) protected blogsQueryRepositories: BlogsQueryRepositories,@inject(PostsQueryRepositories) protected postsQueryRepositories: PostsQueryRepositories) {
+    constructor(@inject(BlogsQueryRepositories) protected blogsQueryRepositories: BlogsQueryRepositories, @inject(PostsQueryRepositories) protected postsQueryRepositories: PostsQueryRepositories) {
     }
 
     async create(postData: IPostInputModel, currentUser: string) {
@@ -36,7 +36,7 @@ export class PostsRepositories {
                 if (foundPost) {
                     return {
                         status: ResultCode.Created,
-                        data: mappingPosts.formatingDataForOutputPost(foundPost, currentUser)
+                        data: await mappingPosts.formatingDataForOutputPost(foundPost, currentUser)
                     }
                 }
                 return {errorMessage: 'Something went wrong', status: ResultCode.BadRequest, data: null}
@@ -100,6 +100,7 @@ export class PostsRepositories {
         like.parentId = data.parentId;
         like.status = data.status;
         like.addedAt = new Date().toISOString();
+        like.login = data.login;
 
         await like.save();
 
@@ -128,14 +129,17 @@ export class PostsRepositories {
             return {status: ResultCode.NotContent, data: null}
         }
 
-        currentStatus.status = data.status;
-        if(data.status === LikeStatus.Like) {
+
+        if (data.status === LikeStatus.Like) {
             post.likesCount += 1;
             post.dislikesCount -= 1;
-        } else {
+        } else if (data.status === LikeStatus.Dislike) {
             post.likesCount -= 1;
             post.dislikesCount += 1;
+        } else {
+            currentStatus.status === LikeStatus.Like ? post.likesCount -= 1 : post.dislikesCount -= 1;
         }
+        currentStatus.status = data.status;
 
         await post.save();
 

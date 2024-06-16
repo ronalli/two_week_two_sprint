@@ -13,7 +13,7 @@ export class CommentsController {
 
     async getComment(req: Request, res: Response) {
         const {commentId} = req.params;
-        const token = req.headers.authorization?.split(' ')[1] || "unknown";
+        const token = req.cookies.refreshToken || ''
 
         const currentStatus = await serviceInfo.initializeStatusLike(token, commentId)
 

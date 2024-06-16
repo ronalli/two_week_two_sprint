@@ -8,6 +8,7 @@ import {validatorParamPostId} from "../middleware/postId-validator-middleware";
 import {authJwtMiddleware} from "../middleware/auth-jwt-middleware";
 import {container} from "../composition-root";
 import {PostsController} from "../posts/postsController";
+import {validatorLikeStatus} from "../middleware/like-status-middleware";
 
 const postsController = container.resolve(PostsController);
 
@@ -21,4 +22,4 @@ postsRouter.delete('/:id', authMiddleware, postsController.deletePost.bind(posts
 postsRouter.post('/:postId/comments', authJwtMiddleware, validationContent, inputCheckErrorsMiddleware, postsController.createCommentForSpecialPost.bind(postsController))
 postsRouter.get('/:postId/comments', postsController.getAllCommentsForPost.bind(postsController))
 
-postsRouter.put('/:postId/like-status', authJwtMiddleware, postsController.updateLikeStatusForSpecialPost.bind(postsController))
+postsRouter.put('/:postId/like-status', authJwtMiddleware, validatorLikeStatus,  inputCheckErrorsMiddleware, postsController.updateLikeStatusForSpecialPost.bind(postsController))

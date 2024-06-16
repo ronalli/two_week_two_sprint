@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import {db} from "../../src/db/db";
 import {serviceComments} from "../utils/serviceComments";
 import {req} from "../test-helpers";
+import cookie from "cookie";
 import {HTTP_STATUSES, SETTINGS} from "../../src/settings";
 
 describe('Status like', () => {
@@ -42,11 +43,14 @@ describe('Status like', () => {
             "password": '12345678'
         })
 
+        const cookies = cookie.parse(String(user.headers['set-cookie'])).refreshToken;
+
        await req.put(SETTINGS.PATH.COMMENTS + `/${result.body.items[0].id}/like-status`).set('Authorization', `Bearer ${user.body.accessToken}`).send({
             "likeStatus": "Like"
         }).expect(HTTP_STATUSES.NotContent)
 
-        const res = await req.get(SETTINGS.PATH.COMMENTS + `/${result.body.items[0].id}`).set('Authorization', `Bearer ${user.body.accessToken}`)
+
+        const res = await req.get(SETTINGS.PATH.COMMENTS + `/${result.body.items[0].id}`).set('Cookie', `refreshToken=${cookies}`)
 
         expect(res.body.likesInfo.likesCount).toBe(1)
         expect(res.body.likesInfo.dislikesCount).toBe(0)
@@ -62,7 +66,7 @@ describe('Status like', () => {
             "likeStatus": "Dislike"
         }).expect(HTTP_STATUSES.NotContent)
 
-        const res2 = await req.get(SETTINGS.PATH.COMMENTS + `/${result.body.items[0].id}`).set('Authorization', `Bearer ${user.body.accessToken}`)
+        const res2 = await req.get(SETTINGS.PATH.COMMENTS + `/${result.body.items[0].id}`).set('Cookie', `refreshToken=${cookies}`)
 
         expect(res2.body.likesInfo.likesCount).toBe(0)
         expect(res2.body.likesInfo.dislikesCount).toBe(1)
