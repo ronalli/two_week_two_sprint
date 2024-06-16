@@ -1,3 +1,5 @@
+import {ObjectId} from "mongodb";
+
 export enum LikeStatus {
     None = 'None',
     Like = 'Like',

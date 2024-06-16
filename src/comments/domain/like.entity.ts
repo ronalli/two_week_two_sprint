@@ -1,5 +1,6 @@
 import {HydratedDocument, model, Model, Schema} from "mongoose";
 import {ILikeTypeDB, LikeStatus} from "../../types/like.status-type";
+import {ObjectId} from "mongodb";
 
 type LikeModel = Model<ILikeTypeDB>
 
